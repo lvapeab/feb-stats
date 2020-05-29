@@ -13,7 +13,9 @@ def get_elements(doc: str,
     return table_elements
 
 
-def elements_to_df(tr_elements: List[str]) -> pd.DataFrame:
+def table_elements_to_df(tr_elements: List[str],
+                         initial_row:int=2
+                         ) -> pd.DataFrame:
     col = []
     i = 0
     # For each row, store each first element (header) and an empty list
@@ -23,7 +25,7 @@ def elements_to_df(tr_elements: List[str]) -> pd.DataFrame:
         col.append((name, []))
 
     # Since out first row is the header, data is stored on the second row onwards
-    for j in range(2, len(tr_elements)):
+    for j in range(initial_row, len(tr_elements)):
         # T is our j'th row
         T = tr_elements[j]
         # If row is not of size 16, the //tr data is not from our table

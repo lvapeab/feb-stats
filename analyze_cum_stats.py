@@ -5,8 +5,8 @@ import requests
 from urllib.parse import urlparse
 from typing import Optional
 
-from feb_stats.parser import get_elements, elements_to_df
-from feb_stats.transforms import parse_df
+from feb_stats.parser import get_elements, table_elements_to_df
+from feb_stats.cum_stats_transforms import parse_cum_stats_df
 
 def parse_cum_stats(link: str,
                     id: Optional[str] = '//table[@id="estadisticasTotalesDataGrid"]//tr') -> pd.DataFrame:
@@ -26,6 +26,12 @@ def parse_cum_stats(link: str,
 
     elements = get_elements(doc,
                             id)
-    ori_df = elements_to_df(elements)
-    df = parse_df(ori_df)
+    ori_df = table_elements_to_df(elements)
+    df = parse_cum_stats_df(ori_df)
     return df
+
+
+if __name__ == '__main__':
+    # link = 'http://competiciones.feb.es/estadisticas/Estadisticas.aspx?g=39&t=0'
+    link = '/home/lvapeab/projects/feb-stats/test_artifacts/1.html'
+    parse_cum_stats(link)
