@@ -7,7 +7,7 @@ from typing import Optional, List
 
 from feb_stats.parser import get_elements, game_stats_elements_to_df
 from feb_stats.game_stats_transforms import parse_game_stats_df
-
+from feb_stats.utils import dataframe_to_excel
 
 def parse_game_stats(link: str,
                      ids: List[Optional[str]]=None) -> pd.DataFrame:
@@ -47,4 +47,7 @@ def parse_game_stats(link: str,
 if __name__ == '__main__':
     # link = 'http://competiciones.feb.es/estadisticas/Estadisticas.aspx?g=39&t=0'
     link = '/home/lvapeab/projects/feb-stats/test_artifacts/game_sheet.html'
-    parse_game_stats(link)
+    parsed_df = parse_game_stats(link)
+    dataframe_to_excel(parsed_df,
+                       './df.xlsx',
+                       sheet_name='Game Sheet')
