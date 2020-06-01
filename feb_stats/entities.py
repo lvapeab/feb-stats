@@ -1,4 +1,4 @@
-from typing import TypeVar, Generic, List
+from typing import TypeVar, Generic, List, Optional, Set
 from dataclasses import dataclass
 import pandas as pd
 
@@ -9,12 +9,14 @@ T = TypeVar('T')
 class Player(Generic[T]):
     id: int
     name: str
+    season_stats: Optional[pd.DataFrame] = None
 
 
 @dataclass(frozen=True)
 class Team(Generic[T]):
     id: int
     name: str
+    season_stats: Optional[pd.DataFrame] = None
 
     def __str__(self):
         return self.name
@@ -48,11 +50,12 @@ class League(Generic[T]):
     id: int
     name: str
     season: str
-    teams: List[Team]
+    teams: Set[Team]
     games: List[Game]
 
     def __str__(self):
         return f'{self.name} - {self.season}'
+
 
 # TODO: These ops should be done in a DB
 def get_team_by_name(league: League,

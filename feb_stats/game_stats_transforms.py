@@ -11,6 +11,13 @@ def transform_cum_stats_shots(shots_series: pd.Series,
                         dtype='float32')
 
 
+def transform_cum_stats_minutes(minutes_timeseries: pd.Series,
+                                prefix='minutos') -> pd.DataFrame:
+    """Shots with the format made-attempted"""
+    cast_fn = lambda x: '00:' + str(x)  # Add hours to min:seconds
+    return pd.DataFrame({prefix: minutes_timeseries.map(cast_fn)})
+
+
 def transform_cum_stats_blocks(blocks_serie: pd.Series,
                                prefix='tapones') -> pd.DataFrame:
     """Blocks with the format made/received"""
@@ -63,25 +70,18 @@ def parse_game_stats_df(initial_df: pd.DataFrame,
 
     df = initial_df.rename(no_transform_keys,
                            axis='columns')
-    cast_keys = {
-        'puntos_favor': np.float32,
-        'asistencias': np.float32,
-        'perdidas': np.float32,
-        'robos': np.float32,
-        'mates': np.float32,
-        'valoracion': np.float32,
-    }
-    df = df.astype(cast_keys)
 
     transform_keys = {
         # key, Dict[new_key_prefix, function]
         '2 pt': ('2_puntos', transform_cum_stats_shots),
+        'Min': ('minutos', transform_cum_stats_minutes),
         '3 pt': ('3_puntos', transform_cum_stats_shots),
         'T.Camp': ('tiros_campo', transform_cum_stats_shots),
         'T.L': ('tiros_libres', transform_cum_stats_shots),
         rebotes_str: ('rebotes', transform_cum_stats_rebounds),
         'Faltas C R': ('faltas', transform_cum_stats_fouls),
         tapones_str: ('tapones', transform_cum_stats_blocks),
+
     }
 
     for transform_key, transform_tuple in transform_keys.items():
@@ -90,4 +90,21 @@ def parse_game_stats_df(initial_df: pd.DataFrame,
         df = pd.concat([df, new_df], axis=1)
         df = df.drop(axis='columns',
                      labels=transform_key)
+
+    df.at[df.shape[0] - 1, 'mas_menos'] = 0.
+
+    cast_keys = {
+        'puntos_favor': np.float32,
+        'mas_menos': np.float32,
+        'asistencias': np.float32,
+        'perdidas': np.float32,
+        'robos': np.float32,
+        'mates': np.float32,
+        'valoracion': np.float32,
+    }
+    df = df.astype(cast_keys)
+    df['minutos'] = pd.to_timedelta(df['minutos'])
+    df['partidos'] = 1
+    df.at[df.shape[0] - 1, 'mas_menos'] = df['mas_menos'].sum()
+
     return df

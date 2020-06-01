@@ -1,5 +1,7 @@
+import functools
 import pandas as pd
-from feb_stats.entities import League, Team, get_games_by_team
+from feb_stats.entities import League, Team, Boxscore, get_games_by_team
+from typing import List
 
 
 def compute_oer(df: pd.DataFrame) -> pd.DataFrame:
@@ -17,9 +19,6 @@ def compute_total_possessions(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def cum_stats(df: pd.DataFrame) -> pd.DataFrame:
-    return df.cumsum().tail(1)
-
 # El DER es el OER de los rivales cuando se enfrentan a ti
 def compute_der(league: League,
                 team: Team,
@@ -29,11 +28,25 @@ def compute_der(league: League,
                               team)
     total_df = pd.DataFrame()
     for game in games:
-        if game.local_team != team:
-            df = game.local_boxscore.boxscore.tail(1)
-        else:
-            df = game.local_boxscore.boxscore.tail(1)
+        df = game.local_boxscore.boxscore.tail(1) if game.local_team != team else game.local_boxscore.boxscore.tail(1)
         total_df = pd.concat([total_df, df], ignore_index=True)
-    cum_df = cum_stats(total_df)
-    der = compute_oer(cum_df)['oer']
+    der = compute_oer(total_df.sum())['oer']
     return der
+
+def sum_boxscores(df1:pd.DataFrame, df2:pd.DataFrame) -> pd.DataFrame:
+    dorsales1 = df1['dorsal']
+    df_sum = pd.concat([df1, df2]).groupby('jugador', as_index=True).sum()
+    df_sum['dorsal'] = dorsales1
+    return df_sum
+
+
+def aggregate_boxscores(boxscores: List[Boxscore]) -> Boxscore:
+    all_dfs = [boxscore.boxscore.set_index('jugador') for boxscore in boxscores]
+    agg_df = functools.reduce(lambda df1, df2: sum_boxscores(df1, df2), all_dfs)
+    return Boxscore(id=-1,
+                    boxscore=agg_df
+                    )
+
+
+def aggregate_league(league: League) -> League:
+    """Aggregates the games of a League. Computing DER and OER."""
