@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 
 
@@ -62,6 +63,15 @@ def parse_game_stats_df(initial_df: pd.DataFrame,
 
     df = initial_df.rename(no_transform_keys,
                            axis='columns')
+    cast_keys = {
+        'puntos_favor': np.float32,
+        'asistencias': np.float32,
+        'perdidas': np.float32,
+        'robos': np.float32,
+        'mates': np.float32,
+        'valoracion': np.float32,
+    }
+    df = df.astype(cast_keys)
 
     transform_keys = {
         # key, Dict[new_key_prefix, function]

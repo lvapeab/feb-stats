@@ -1,17 +1,21 @@
 import glob
 import lxml.html as lh
 import os
-import pandas as pd
 import requests
 from urllib.parse import urlparse
-from typing import Dict, Optional, List
+from typing import Dict, Optional, List, Tuple
+from hashlib import md5
 
-from feb_stats.parser import get_elements, game_stats_elements_to_df, get_game_metadata
+from feb_stats.parser import get_elements, table_to_df, get_game_metadata
 from feb_stats.game_stats_transforms import parse_game_stats_df
+from feb_stats.entities import Game, Boxscore, Team, Player, League, get_team_by_name
+from feb_stats.transforms import compute_der
+
 from feb_stats.utils import dataframe_to_excel
 
-def parse_game_stats(link: str,
-                     ids: List[Optional[str]]=None) -> Dict[str, pd.DataFrame]:
+
+def parse_games_stats(link: str,
+                      ids: List[Optional[str]] = None) -> Tuple[Game, Tuple[Team, Team]]:
     ids = ids or [
         ('//table[@id="jugadoresLocalDataGrid"]//tr', True),
         ('//table[@id="jugadoresVisitanteDataGrid"]//tr', False)
@@ -32,30 +36,99 @@ def parse_game_stats(link: str,
         raise ValueError(f'Unable to find the resource {link} (not a valid URL nor an existing file.)')
 
     game_stats = {}
-    game_stats['metadata'] = get_game_metadata(doc)
+    metadata = get_game_metadata(doc)
+
     for (id, local) in ids:
         elements = get_elements(doc,
                                 id)
         key = 'local_boxscore' if local else 'visitante_boxscore'
         if elements:
-            ori_df = game_stats_elements_to_df(elements,
-                                              initial_row=2,
-                                              n_elem=18)
+            ori_df = table_to_df(elements,
+                                 initial_row=2,
+                                 n_elem=18)
             df = parse_game_stats_df(ori_df,
                                      local_team=local)
             game_stats[key] = df
-    return game_stats
+        else:
+            raise ValueError(f'Unable to parse stats from {id}')
+    local_team = Team(
+        id=int(md5(str.encode(metadata['equipo_local'], encoding='UTF-8')).hexdigest(), 16),
+        name=metadata['equipo_local']
+    )
+    away_team = Team(
+        id=int(md5(str.encode(metadata['equipo_visitante'], encoding='UTF-8')).hexdigest(), 16),
+        name=metadata['equipo_visitante']
+    )
+    game = Game(
+        id=int(md5(str.encode(
+            f"{metadata['liga']}_{metadata['fecha']}_{metadata['equipo_local']}_{metadata['equipo_visitante']}",
+            encoding='UTF-8')).hexdigest(), 16),
+        date=metadata['fecha'],
+        hour=metadata['hora'],
+        league=metadata['liga'],
+        season=metadata['temporada'],
+        local_team=local_team,
+        local_score=int(metadata['resultado_local']),
+        away_team=away_team,
+        away_score=int(metadata['resultado_visitante']),
+        main_referee=Player(
+            id=int(md5(str.encode(metadata['arbitro_principal'], encoding='UTF-8')).hexdigest(), 16),
+            name=metadata['arbitro_principal']
+        ),
+        aux_referee=Player(
+            id=int(md5(str.encode(metadata['arbitro_auxiliar'], encoding='UTF-8')).hexdigest(), 16),
+            name=metadata['arbitro_auxiliar']
+        ),
+        local_boxscore=Boxscore(
+            id=int(md5(str.encode(f"{metadata['liga']}_{metadata['fecha']}_{metadata['equipo_local']}",
+                                  encoding='UTF-8')).hexdigest(), 16),
 
-def aggregate_boxscores(boxscores_dir):
+            boxscore=game_stats['local_boxscore']
+        ),
+        away_boxscore=Boxscore(
+            id=int(md5(str.encode(f"{metadata['liga']}_{metadata['fecha']}_{metadata['equipo_visitante']}",
+                                  encoding='UTF-8')).hexdigest(), 16),
+
+            boxscore=game_stats['visitante_boxscore']
+        )
+    )
+    return game, (local_team, away_team)
+
+
+def aggregate_boxscores(boxscores_dir: str) -> League:
+    all_games = []
+    all_teams = []
     for link in glob.iglob(os.path.join(boxscores_dir, '*.html'), recursive=False):
-        parsed_dfs = parse_game_stats(link)
-    print(parsed_dfs)
+        game, teams = parse_games_stats(link)
+        all_games.append(game)
+        for team in teams:
+            all_teams.append(team)
+
+    if all_games:
+        league = League(
+            id=int(md5(str.encode(f"{all_games[0].league}", encoding='UTF-8')).hexdigest(), 16),
+            name=all_games[0].league,
+            season=all_games[0].season,
+            teams=list(set(all_teams)),
+            games=all_games
+        )
+        return league
+    else:
+        raise ValueError('No games found')
+
 
 if __name__ == '__main__':
     # link = 'http://competiciones.feb.es/estadisticas/Estadisticas.aspx?g=39&t=0'
     link = '/home/lvapeab/projects/feb-stats/test_artifacts/game_sheet.html'
-    aggregate_boxscores('/home/lvapeab/projects/feb-stats/test_artifacts/')
-    # parsed_df = parse_game_stats(link)
+    league = aggregate_boxscores('/home/lvapeab/projects/feb-stats/test_artifacts/')
+
+    team = get_team_by_name(league,
+                            'GUILLÉN GROUP ALGINET')
+
+    ders = compute_der(league,
+                       team)
+    print(ders)
+    # parsed_df = parse_games_stats(link)
     # dataframe_to_excel(parsed_df,
     #                    './df.xlsx',
     #                    sheet_name='Game Sheet')

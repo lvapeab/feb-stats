@@ -5,7 +5,7 @@ import requests
 from urllib.parse import urlparse
 from typing import Optional
 
-from feb_stats.parser import get_elements, cum_stats_elements_to_df
+from feb_stats.parser import get_elements, table_to_df
 from feb_stats.cum_stats_transforms import parse_cum_stats_df
 from feb_stats.utils import dataframe_to_excel
 
@@ -27,9 +27,9 @@ def parse_cum_stats(link: str,
 
     elements = get_elements(doc,
                             id)
-    ori_df = cum_stats_elements_to_df(elements,
-                                      initial_row=2,
-                                      n_elem=16)
+    ori_df = table_to_df(elements,
+                         initial_row=2,
+                         n_elem=16)
     df = parse_cum_stats_df(ori_df)
     return df
 
