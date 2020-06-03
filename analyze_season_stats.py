@@ -36,7 +36,7 @@ def parse_cum_stats(link: str,
 
 if __name__ == '__main__':
     # link = 'http://competiciones.feb.es/estadisticas/Estadisticas.aspx?g=39&t=0'
-    link = '/home/lvapeab/projects/feb-stats/test_artifacts/1.html'
+    link = '/home/lvapeab/projects/feb-stats/data/1.html'
     parsed_df = parse_cum_stats(link)
     league_to_excel(parsed_df,
                        './df.xlsx',

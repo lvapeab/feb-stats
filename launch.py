@@ -7,7 +7,7 @@ if __name__=='__main__':
     # STEP 1 define the layout
     layout = [
                 [sg.Text('Introduce la carpeta con las actas (ficheros .html).')],
-                [sg.Input('test_artifacts')],
+                [sg.Input('data')],
                 [sg.Button('Analizar'),
                  sg.Button('Salir')]
              ]
