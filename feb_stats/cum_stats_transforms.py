@@ -1,5 +1,5 @@
 import pandas as pd
-from feb_stats.transforms import compute_oer
+from feb_stats.transforms import oer_from_dataframe
 
 def transform_cum_stats_shots(shots_series: pd.Series,
                               prefix='tiros') -> pd.DataFrame:
@@ -68,6 +68,6 @@ def parse_cum_stats_df(initial_df: pd.DataFrame) -> pd.DataFrame:
         df = pd.concat([df, new_df], axis=1)
         df = df.drop(axis='columns',
                      labels=transform_key)
-    df = compute_oer(df)
+    df = oer_from_dataframe(df)
     return df
 

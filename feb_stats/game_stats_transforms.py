@@ -103,8 +103,8 @@ def parse_game_stats_df(initial_df: pd.DataFrame,
         'valoracion': np.float32,
     }
     df = df.astype(cast_keys)
-    df['minutos'] = pd.to_timedelta(df['minutos'])
-    df['partidos'] = 1
-    df.at[df.shape[0] - 1, 'mas_menos'] = df['mas_menos'].sum()
+    df.loc[:, 'minutos'] = pd.to_timedelta(df.loc[:, 'minutos'])
+    df.loc[:, 'partidos'] = 1
+    df.at[df.shape[0] - 1, 'mas_menos'] = df.loc[:, 'mas_menos'].sum()
 
     return df

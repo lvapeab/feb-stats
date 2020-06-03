@@ -7,7 +7,7 @@ from typing import Optional
 
 from feb_stats.parser import get_elements, table_to_df
 from feb_stats.cum_stats_transforms import parse_cum_stats_df
-from feb_stats.utils import dataframe_to_excel
+from feb_stats.utils import league_to_excel
 
 def parse_cum_stats(link: str,
                     id: Optional[str] = '//table[@id="estadisticasTotalesDataGrid"]//tr') -> pd.DataFrame:
@@ -38,6 +38,6 @@ if __name__ == '__main__':
     # link = 'http://competiciones.feb.es/estadisticas/Estadisticas.aspx?g=39&t=0'
     link = '/home/lvapeab/projects/feb-stats/test_artifacts/1.html'
     parsed_df = parse_cum_stats(link)
-    dataframe_to_excel(parsed_df,
+    league_to_excel(parsed_df,
                        './df.xlsx',
-                       sheet_name='Game Sheet')
+                    sheet_name='Game Sheet')

@@ -8,10 +8,9 @@ from hashlib import md5
 
 from feb_stats.parser import get_elements, table_to_df, get_game_metadata
 from feb_stats.game_stats_transforms import parse_game_stats_df
-from feb_stats.entities import Game, Boxscore, Team, Player, League, get_team_by_name, get_games_by_team
-from feb_stats.transforms import compute_der, aggregate_boxscores
+from feb_stats.entities import Game, Boxscore, Team, Player, League, get_team_by_name, get_games_by_team, get_team_boxscores
+from feb_stats.transforms import compute_der, aggregate_boxscores, compute_league_aggregates
 
-from feb_stats.utils import dataframe_to_excel
 
 
 def parse_games_stats(link: str,
@@ -121,18 +120,17 @@ if __name__ == '__main__':
     # link = 'http://competiciones.feb.es/estadisticas/Estadisticas.aspx?g=39&t=0'
     link = '/home/lvapeab/projects/feb-stats/test_artifacts/game_sheet.html'
     league = analyze_boxscores('/home/lvapeab/projects/feb-stats/test_artifacts/')
-
-    team = get_team_by_name(league,
-                            'GUILLÉN GROUP ALGINET')
-
+    new_league = compute_league_aggregates(league)
+    new_league.export_to_excel()
+    # team = get_team_by_name(league,
+    #                         'GUILLÉN GROUP ALGINET')
     # rival_boxscores = [game.away_boxscore if game.local_team == team else game.local_boxscore for game in get_games_by_team(league, team)]
-    own_boxscores = [game.local_boxscore if game.local_team == team else game.away_boxscore for game in get_games_by_team(league, team)]
-    aggregate_boxscores(own_boxscores)
-
+    # own_boxscores = get_team_boxscores(league,
+    #                                    team)
+    # aggregate_boxscores(own_boxscores)
+    #
     # ders = compute_der(league,
     #                    team)
     # print(ders)
     # parsed_df = parse_games_stats(link)
-    # dataframe_to_excel(parsed_df,
-    #                    './df.xlsx',
-    #                    sheet_name='Game Sheet')
+

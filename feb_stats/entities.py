@@ -1,6 +1,9 @@
-from typing import TypeVar, Generic, List, Optional, Set
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+import os
 import pandas as pd
+from typing import TypeVar, Generic, List, Optional, Set
+
+from feb_stats.utils import league_to_excel
 
 T = TypeVar('T')
 
@@ -24,8 +27,8 @@ class Team(Generic[T]):
 
 @dataclass(frozen=True)
 class Boxscore(Generic[T]):
-    id: int
     boxscore: pd.DataFrame
+    id: Optional[int] = None
 
 
 @dataclass(frozen=True)
@@ -52,9 +55,22 @@ class League(Generic[T]):
     season: str
     teams: Set[Team]
     games: List[Game]
+    aggregated_games: Optional[pd.DataFrame] = None
 
     def __str__(self):
         return f'{self.name} - {self.season}'
+
+    def export_to_excel(self,
+                        dir: Optional[str] = None,
+                        filename: Optional[str] = None, ) -> None:
+        dir = dir or '.'
+        filename = filename or f'{self.name}_{self.season.replace("/", "-")}.xlsx'
+        if self.aggregated_games is not None:
+            league_to_excel(self,
+                            os.path.join(dir, filename),
+                            sheet_name=f'{self.name}_{self.season.replace("/", "-")}')
+        else:
+            raise NotImplementedError('Still unimplemented')
 
 
 # TODO: These ops should be done in a DB
@@ -73,3 +89,15 @@ def get_games_by_team(league: League,
         if team in {game.local_team, game.away_team}:
             matching_games.append(game)
     return matching_games
+
+
+def get_team_boxscores(league: League,
+                       team: Team) -> List[Boxscore]:
+    return [game.local_boxscore if game.local_team == team else game.away_boxscore
+            for game in get_games_by_team(league, team)]
+
+
+def get_rival_boxscores(league: League,
+                        team: Team) -> List[Boxscore]:
+    return [game.local_boxscore if game.local_team != team else game.away_boxscore
+            for game in get_games_by_team(league, team)]
