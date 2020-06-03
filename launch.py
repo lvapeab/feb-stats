@@ -1,8 +1,9 @@
 import PySimpleGUI as sg
+import os
 from feb_stats.parser import parse_boxscores
 from feb_stats.transforms import compute_league_aggregates
 
-if __name__=='__main__':
+def launch():
     sg.theme('BluePurple')
     # STEP 1 define the layout
     layout = [
@@ -27,11 +28,14 @@ if __name__=='__main__':
             folder = values.get(0, '')
             folder = '.' if folder == '' else folder
 
-            league = parse_boxscores(folder)
+            league = parse_boxscores(os.path.join('../', folder))
             new_league = compute_league_aggregates(league)
-            output_file = new_league.export_to_excel()
+            output_file = new_league.export_to_excel('../')
             sg.popup('Estadísticas guardadas en:', output_file)
             window.close()
             break
 
     window.close()
+
+if __name__ == '__main__':
+    launch()
