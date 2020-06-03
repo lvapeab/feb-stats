@@ -71,6 +71,7 @@ def compute_league_aggregates(league: League) -> League:
                                 team)
         own_df.loc['equipo'] = team.name
         own_df.loc['der'] = rivals_df.loc['der']
+        own_df.loc['puntos_contra'] = rivals_df.loc['puntos_favor']
         own_df.pop('dorsal')
         own_df = own_df.reset_index().transpose()
         own_df.columns = own_df.loc['index']
