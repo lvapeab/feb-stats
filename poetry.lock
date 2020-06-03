@@ -62,6 +62,14 @@ test = ["pytest (>=4.0.2)", "pytest-xdist", "hypothesis (>=3.58)"]
 
 [[package]]
 category = "main"
+description = "GUI SDK Launched in 2018. It's 2020 and PySimpleGUI is actively developed and supported. Super-simple to create custom GUI's. 200 Demo programs & Cookbook for rapid start. Extensive documentation. Main doc is www.PySimpleGUI.org.  Examples using Machine Learning(GUI, OpenCV Integration,  Chatterbot), Rainmeter Style Floating Desktop Widgets, Matplotlib + Pyplot integration, add GUI to command line scripts, PDF & Image Viewer. Great for beginners as well as advanced GUI programmers"
+name = "pysimplegui"
+optional = false
+python-versions = "*"
+version = "4.19.0"
+
+[[package]]
+category = "main"
 description = "Extensions to the standard Python datetime module"
 name = "python-dateutil"
 optional = false
@@ -127,7 +135,7 @@ python-versions = "*"
 version = "1.2.8"
 
 [metadata]
-content-hash = "f82c45be58f691219ba7b898e87567c6be22b396c5ec7904884800d9f5a449c9"
+content-hash = "c3b6661e95c622a4903f48a643c43a0766b00d69684b5ae79bc44504d761d62b"
 python-versions = "^3.7"
 
 [metadata.files]
@@ -212,6 +220,10 @@ pandas = [
     {file = "pandas-1.0.3-cp38-cp38-win32.whl", hash = "sha256:167a1315367cea6ec6a5e11e791d9604f8e03f95b57ad227409de35cf850c9c5"},
     {file = "pandas-1.0.3-cp38-cp38-win_amd64.whl", hash = "sha256:1a7c56f1df8d5ad8571fa251b864231f26b47b59cbe41aa5c0983d17dbb7a8e4"},
     {file = "pandas-1.0.3.tar.gz", hash = "sha256:32f42e322fb903d0e189a4c10b75ba70d90958cc4f66a1781ed027f1a1d14586"},
+]
+pysimplegui = [
+    {file = "PySimpleGUI-4.19.0-py3-none-any.whl", hash = "sha256:68750dc40d802db04087d34103bdc656402fb0f781dc4f00bf6a8593c9f118b2"},
+    {file = "PySimpleGUI-4.19.0.tar.gz", hash = "sha256:3916c610f7c614028ada7f42da05ab17840d67ceba2c132a57fb532085b6a6a5"},
 ]
 python-dateutil = [
     {file = "python-dateutil-2.8.1.tar.gz", hash = "sha256:73ebfe9dbf22e832286dafa60473e4cd239f8592f699aa5adaf10050e6e1823c"},

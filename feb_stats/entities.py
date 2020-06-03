@@ -62,13 +62,14 @@ class League(Generic[T]):
 
     def export_to_excel(self,
                         dir: Optional[str] = None,
-                        filename: Optional[str] = None, ) -> None:
+                        filename: Optional[str] = None, ) -> str:
         dir = dir or '.'
         filename = filename or f'{self.name}_{self.season.replace("/", "-")}.xlsx'
         if self.aggregated_games is not None:
             league_to_excel(self,
                             os.path.join(dir, filename),
                             sheet_name=f'{self.name}_{self.season.replace("/", "-")}')
+            return os.path.join(dir, filename)
         else:
             raise NotImplementedError('Still unimplemented')
 
