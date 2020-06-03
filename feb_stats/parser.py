@@ -9,13 +9,14 @@ from typing import Dict, Optional, List, Tuple
 from hashlib import md5
 
 from feb_stats.game_stats_transforms import parse_game_stats_df
-from feb_stats.entities import Game, Boxscore, Team, Player, League, get_team_by_name, get_games_by_team, get_team_boxscores
+from feb_stats.entities import Game, Boxscore, Team, Player, League, get_team_by_name, get_games_by_team, \
+    get_team_boxscores
 from feb_stats.transforms import compute_der, aggregate_boxscores, compute_league_aggregates
 
 
-
 def parse_str(input_str: str):
-    return ' '.join(input_str.replace('\n', ' ').replace('\t', ' ').replace('\r', ' ').replace(',', '.').split()).strip()
+    return ' '.join(
+        input_str.replace('\n', ' ').replace('\t', ' ').replace('\r', ' ').replace(',', '.').split()).strip()
 
 
 def get_elements(doc: Element,
@@ -91,7 +92,6 @@ def table_to_df(tr_elements: List[Element],
     data_dict = {title: column for (title, column) in col}
     df = pd.DataFrame(data_dict)
     return df
-
 
 
 def parse_games_stats(link: str,
@@ -174,6 +174,7 @@ def parse_games_stats(link: str,
     )
     return game, (local_team, away_team)
 
+
 def parse_boxscores(boxscores_dir: str) -> League:
     all_games = []
     all_teams = set()
@@ -188,7 +189,7 @@ def parse_boxscores(boxscores_dir: str) -> League:
             id=int(md5(str.encode(f"{all_games[0].league}", encoding='UTF-8')).hexdigest(), 16),
             name=all_games[0].league,
             season=all_games[0].season,
-            teams=set(all_teams),
+            teams=list(all_teams),
             games=all_games
         )
         return league

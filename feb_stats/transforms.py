@@ -7,41 +7,32 @@ from typing import List
 def oer_from_dataframe(df: pd.DataFrame,
                        key_name='oer') -> pd.DataFrame:
     """OER = scored points / total possessions"""
-    if 'posesiones_totales' not in df:
+    if 'posesiones_totales' not in list(df.index):
         df = compute_total_possessions(df)
-    df.loc[key_name] = df.loc['puntos_favor'] / df.loc['posesiones_totales']
-    return df
+    df.loc[:, key_name] = df.loc[:, 'puntos_favor'] / df.loc[:, 'posesiones_totales']
+    return pd.DataFrame(df)
 
 
 def compute_total_possessions(df: pd.DataFrame) -> pd.DataFrame:
     """Estimation of total possessions:
         attempted shots (FG) + attempted FT / 2 + turnovers """
-    df.loc['posesiones_totales'] = df.loc['tiros_campo_intentados'] + (df.loc['tiros_libres_intentados'] / 2) + df.loc[
-        'perdidas']
+    df.loc[:, 'posesiones_totales'] = df.loc[:, 'tiros_campo_intentados'] + \
+                                      df.loc[:, 'tiros_libres_intentados'] / 2 + \
+                                      df.loc[:, 'perdidas']
     return df
 
 
-def compute_oer(league: League,
-                team: Team,
+def compute_oer(boxscore: pd.DataFrame
                 ) -> pd.DataFrame:
-    assert team in league.teams, f'The team {team} is not in the league.'
-    boxscores = get_team_boxscores(league,
-                                   team)
-    total_df = aggregate_boxscores(boxscores)
-    oer = oer_from_dataframe(total_df.boxscore.loc['Total'])
+    oer = oer_from_dataframe(boxscore)
     return oer
 
 
-def compute_der(league: League,
-                team: Team,
+def compute_der(boxscore: pd.DataFrame,
                 ) -> pd.DataFrame:
     """DER is computed as the OER of the rivals when they play against `team`.
     """
-    assert team in league.teams, f'The team {team} is not in the league.'
-    boxscores = get_rival_boxscores(league,
-                                    team)
-    total_df = aggregate_boxscores(boxscores)
-    der = oer_from_dataframe(total_df.boxscore.loc['Total'],
+    der = oer_from_dataframe(pd.DataFrame(boxscore.loc['Total', :]).T,
                              key_name='der')
     return der
 
@@ -50,8 +41,20 @@ def sum_boxscores(df1: pd.DataFrame,
                   df2: pd.DataFrame) -> pd.DataFrame:
     """Add the numerical statistics from two dataframes. Set `'jugador'` as index."""
     dorsales1 = df1.loc[:, 'dorsal']
-    df_sum = pd.concat([df1, df2]).groupby('jugador', as_index=True).sum()
-    df_sum.loc[:, 'dorsal'] = dorsales1
+    dorsales2 = df2.loc[:, 'dorsal']
+    dorsales = dorsales1.combine(dorsales2, lambda x, y: x if  pd.isna(y) else y)
+
+    minutes1 = df1.loc[:, 'minutos']
+    minutes2 = df2.loc[:, 'minutos']
+    minutes_sum = minutes1.add(minutes2, fill_value=pd.to_timedelta(0.))
+
+    df1 = df1.drop('dorsal', axis='columns')
+    df2 = df2.drop('dorsal', axis='columns')
+    df1 = df1.drop('minutos', axis='columns')
+    df2 = df2.drop('minutos', axis='columns')
+    df_sum = df1.add(df2, fill_value=0)
+    df_sum.loc[:, 'dorsal'] = dorsales
+    df_sum.loc[:, 'minutos'] = minutes_sum
     return df_sum
 
 
@@ -64,19 +67,36 @@ def aggregate_boxscores(boxscores: List[Boxscore]) -> Boxscore:
 def compute_league_aggregates(league: League) -> League:
     """Aggregates the games of a League. Computes DER and OER."""
     aggregated_games_df = pd.DataFrame()
+    aggregated_league_teams = list()
     for team in league.teams:
-        own_df = compute_oer(league,
-                             team)
-        rivals_df = compute_der(league,
-                                team)
-        own_df.loc['equipo'] = team.name
-        own_df.loc['der'] = rivals_df.loc['der']
-        own_df.loc['puntos_contra'] = rivals_df.loc['puntos_favor']
-        own_df.pop('dorsal')
-        own_df = own_df.reset_index().transpose()
-        own_df.columns = own_df.loc['index']
-        own_df = own_df.drop(['index'])
-        aggregated_games_df = pd.concat([aggregated_games_df, own_df])
+        team_boxscores = get_team_boxscores(league, team)
+        own_df = aggregate_boxscores(team_boxscores)
+        own_df = compute_oer(own_df.boxscore)
+        bad_df = own_df.index.isin(['Total'])
+        players_df = own_df.loc[~bad_df, :]
+
+        aggregated_league_teams.append(Team(
+            id=team.id,
+            name=team.name,
+            season_stats=players_df
+        )
+        )
+
+        team_df = own_df.loc['Total', :]
+
+        rivals_boxscores = aggregate_boxscores(get_rival_boxscores(league, team))
+        rivals_df = compute_der(rivals_boxscores.boxscore)
+
+        team_df.loc['der'] = rivals_df.loc['Total', 'der']
+
+        team_df.loc['equipo'] = team.name
+        team_df.loc['puntos_contra'] = rivals_df.loc['Total', 'puntos_favor']
+        team_df.pop('dorsal')
+        team_df = team_df.reset_index().transpose()
+        team_df.columns = team_df.loc['index']
+        team_df = team_df.drop(['index'])
+        aggregated_games_df = pd.concat([aggregated_games_df, team_df])
+
     aggregated_games_df = aggregated_games_df.reset_index()
     aggregated_games_df = aggregated_games_df.rename(columns={'index': 'modo'})
 
@@ -84,7 +104,7 @@ def compute_league_aggregates(league: League) -> League:
         id=league.id,
         name=league.name,
         season=league.season,
-        teams=league.teams,
+        teams=aggregated_league_teams,
         games=league.games,
         aggregated_games=aggregated_games_df
     )

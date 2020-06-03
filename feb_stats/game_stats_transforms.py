@@ -57,7 +57,7 @@ def parse_game_stats_df(initial_df: pd.DataFrame,
 
     no_transform_keys = {
         'N': 'dorsal',
-        'I': 'titular',  # TODO: Drop this?
+        'I': 'titular',
         'Jugador': 'jugador',
         'Ptos': 'puntos_favor',
         'As': 'asistencias',
@@ -70,7 +70,8 @@ def parse_game_stats_df(initial_df: pd.DataFrame,
 
     df = initial_df.rename(no_transform_keys,
                            axis='columns')
-
+    df = df.drop('titular',
+                 axis='columns')  # TODO: Manage this
     transform_keys = {
         # key, Dict[new_key_prefix, function]
         '2 pt': ('2_puntos', transform_cum_stats_shots),
