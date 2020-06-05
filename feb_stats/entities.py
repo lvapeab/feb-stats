@@ -5,7 +5,7 @@ import pandas as pd
 import numpy as np
 from typing import TypeVar, Generic, List, Optional
 
-from feb_stats.utils import numerical_columns, get_sorted_list_of_columns
+from feb_stats.utils import numerical_columns, get_sorted_list_of_columns, timedelta_to_str
 
 T = TypeVar('T')
 
@@ -106,6 +106,20 @@ def get_rival_boxscores(league: League,
             for game in get_games_by_team(league, team)]
 
 
+def average_games(df: pd.DataFrame,
+                  individual_columns: bool=False) -> pd.DataFrame:
+    n_games = df.loc[:, 'partidos'].astype(np.float32)
+
+    a = [(col, col in df) for col in numerical_columns()]
+    # a = 'posesiones_totales' in df
+    df.loc[:, numerical_columns(individual_columns=individual_columns)] = \
+        df.loc[:, numerical_columns(individual_columns=individual_columns)].astype(np.float32).div(n_games, axis='rows')
+    if 'minutos' in df:
+        df.loc[:, 'minutos'] /= n_games
+    df.loc[:, 'modo'] = 'Media'
+    return df
+
+
 def league_to_excel(league,
                     name: str = 'stats.xlsx',
                     sheet_name='Sheet 1',
@@ -120,12 +134,16 @@ def league_to_excel(league,
         column_names = list(map(lambda x: ' '.join(x.capitalize().split('_')),
                                 columns))
 
-        averaged_games = copy.copy(league.aggregated_games)
-        n_games = averaged_games.loc[:, 'partidos'].astype(np.float32)
-        averaged_games.loc[:, numerical_columns()] = averaged_games.loc[:, numerical_columns()].astype(np.float32).div(
-            n_games, axis='rows')
-        averaged_games['modo'] = 'Media'
-        league.aggregated_games.to_excel(
+        aggregated_games = league.aggregated_games
+        averaged_games = average_games(aggregated_games.copy())
+
+        aggregated_games.loc[:, 'minutos'] = aggregated_games['minutos'].apply(
+            lambda x: timedelta_to_str(x) if not pd.isnull(x) else ''
+        )
+        averaged_games.loc[:, 'minutos'] = averaged_games['minutos'].apply(
+            lambda x: timedelta_to_str(x) if not pd.isnull(x) else ''
+        )
+        aggregated_games.to_excel(
             writer,
             float_format="%.3f",
             columns=columns,
@@ -141,16 +159,32 @@ def league_to_excel(league,
 
         player_columns = get_sorted_list_of_columns(individual_columns=True)
         player_column_names = list(map(lambda x: ' '.join(x.capitalize().split('_')),
-                                player_columns))
-        # TODO: Properly save minutos
+                                       player_columns))
         for team in league.teams:
             if team.season_stats is not None:
-                team.season_stats.to_excel(
+                aggregated_team_season_games = team.season_stats
+                averaged_team_season_games = average_games(aggregated_team_season_games.copy(),
+                                                           individual_columns=True
+                                                           )
+
+                aggregated_team_season_games.loc[:, 'minutos'] = aggregated_team_season_games['minutos'].apply(
+                    lambda x: timedelta_to_str(x) if not pd.isnull(x) else ''
+                )
+                averaged_team_season_games.loc[:, 'minutos'] = averaged_team_season_games['minutos'].apply(
+                    lambda x: timedelta_to_str(x) if not pd.isnull(x) else ''
+                )
+                aggregated_team_season_games.to_excel(
                     writer,
                     float_format="%.3f",
                     columns=player_columns,
                     header=player_column_names,
                     sheet_name=team.name[:31])
+                averaged_team_season_games.to_excel(
+                    writer,
+                    float_format="%.3f",
+                    columns=player_columns,
+                    header=player_column_names,
+                    sheet_name=f'medias - {team.name}'[:31])
 
         for n_sheet, (worksheet_name, worksheet) in enumerate(writer.sheets.items()):
             #     worksheet.conditional_format('C2:C8', {type': '3_color_scale'})

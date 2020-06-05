@@ -64,7 +64,7 @@ def parse_cum_stats_df(initial_df: pd.DataFrame) -> pd.DataFrame:
 
     for transform_key, transform_tuple in transform_keys.items():
         new_name, transform_function = transform_tuple
-        new_df = transform_function(df[transform_key], prefix=new_name)
+        new_df = transform_function(df.loc[:, transform_key], prefix=new_name)
         df = pd.concat([df, new_df], axis=1)
         df = df.drop(axis='columns',
                      labels=transform_key)

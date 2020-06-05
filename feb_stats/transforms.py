@@ -42,7 +42,7 @@ def sum_boxscores(df1: pd.DataFrame,
     """Add the numerical statistics from two dataframes. Set `'jugador'` as index."""
     dorsales1 = df1.loc[:, 'dorsal']
     dorsales2 = df2.loc[:, 'dorsal']
-    dorsales = dorsales1.combine(dorsales2, lambda x, y: x if  pd.isna(y) else y)
+    dorsales = dorsales1.combine(dorsales2, lambda x, y: x if pd.isna(y) else y)
 
     minutes1 = df1.loc[:, 'minutos']
     minutes2 = df2.loc[:, 'minutos']
@@ -82,13 +82,12 @@ def compute_league_aggregates(league: League) -> League:
         )
         )
 
-        team_df = own_df.loc['Total', :]
+        team_df = own_df.loc['Total', :].copy()
 
         rivals_boxscores = aggregate_boxscores(get_rival_boxscores(league, team))
         rivals_df = compute_der(rivals_boxscores.boxscore)
 
         team_df.loc['der'] = rivals_df.loc['Total', 'der']
-
         team_df.loc['equipo'] = team.name
         team_df.loc['puntos_contra'] = rivals_df.loc['Total', 'puntos_favor']
         team_df.pop('dorsal')
