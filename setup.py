@@ -28,7 +28,6 @@ setup(
         "lxml",
         "requests",
         "xlsxwriter",
-        "PySimpleGUI",
     ],
     packages=['feb_stats'],
     py_modules=['feb_stats'],

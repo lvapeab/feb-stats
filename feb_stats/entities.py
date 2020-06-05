@@ -107,7 +107,7 @@ def get_rival_boxscores(league: League,
 
 
 def average_games(df: pd.DataFrame,
-                  individual_columns: bool=False) -> pd.DataFrame:
+                  individual_columns: bool = False) -> pd.DataFrame:
     n_games = df.loc[:, 'partidos'].astype(np.float32)
 
     a = [(col, col in df) for col in numerical_columns()]
