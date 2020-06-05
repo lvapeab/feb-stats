@@ -1,5 +1,5 @@
 import unittest
-from feb_stats.parser import parse_str
+from python.feb_stats.parser import parse_str
 
 class ParserTestCase(unittest.TestCase):
 

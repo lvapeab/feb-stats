@@ -1,6 +1,6 @@
 import functools
 import pandas as pd
-from feb_stats.entities import League, Team, Boxscore, get_games_by_team, get_rival_boxscores, get_team_boxscores
+from python.feb_stats.entities import League, Team, Boxscore, get_rival_boxscores, get_team_boxscores
 from typing import List
 
 

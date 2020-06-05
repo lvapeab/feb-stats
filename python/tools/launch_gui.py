@@ -1,9 +1,9 @@
+import os
 from tkinter import *
 from tkinter import filedialog
 
-import os
-from feb_stats.parser import parse_boxscores
-from feb_stats.transforms import compute_league_aggregates
+from python.feb_stats.parser import parse_boxscores
+from python.feb_stats.transforms import compute_league_aggregates
 
 global folder_path
 
@@ -37,7 +37,6 @@ class MainWindow(Tk):
         super(MainWindow, self).__init__()
         self.title("Análisis actas FEB")
         self.minsize(150, 150)
-        # self.wm_iconbitmap('icon.ico')
         self.dirname = os.path.abspath(os.path.curdir)
         self.build()
 

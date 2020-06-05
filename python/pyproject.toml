@@ -12,6 +12,7 @@ lxml = "^4.5.1"
 requests = "^2.23.0"
 xlsxwriter = "^1.2.8"
 pysimplegui = "^4.19.0"
+numpy = "^1.18.5"
 
 [tool.poetry.dev-dependencies]
 

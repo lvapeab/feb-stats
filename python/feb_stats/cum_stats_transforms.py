@@ -1,5 +1,5 @@
 import pandas as pd
-from feb_stats.transforms import oer_from_dataframe
+from python.feb_stats.transforms import oer_from_dataframe
 
 def transform_cum_stats_shots(shots_series: pd.Series,
                               prefix='tiros') -> pd.DataFrame:
