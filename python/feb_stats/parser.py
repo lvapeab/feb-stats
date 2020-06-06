@@ -192,4 +192,4 @@ def parse_boxscores(boxscores_dir: str) -> League:
         )
         return league
     else:
-        raise ValueError('No games found')
+        raise ValueError(f'No games found in {boxscores_dir}')

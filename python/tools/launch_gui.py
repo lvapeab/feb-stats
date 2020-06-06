@@ -5,7 +5,6 @@ from tkinter import filedialog
 from python.feb_stats.parser import parse_boxscores
 from python.feb_stats.transforms import compute_league_aggregates
 
-global folder_path
 
 class CloseWindow(Tk):
     def __init__(self,
@@ -24,7 +23,6 @@ class CloseWindow(Tk):
     def build_label(self, row, column):
         self.label = Label(text=self.text_to_show)
         self.label.grid(row=row, column=column, sticky=W)
-
 
     def build_close_button(self, row, column):
         self.close_button = Button(text="Cerrar",
@@ -83,6 +81,7 @@ class MainWindow(Tk):
         self.destroy()
         close = CloseWindow(text_to_show)
         close.mainloop()
+
 
 if __name__ == '__main__':
     root = MainWindow()

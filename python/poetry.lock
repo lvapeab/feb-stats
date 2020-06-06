@@ -24,6 +24,18 @@ version = "2.9"
 
 [[package]]
 category = "main"
+description = "Alternate keyring implementations"
+name = "keyrings.alt"
+optional = false
+python-versions = ">=3.6"
+version = "3.4.0"
+
+[package.extras]
+docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
+testing = ["pytest (>=3.5,<3.7.3 || >3.7.3)", "pytest-checkdocs (>=1.2.3)", "pytest-flake8", "pytest-black-multipy", "pytest-cov", "backports.unittest-mock", "keyring (>=10.3.1,<20)", "fs (>=0.5,<2)", "pycryptodome", "gdata", "python-keyczar"]
+
+[[package]]
+category = "main"
 description = "Powerful and Pythonic XML processing library combining libxml2/libxslt with the ElementTree API."
 name = "lxml"
 optional = false
@@ -135,7 +147,7 @@ python-versions = "*"
 version = "1.2.8"
 
 [metadata]
-content-hash = "67d369588d982fcdce701bc5cba83eb88f725845830b442a8c3850e5c8036025"
+content-hash = "b669dce088bb26b2eb043175ac44dda2d7dd4418ab7c234597743e9888bc47db"
 python-versions = "^3.7"
 
 [metadata.files]
@@ -150,6 +162,10 @@ chardet = [
 idna = [
     {file = "idna-2.9-py2.py3-none-any.whl", hash = "sha256:a068a21ceac8a4d63dbfd964670474107f541babbd2250d61922f029858365fa"},
     {file = "idna-2.9.tar.gz", hash = "sha256:7588d1c14ae4c77d74036e8c22ff447b26d0fde8f007354fd48a7814db15b7cb"},
+]
+"keyrings.alt" = [
+    {file = "keyrings.alt-3.4.0-py2.py3-none-any.whl", hash = "sha256:1cfd6525594169fa427aa2cfc72b1853a1af93c18cb1da663c3792e53916e1a9"},
+    {file = "keyrings.alt-3.4.0.tar.gz", hash = "sha256:91328ac4229e70b1d0061d21bf61d36b031a6b4828f2682e38c741812f6eb23d"},
 ]
 lxml = [
     {file = "lxml-4.5.1-cp27-cp27m-macosx_10_9_x86_64.whl", hash = "sha256:ee2be8b8f72a2772e72ab926a3bccebf47bb727bda41ae070dc91d1fb759b726"},

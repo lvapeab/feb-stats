@@ -120,11 +120,11 @@ def average_games(df: pd.DataFrame,
 
 
 def league_to_excel(league,
-                    name: str = 'stats.xlsx',
+                    filename: str = 'stats.xlsx',
                     sheet_name='Sheet 1',
                     col_width: int = 20) -> None:
     # Create a Pandas Excel writer using XlsxWriter as the engine.
-    writer = pd.ExcelWriter(name,
+    writer = pd.ExcelWriter(filename,
                             engine='xlsxwriter',
                             )
 
@@ -194,3 +194,4 @@ def league_to_excel(league,
 
             worksheet.set_column(2, len(columns), col_width)
         writer.save()
+    print(f"Data saved in {filename}")
