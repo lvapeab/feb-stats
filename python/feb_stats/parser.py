@@ -26,9 +26,6 @@ def get_elements(doc: Element,
 
 def get_game_metadata(doc: Element) -> Dict[str, str]:
     # Parse data by id
-
-    # '//table[@id="jugadoresLocalDataGrid"]//tr'
-
     fecha = doc.xpath('//span[@id="fechaLabel"]')
     hora = doc.xpath('//span[@id="horaLabel"]')
 

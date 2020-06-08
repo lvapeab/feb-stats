@@ -1,5 +1,7 @@
 import pandas as pd
 from python.feb_stats.transforms import oer_from_dataframe
+from typing import Callable, Dict, Optional, Tuple
+
 
 def transform_cum_stats_shots(shots_series: pd.Series,
                               prefix='tiros') -> pd.DataFrame:
@@ -36,22 +38,22 @@ def transform_cum_stats_rebounds(rebs_serie: pd.Series,
                                  ],
                         dtype='float32')
 
-def parse_cum_stats_df(initial_df: pd.DataFrame) -> pd.DataFrame:
-    no_transform_keys = {'Equipo': 'equipo',
-                         'Part': 'partidos',
-                         'Min': 'minutos',
-                         'Ptos': 'puntos_favor',
-                         'As': 'asistencias',
-                         'B.P': 'perdidas',
-                         'B.R': 'robos',
-                         'Mat': 'mates',
-                         'Val': 'valoracion',
-                         }
 
-    df = initial_df.rename(no_transform_keys,
-                           axis='columns')
-
-    transform_keys = {
+def parse_cum_stats_df(initial_df: pd.DataFrame,
+                       transform_keys: Optional[Dict[str, Tuple[str, Callable]]] = None,
+                       no_transform_keys: Optional[Dict[str, str]] = None,
+                       ) -> pd.DataFrame:
+    no_transform_keys = no_transform_keys or {'Equipo': 'equipo',
+                                              'Part': 'partidos',
+                                              'Min': 'minutos',
+                                              'Ptos': 'puntos_favor',
+                                              'As': 'asistencias',
+                                              'B.P': 'perdidas',
+                                              'B.R': 'robos',
+                                              'Mat': 'mates',
+                                              'Val': 'valoracion',
+                                              }
+    transform_keys = transform_keys or {
         # key, Dict[new_key_prefix, function]
         '2 puntos': ('2_puntos', transform_cum_stats_shots),
         '3 puntos': ('3_puntos', transform_cum_stats_shots),
@@ -62,6 +64,8 @@ def parse_cum_stats_df(initial_df: pd.DataFrame) -> pd.DataFrame:
         'TaponesFaCo': ('tapones', transform_cum_stats_blocks),
     }
 
+    df = initial_df.rename(no_transform_keys,
+                           axis='columns')
     for transform_key, transform_tuple in transform_keys.items():
         new_name, transform_function = transform_tuple
         new_df = transform_function(df.loc[:, transform_key], prefix=new_name)
@@ -70,4 +74,3 @@ def parse_cum_stats_df(initial_df: pd.DataFrame) -> pd.DataFrame:
                      labels=transform_key)
     df = oer_from_dataframe(df)
     return df
-
