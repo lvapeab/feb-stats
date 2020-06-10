@@ -8,9 +8,8 @@ py_library(
     name = "api",
     srcs = glob(
         [
-            "__init__.py",
             "api.py",
-            "model_handler.py",
+            "handler.py",
             "codegen/*.py",
         ],
         exclude = ["**/*_test.py"],
@@ -21,30 +20,15 @@ py_library(
         dependency("grpcio"),
         dependency("grpcio-status"),
         dependency("opencensus"),
-        dependency("torchserve"),
-        "//python/model",
+        "//python/feb_stats:parser",
+        "//python/feb_stats:transforms",
     ],
 )
-#
-#py_library(
-#    name = "health_client",
-#    srcs = [
-#        ":health_client.py",
-#    ],
-#    srcs_version = "PY3",
-#    deps = [
-#        "//python/health_check",
-#    ],
-#)
 
 py_test(
     name = "api_test",
     size = "small",
     srcs = [":api_test.py"],
-    data = [
-        "//python/test_artifacts:1.png",
-        "//python/test_artifacts:test_model.mar",
-    ],
     python_version = "PY3",
     deps = [
         ":api",
@@ -63,7 +47,6 @@ py_binary(
         dependency("opencensus-ext-jaeger"),
         dependency("opencensus-ext-stackdriver"),
         ":api",
-        #        ":health_client",
     ],
 )
 

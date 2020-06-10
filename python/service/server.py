@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
-import sys
 import argparse
 import grpc
 import os
 import signal
-import pathlib
 from concurrent import futures
 from grpc_reflection.v1alpha import reflection
 

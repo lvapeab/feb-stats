@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from grpc import insecure_channel
 from python.feb_stats.transforms import export_boxscores_from_bytes
-from typing import  List
+from typing import List
 
 class LeagueHandler(ABC):
     @abstractmethod
