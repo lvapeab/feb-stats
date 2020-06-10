@@ -32,5 +32,5 @@ COPY ./data /data
 COPY . /code/
 WORKDIR /code
 
-EXPOSE 8080 8081
-CMD ["bazel",  "run",  "//python/tools:analyze_boxscores", "--", "--data /data", "--output /data"]
+EXPOSE 50001
+CMD ["bazel",  "run",  "//python/service:server", "--", "-local"]
