@@ -21,9 +21,22 @@ py_library(
     srcs_version = "PY3",
     visibility = ["//python:__subpackages__"],
     deps = [
+        dependency("pandas"),
+    ],
+)
+
+py_library(
+    name = "entities_ops",
+    srcs = [
+        "entities_ops.py",
+    ],
+    srcs_version = "PY3",
+    visibility = ["//python:__subpackages__"],
+    deps = [
         dependency("numpy"),
         dependency("pandas"),
-        dependency("xlsxwriter"),
+        dependency("openpyxl"),
+        ":entities",
         ":utils",
     ],
 )
@@ -31,14 +44,15 @@ py_library(
 py_library(
     name = "transforms",
     srcs = [
-        "cum_stats_transforms.py",
         "game_stats_transforms.py",
         "transforms.py",
     ],
     srcs_version = "PY3",
     visibility = ["//python:__subpackages__"],
     deps = [
+        dependency("pandas"),
         ":entities",
+        ":entities_ops",
     ],
 )
 

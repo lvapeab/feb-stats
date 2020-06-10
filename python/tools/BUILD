@@ -24,6 +24,7 @@ py_binary(
     main = "analyze_boxscores.py",
     srcs_version = "PY3",
     deps = [
+        "//python/feb_stats:entities_ops",
         "//python/feb_stats:parser",
         "//python/feb_stats:transforms",
     ],

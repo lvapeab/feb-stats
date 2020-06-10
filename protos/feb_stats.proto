@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package feb_stats;
+
+service FebStatsService {
+    rpc GetFebStats (GetFebStatsRequest) returns (GetFebStatsResponse);
+}
+
+message GetFebStatsRequest {
+//    string id = 1;
+    repeated bytes boxscores = 1;
+}
+
+message GetFebStatsResponse {
+//    string id = 1;
+    bytes sheet = 1;
+}

@@ -1,11 +1,12 @@
 import pandas as pd
+from pathlib import Path
 from lxml.html import HtmlElement, Element
 import glob
 import lxml.html as lh
 import os
 import requests
 from urllib.parse import urlparse
-from typing import Dict, Optional, List, Tuple
+from typing import Dict, Optional, List, Tuple, Union
 from hashlib import md5
 
 from python.feb_stats.game_stats_transforms import parse_game_stats_df
@@ -89,27 +90,12 @@ def table_to_df(tr_elements: List[Element],
     return df
 
 
-def parse_games_stats(link: str,
+def parse_games_stats(doc: Element,
                       ids: List[Optional[str]] = None) -> Tuple[Game, Tuple[Team, Team]]:
     ids = ids or [
         ('//table[@id="jugadoresLocalDataGrid"]//tr', True),
         ('//table[@id="jugadoresVisitanteDataGrid"]//tr', False)
     ]
-
-    result = urlparse(link)
-    if all([result.scheme, result.netloc, result.path]):
-        page = requests.get(link)
-        # Store the contents of the website under doc
-        doc = lh.fromstring(page.content)
-    elif os.path.isfile(link):
-        with open(link,
-                  mode="r",
-                  encoding='latin1') as f:
-            page_str = f.read()
-        doc = lh.fromstring(page_str)
-    else:
-        raise ValueError(f'Unable to find the resource {link} (not a valid URL nor an existing file.)')
-
     game_stats = {}
     metadata = get_game_metadata(doc)
 
@@ -170,11 +156,58 @@ def parse_games_stats(link: str,
     return game, (local_team, away_team)
 
 
-def parse_boxscores(boxscores_dir: str) -> League:
+def read_link(link: Union[str, bytes]) -> Element:
+    if isinstance(link, str):
+        result = urlparse(link)
+        if all([result.scheme, result.netloc, result.path]):
+            page = requests.get(link)
+            # Store the contents of the website under doc
+            document_string = lh.fromstring(page.content)
+        elif os.path.isfile(link):
+            with open(link,
+                      mode="r",
+                      encoding='latin1') as f:
+                document_string = f.read()
+        else:
+            raise ValueError(f'Unable to find the resource {link} (not a valid URL nor an existing file.)')
+    else:
+        document_string = link.decode('latin1')
+
+    doc = lh.fromstring(document_string)
+
+    return doc
+
+
+def parse_boxscores_bytes(boxscores_bytes: List[bytes]) -> League:
     all_games = []
     all_teams = set()
-    for link in glob.iglob(os.path.join(boxscores_dir, '*.html'), recursive=False):
-        game, teams = parse_games_stats(link)
+    for link in boxscores_bytes:
+        doc = read_link(link)
+        game, teams = parse_games_stats(doc)
+        all_games.append(game)
+        for team in teams:
+            all_teams.add(team)
+
+    if all_games:
+        league = League(
+            id=int(md5(str.encode(f"{all_games[0].league}", encoding='UTF-8')).hexdigest(), 16),
+            name=all_games[0].league,
+            season=all_games[0].season,
+            teams=list(all_teams),
+            games=all_games
+        )
+        return league
+    else:
+        raise ValueError(f'No games found in {boxscores_bytes}')
+
+
+
+def parse_boxscores_dir(boxscores_dir: Path) -> League:
+    all_games = []
+    all_teams = set()
+    for link in glob.iglob(os.path.join(str(boxscores_dir), '*.html'), recursive=False):
+        doc = read_link(link)
+        game, teams = parse_games_stats(doc)
         all_games.append(game)
         for team in teams:
             all_teams.add(team)
