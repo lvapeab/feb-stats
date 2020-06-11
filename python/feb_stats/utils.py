@@ -1,5 +1,9 @@
 import pandas as pd
 from typing import List
+import json
+from base64 import b64decode
+from openpyxl import load_workbook
+from io import BytesIO
 
 
 def timedelta_to_str(timedelta: pd.Timedelta) -> str:
@@ -76,3 +80,14 @@ def numerical_columns(individual_columns: bool = False) -> List[str]:
     if not individual_columns:
         column_list.append('puntos_contra')
     return column_list
+
+
+def response_to_excel(response: str,
+                      output: str) -> None:
+    """Saves the response of the server into an xls file."""
+    with open(response, mode='rb') as f:
+        response = json.load(f)
+    xls_file = b64decode(response['sheet'])
+    workbook = load_workbook(filename=BytesIO(xls_file))
+    workbook.save(output)
+    return
