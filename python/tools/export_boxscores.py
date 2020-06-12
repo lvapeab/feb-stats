@@ -1,5 +1,4 @@
 from argparse import ArgumentParser
-from base64 import b64decode
 from openpyxl import load_workbook
 from io import BytesIO
 

@@ -1,9 +1,11 @@
 import functools
+import numpy as np
 import pandas as pd
 from pathlib import Path
 from python.feb_stats.entities import League, Team, Boxscore
 from python.feb_stats.entities_ops import get_rival_boxscores, get_team_boxscores, league_to_excel
 from python.feb_stats.parser import parse_boxscores_dir, parse_boxscores_bytes
+from python.feb_stats.utils import timedelta_to_minutes
 
 from typing import List
 
@@ -14,15 +16,22 @@ def oer_from_dataframe(df: pd.DataFrame,
     if 'posesiones_totales' not in list(df.index):
         df = compute_total_possessions(df)
     df.loc[:, key_name] = df.loc[:, 'puntos_favor'] / df.loc[:, 'posesiones_totales']
+    df.loc[:, f'{key_name}_por_40_minutos'] = 40 * df.loc[:, key_name].divide(
+        df.loc[:, 'minutos'].apply(lambda x: timedelta_to_minutes(x) if not pd.isnull(x) else np.nan),
+        fill_value=-1)
     return pd.DataFrame(df)
 
 
 def compute_total_possessions(df: pd.DataFrame) -> pd.DataFrame:
     """Estimation of total possessions:
         attempted shots (FG) + attempted FT / 2 + turnovers """
+
+    total_index = df.index.isin(['Total'])
+
     df.loc[:, 'posesiones_totales'] = df.loc[:, 'tiros_campo_intentados'] + \
                                       df.loc[:, 'tiros_libres_intentados'] / 2 + \
                                       df.loc[:, 'perdidas']
+    df.loc[~total_index, 'posesiones_totales'] += df.loc[~total_index, 'asistencias']
     return df
 
 
@@ -32,8 +41,44 @@ def compute_oer(boxscore: pd.DataFrame
     return oer
 
 
-def compute_der(boxscore: pd.DataFrame,
-                ) -> pd.DataFrame:
+def compute_shots_percentage(df: pd.DataFrame) -> pd.DataFrame:
+    """Compute FG%, 3PT% and FT%"""
+    df.loc[:, 'porcentaje_2_puntos'] = df.loc[:, '2_puntos_metidos'].divide(df.loc[:, '2_puntos_intentados'],
+                                                                            fill_value=0.) * 100.
+    df.loc[:, 'porcentaje_3_puntos'] = df.loc[:, '3_puntos_metidos'].divide(df.loc[:, '3_puntos_intentados'],
+                                                                            fill_value=0.) * 100.
+    df.loc[:, 'porcentaje_tiros_campo'] = df.loc[:, 'tiros_campo_metidos'].divide(df.loc[:, 'tiros_campo_intentados'],
+                                                                                  fill_value=0.) * 100.
+    df.loc[:, 'porcentaje_tiros_libres'] = df.loc[:, 'tiros_libres_metidos'].divide(
+        df.loc[:, 'tiros_libres_intentados'], fill_value=0.) * 100.
+    return df
+
+
+def compute_volumes(df: pd.DataFrame) -> pd.DataFrame:
+    """Compute the volume of a player w.r.t. the team."""
+
+    volume_keys = {
+        'puntos_favor',
+        'posesiones_totales',
+        '2_puntos_metidos',
+        '2_puntos_intentados',
+        '3_puntos_metidos',
+        '3_puntos_intentados',
+        'tiros_campo_metidos',
+        'tiros_campo_intentados',
+        'tiros_libres_metidos',
+        'tiros_libres_intentados',
+        'rebotes_defensivos',
+        'rebotes_ofensivos',
+        'rebotes_totales',
+    }
+    for volume_key in volume_keys:
+        df.loc[:, f'volumen_{volume_key}'] = df.loc[:, volume_key].divide(df.loc['Total', volume_key],
+                                                                          fill_value=0.) * 100.
+    return df
+
+
+def compute_der(boxscore: pd.DataFrame) -> pd.DataFrame:
     """DER is computed as the OER of the rivals when they play against `team`.
     """
     der = oer_from_dataframe(pd.DataFrame(boxscore.loc['Total', :]).T,
@@ -76,8 +121,10 @@ def compute_league_aggregates(league: League) -> League:
         team_boxscores = get_team_boxscores(league, team)
         own_df = aggregate_boxscores(team_boxscores)
         own_df = compute_oer(own_df.boxscore)
-        bad_df = own_df.index.isin(['Total'])
-        players_df = own_df.loc[~bad_df, :]
+        own_df = compute_shots_percentage(own_df)
+        own_df = compute_volumes(own_df)
+        total_team_df = own_df.index.isin(['Total'])
+        players_df = own_df.loc[~total_team_df, :]
 
         aggregated_league_teams.append(Team(
             id=team.id,
@@ -123,4 +170,3 @@ def export_boxscores_from_bytes(boxscores: List[bytes]) -> bytes:
     league = parse_boxscores_bytes(boxscores)
     new_league = compute_league_aggregates(league)
     return league_to_excel(new_league)
-

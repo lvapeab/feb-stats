@@ -1,12 +1,12 @@
 from io import BytesIO
-import os
 import pandas as pd
 import numpy as np
 from typing import TypeVar, Generic, List, Optional
 from openpyxl.utils import get_column_letter
+from openpyxl.styles import Alignment
 
 from python.feb_stats.entities import League, Team, Game, Boxscore
-from python.feb_stats.utils import numerical_columns, get_sorted_list_of_columns, timedelta_to_str
+from python.feb_stats.utils import averageable_numerical_columns, get_sorted_list_of_columns, timedelta_to_str
 
 
 # TODO: These ops should be done in a DB
@@ -42,8 +42,8 @@ def get_rival_boxscores(league: League,
 def average_games(df: pd.DataFrame,
                   individual_columns: bool = False) -> pd.DataFrame:
     n_games = df.loc[:, 'partidos'].astype(np.float32)
-    df.loc[:, numerical_columns(individual_columns=individual_columns)] = \
-        df.loc[:, numerical_columns(individual_columns=individual_columns)].astype(np.float32).div(n_games, axis='rows')
+    df.loc[:, averageable_numerical_columns(individual_columns=individual_columns)] = \
+        df.loc[:, averageable_numerical_columns(individual_columns=individual_columns)].astype(np.float32).div(n_games, axis='rows')
     if 'minutos' in df:
         df.loc[:, 'minutos'] /= n_games
     df.loc[:, 'modo'] = 'Media'
@@ -52,7 +52,7 @@ def average_games(df: pd.DataFrame,
 
 def league_to_excel(league,
                     filename: str = None,
-                    col_width: int = 20) -> bytes:
+                    col_width: int = 30) -> bytes:
     filename = filename or f'{league.name}_{league.season.replace("/", "-")}.xlsx'
 
     # Create a Pandas Excel writer using openpyxl as the engine.
@@ -124,11 +124,15 @@ def league_to_excel(league,
                     encoding='latin1',
                     sheet_name=f'medias - {team.name}'[:31])
 
-        for n_sheet, (worksheet_name, worksheet) in enumerate(writer.sheets.items()):
-            for n_column in range(worksheet.max_column):
-                worksheet.column_dimensions[
-                    get_column_letter(n_column + 1)].width = 2 * col_width if n_column < 2 else col_width
 
+        center_alignment = Alignment(horizontal='center')
+        for n_sheet, (worksheet_name, worksheet) in enumerate(writer.sheets.items()):
+            for row in worksheet.iter_rows():
+                for cell in row:
+                    cell.alignment = center_alignment
+
+            for n_column in range(worksheet.max_column):
+                worksheet.column_dimensions[get_column_letter(n_column + 1)].width = 2 * col_width if n_column < 2 else col_width
         virtual_workbook = BytesIO()
         writer.book.save(virtual_workbook)
         virtual_workbook.seek(0)

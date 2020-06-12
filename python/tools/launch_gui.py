@@ -1,9 +1,10 @@
 import os
 from tkinter import *
 from tkinter import filedialog
+from openpyxl import load_workbook
 
-from python.feb_stats.parser import parse_boxscores
-from python.feb_stats.transforms import compute_league_aggregates
+from python.feb_stats.transforms import export_boxscores_from_path
+from io import BytesIO
 
 
 class CloseWindow(Tk):
@@ -42,8 +43,10 @@ class MainWindow(Tk):
         self.build_instructions_label(0, 0)
         self.build_directory_entry(0, 1)
         self.build_browse_button(0, 2)
+        self.build_output_filename_label(1, 0)
+        self.build_output_filename_entry(1, 1)
 
-        self.build_analyze_button(1, 0)
+        self.build_analyze_button(3, 0)
         # self.build_close_button(1, 1)
 
     def build_instructions_label(self, row, column):
@@ -59,6 +62,16 @@ class MainWindow(Tk):
         self.browse_button = Button(text="Examinar", command=self.ask_directory)
         self.browse_button.grid(row=row, column=column)
 
+
+    def build_output_filename_entry(self, row, column):
+        self.output_filename_entry = Entry()
+        self.output_filename_entry.insert(0, 'analisis.xlsx')
+        self.output_filename_entry.grid(row=row, column=column, sticky=W)
+
+    def build_output_filename_label(self, row, column):
+        self.instructions_label = Label(text=f"Exportar los resultados en:")
+        self.instructions_label.grid(row=row, column=column, sticky=W)
+
     def ask_directory(self):
         self.dirname = filedialog.askdirectory(initialdir="..",
                                                title="Select folder")
@@ -72,9 +85,11 @@ class MainWindow(Tk):
     def analyze(self):
         try:
             boxscores_dir = self.directory_entry.get()
-            league = parse_boxscores(boxscores_dir)
-            new_league = compute_league_aggregates(league)
-            self.output_file = os.path.abspath(new_league.export_to_excel('../'))
+            excel_data = export_boxscores_from_path(boxscores_dir)
+            self.output_file = os.path.abspath(os.path.join('../',
+                                                            self.output_filename_entry.get()))
+            wb = load_workbook(filename=BytesIO(excel_data))
+            wb.save(self.output_file)
             text_to_show = f"Análisis guardado en {self.output_file}"
         except ValueError:
             text_to_show = f'No he podido encontrar partidos en esta carpeta ({boxscores_dir}).'
