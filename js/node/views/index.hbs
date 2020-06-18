@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Analizador de estadísticas FEB</title>
+        <link rel="shortcut icon" href="assets/images/basketball.png">
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="css/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.5.1/min/dropzone.min.css">
+    <script src="https://kit.fontawesome.com/fbe4d58721.js" crossorigin="anonymous"></script>
+    <meta name="csrf-token" content="XYZ123">
+</head>
+<body>
+
+
+<!-- Sidebar-->
+<section id="sidebar">
+    <div class="inner">
+        <nav>
+            <ul>
+                <li><a href="#intro">Inicio</a></li>
+                <li><a href="#data">Subir datos</a></li>
+                <li><a href="#contact">Contacto</a></li>
+            </ul>
+        </nav>
+    </div>
+</section>
+
+<!-- Wrapper -->
+<div id="wrapper">
+
+    <section id="intro" class="wrapper style1 fullscreen fade-up">
+        <div class="inner">
+            <h1>Analizador de estadísticas FEB</h1>
+            <p>Analiza actas de partidos FEB.</p>
+            <ol>
+
+
+                <li> La app lee los datos de las páginas web de la FEB. Por la forma en la que está montada, lo más
+                    seguro para coger los datos es guardar las páginas en tu ordenador. Entonces, mi idea del proceso
+                    que habría que seguir es:
+                </li>
+                <ol>
+                    <li> Crear una carpeta en tu PC en la que irás guardando las actas de los partidos.</li>
+                    <li> Tras cada jornada, te metes en la web de la federación y abres la página de estadística de cada
+                        partido.
+                    </li>
+                    <li> Guardas la página de la estadística en la carpeta que habías creado (haciendo click derecho en
+                        la página y eligiendo "guardar como..." o haciendo ctrl+s). Tendrás que darle un nombre
+                        diferente a cada archivo para que no se sobreescriban (p.ej., 1, 2,...). Al guardar la página,
+                        también se guardará una carpeta (con el sufijo "_files"). Estas carpetas las puedes borrar, que
+                        no se usan.
+                    </li>
+                    <li> Una vez tengas todos los partidos guardados, ejecutas la app. Abajo te digo como.</li>
+                    <li> Por temas que no vienen al caso va a ir todo bastante lento, pero bueno. Una vez se cargue la
+                        interfaz, la app te deja elegir una carpeta con actas para analizar. Le das a "Examinar" y
+                        eliges la carpeta con las páginas guardadas. Le das a "Analizar" y esperas. Tardará un poquito
+                        (igual 20 segundos?). Déjale pensar porque es posible que se quede congelada. Una vez acaba
+                        saldrá una ventanita que dirá: "Análisis guardado en C:\.....\.xlsx". Ahí es donde está el excel
+                        con los datos. Por defecto, está en la carpeta superior de donde tengas la app.
+                    </li>
+                </ol>
+                <li>En el Excel que se crea tienes varias hojas. En la primera están los resultados acumulados de los
+                    equipos de la liga y en la segunda, las medias. Luego, por cada equipo se crean dos hojas, una con
+                    estadísticas acumuladas y otra con medias de cada jugador. Consideraciones:
+                </li>
+                <ol>
+                    <li> La mayoría de estadísticas son las que aparecen en la página de la federación. Pero con esto ya
+                        se pueden hacer fácilmente muchas operaciones e indagar más a fondo en ellas de manera sencilla.
+                    </li>
+                    <li> En las hojas de los equipos está el OER de cada jugador. Este OER es el que provoca
+                        individualmente cada jugador (no el del equipo mientras el jugador está en cancha). Es decir,
+                        son los puntos que mete cada jugador con respecto a las posesiones que finaliza directamente
+                        (pérdida o tiro). Supongo que aquí se podrían meter también las asistencias.
+                    </li>
+                    <li> Creo que no hay forma de saber el DER individual, así que esto no está.</li>
+                </ol>
+
+
+            </ol>
+        </div>
+
+
+    </section>
+
+    <section id="data" class="wrapper style1 fullscreen fade-up">
+        <div class="inner">
+            <h1>Subir datos</h1>
+            <p class="alert alert-danger"
+               id="filesloaded" style="display:none;">Selecciona una carpeta con actas.</p>
+            <p> Selecciona las actas. Puedes elegir varios archivos de una carpeta o arrastrarlos al cuadro: </p>
+
+
+            <form method="post" action="/upload" enctype="multipart/form-data">
+                    <input type="file" id="boxscores_input" name="boxscores_input" webkitdirectory mozdirectory/>
+                  <input type="submit" />
+            </form>
+
+
+            <form method="post" action="/analyze" enctype="multipart/form-data">
+<!--                    <input type="file" id="boxscores_input" name="boxscores_input" webkitdirectory mozdirectory/>-->
+                  <input type="submit" class="button" Analizar/>
+            </form>
+<!--            <div>-->
+<!--                <form id="upload-widget"-->
+<!--                      method="post"-->
+<!--                      action="/upload"-->
+<!--                      class="dropzone">-->
+<!--                    <div class="fallback">-->
+<!--                        <input name="file" type="file"/>-->
+<!--                    </div>-->
+<!--                </form>-->
+<!--            </div>-->
+<!--            <div>-->
+<!--                <form id="analyze-button"-->
+<!--                      method="post"-->
+<!--                      action="/analyze"-->
+<!--                      class="button">-->
+<!--                    Analizar-->
+<!--                </form>-->
+<!--            </div>-->
+
+<!--        <button id="myButton" class="button"> Analizar </button>-->
+<!--        </div>-->
+
+<!--        aaaaaaaaaaaaaaaaaaaaa-->
+
+<!--        <form method="POST" action="/submit-form">-->
+<!--                      <input type="file" id="boxscores_input"  webkitdirectory mozdirectory/>-->
+<!--  <input type="submit" />-->
+<!--</form>-->
+
+    </section>
+    <!-- contact -->
+    <section id="contact" class="wrapper style1 fade-up">
+        <div class="inner">
+            <h1>Contact: Álvaro Peris</h1>
+            <a class="fa fa-mail-forward fa-2x"> lvapeab-at-gmail-dot-com</a>
+            <br>
+            <br>
+
+            <ul class="icons">
+                <li><a href="https://www.prhlt.upv.es/u/lvapeab" class="fa-globe fa-3x"><span class="label">PRHLT</span></a>
+                </li>
+                <li><a href="https://github.com/lvapeab" class="fa-github fa-3x"><span class="label">GitHub</span></a>
+                </li>
+                <li><a href="https://scholar.google.es/citations?user=oaTV3OoAAAAJ&hl=es&oi=ao" class="fa-google fa-3x"><span
+                        class="label">Google Scholar</span></a></li>
+                <li><a href="http://es.linkedin.com/in/lvapeab" class="fa-linkedin fa-3x"><span
+                        class="label">LinkedIn</span></a></li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="footer" class="wrapper style1-alt">
+        <div class="inner">
+            <ul class="menu">
+                <li>&copy; Álvaro Peris. All rights reserved.</li>
+                <li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+            </ul>
+        </div>
+    </footer>
+</div>
+
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.5.1/min/dropzone.min.js"></script>
+    <script src="js/client.js"></script>
+
+</body>
+</html>
