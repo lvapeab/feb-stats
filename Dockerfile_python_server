@@ -28,7 +28,6 @@ RUN python3 -m pip install --user --upgrade pip
 RUN python3 -m pip install --user --upgrade keyrings.alt
 RUN python3 -m pip install "poetry==$POETRY_VERSION"
 
-COPY ./data /data
 COPY . /code/
 WORKDIR /code
 

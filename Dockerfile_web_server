@@ -1,0 +1,10 @@
+FROM node:12.18
+
+
+COPY ./ /src
+WORKDIR /src/js/node
+RUN npm rebuild
+
+EXPOSE 8080
+
+CMD  ["node", "server.js"]

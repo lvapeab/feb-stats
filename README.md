@@ -2,21 +2,13 @@
 Stats parser for FEB
 
 
-# Build image
+# Build and run app
 ```
-docker image build  --tag feb-stats --file Dockerfile .
+docker-compose up --build
 ```
-
-# Run container
-```
-docker image build  --tag feb-stats --file Dockerfile .
-```
-
-
-
 # TODO:
 
-[ ] Webapp
+[x] Webapp
 
 [ ] Temporal data (evolution)
 
