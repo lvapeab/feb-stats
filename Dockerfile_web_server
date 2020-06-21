@@ -3,7 +3,7 @@ FROM node:12.18
 
 COPY ./ /src
 WORKDIR /src/js/node
-RUN npm rebuild
+RUN npm install
 
 EXPOSE 80
 
