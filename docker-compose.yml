@@ -10,6 +10,7 @@ services:
     networks:
       - feb-stats-network
 
+
   node-app:
     build:
       context: ./
@@ -23,6 +24,9 @@ services:
       - feb-stats-network
     depends_on:
       - stats-analyzer
+
+
+
 
 
 networks:
