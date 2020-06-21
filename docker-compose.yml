@@ -2,27 +2,27 @@ version: '3.5'
 
 services:
   stats-analyzer:
-    image: lvapeab/feb-stats:0.1
+    build:
+      context: ./
+      dockerfile: Dockerfile_python_server
     ports:
       - '50001:50001'
     networks:
       - feb-stats-network
 
-
   node-app:
-    image: lvapeab/feb-stats_web:0.1
+    build:
+      context: ./
+      dockerfile: Dockerfile_web_server
     ports:
-      - '8080:8080'
+      - '80:80'
     environment:
       GRPC_PORT: '50001'
-      WEB_PORT: '8080'
+      WEB_PORT: '80'
     networks:
       - feb-stats-network
     depends_on:
       - stats-analyzer
-
-
-
 
 
 networks:

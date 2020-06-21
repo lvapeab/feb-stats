@@ -5,6 +5,6 @@ COPY ./ /src
 WORKDIR /src/js/node
 RUN npm rebuild
 
-EXPOSE 8080
+EXPOSE 80
 
 CMD  ["node", "server.js"]

@@ -25,8 +25,9 @@ RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.7 2
 RUN update-alternatives --install /usr/bin/python python /usr/bin/python3.7 2
 
 RUN python3 -m pip install --user --upgrade pip
-RUN python3 -m pip install --user --upgrade keyrings.alt
-RUN python3 -m pip install "poetry==$POETRY_VERSION"
+RUN python3 -m pip install --user -U keyrings.alt
+RUN curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python3
+#RUN python3 -m pip install "poetry==$POETRY_VERSION"
 
 COPY . /code/
 WORKDIR /code
