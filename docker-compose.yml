@@ -9,7 +9,12 @@ services:
       - '50001:50001'
     networks:
       - feb-stats-network
-
+    deploy:
+      restart_policy:
+        condition: any
+        delay: 60s
+        max_attempts: 5
+        window: 300s
 
   node-app:
     build:
@@ -24,6 +29,12 @@ services:
       - feb-stats-network
     depends_on:
       - stats-analyzer
+    deploy:
+      restart_policy:
+        condition: any
+        delay: 30s
+        max_attempts: 5
+        window: 120s
 
 networks:
   feb-stats-network:
