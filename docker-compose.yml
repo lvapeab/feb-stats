@@ -17,7 +17,7 @@ services:
         window: 300s
 
   node-app:
-    image: lvapeab/feb-stats_web:0.2
+    image: lvapeab/feb-stats_web:0.3
     ports:
       - '80:80'
     environment:
