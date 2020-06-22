@@ -25,9 +25,5 @@ services:
     depends_on:
       - stats-analyzer
 
-
-
-
-
 networks:
   feb-stats-network:

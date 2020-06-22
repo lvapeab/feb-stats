@@ -3,7 +3,7 @@ FROM node:12.18
 
 COPY ./ /src
 WORKDIR /src/js/node
-RUN mkdir uploads
+RUN mkdir -p uploads
 RUN npm install
 
 EXPOSE 80

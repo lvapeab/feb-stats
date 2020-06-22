@@ -32,7 +32,6 @@ var client = new feb_stats_proto.FebStatsService(argv.grpc_address + ':'+ argv.g
 
 console.log("Starting server in: " + argv.grpc_address + ':'+ argv.grpc_port);
 
-
 const app = express();
 app.use(busboy());
 app.use(express.static(path.join(__dirname, 'public')));  // serve files from the public directory
@@ -43,7 +42,6 @@ app.get('/', (req, res) => {
     return res.render('index', {layout: false});
 });
 
-// app.use(express.urlencoded({extended: true}));
 function getByteArrayFromFilePath(filePath) {
     let fileData = fs.readFileSync(filePath).toString('hex');
     let result = [];
@@ -53,7 +51,7 @@ function getByteArrayFromFilePath(filePath) {
 }
 
 // Create a Route (/upload) to handle the Form submission (handle POST requests to /upload)
-var uploaded_files = [];
+var uploaded_files = [];  // TODO: Find a better way to manage this.
 app.route('/upload').post(function (req, res, next) {
     var fstream;
     req.pipe(req.busboy);
@@ -73,7 +71,7 @@ app.route('/upload').post(function (req, res, next) {
 
 app.route('/analyze').post(function (req, res, next) {
     var data = [];
-    console.log("Processing: " + uploaded_files.length + " files.");
+    console.log("Processing: " + uploaded_files.length + " files!");
     for (i = 0; i < uploaded_files.length; i++) {
         data.push(getByteArrayFromFilePath(uploaded_files[i]));
         fs.unlink(uploaded_files[i], (err) => {
@@ -81,10 +79,10 @@ app.route('/analyze').post(function (req, res, next) {
             console.error(err);
           }});
     }
+    uploaded_files = [];
     client.GetFebStats({boxscores: data}, function (err, response) {
         console.log('Response:', response);
         console.log('Err:', err);
-
         var filename = new Date();
         filename = dateFormat(filename, "dd_mm_yyyy_h:MM");
         res.writeHead(200, {
