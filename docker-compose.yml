@@ -8,6 +8,8 @@ services:
     networks:
       - feb-stats-network
     deploy:
+      mode: replicated
+      replicas: 1
       restart_policy:
         condition: any
         delay: 60s
@@ -26,6 +28,8 @@ services:
     depends_on:
       - stats-analyzer
     deploy:
+      mode: replicated
+      replicas: 2
       restart_policy:
         condition: any
         delay: 30s
