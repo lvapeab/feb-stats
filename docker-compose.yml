@@ -2,9 +2,7 @@ version: '3.5'
 
 services:
   stats-analyzer:
-    build:
-      context: ./
-      dockerfile: Dockerfile_python_server
+    image: lvapeab/feb-stats:0.2
     ports:
       - '50001:50001'
     networks:
@@ -17,9 +15,7 @@ services:
         window: 300s
 
   node-app:
-    build:
-      context: ./
-      dockerfile: Dockerfile_web_server
+    image: lvapeab/feb-stats:0.2
     ports:
       - '80:80'
     environment:
