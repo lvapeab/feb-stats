@@ -27,8 +27,10 @@ var packageDefinition = protoLoader.loadSync(
     });
 
 var feb_stats_proto = grpc.loadPackageDefinition(packageDefinition).feb_stats;
+let options = { 'grpc.max_receive_message_length': 15 * 1024 * 1024};
 var client = new feb_stats_proto.FebStatsService(argv.grpc_address + ':'+ argv.grpc_port,
-    grpc.credentials.createInsecure());
+    grpc.credentials.createInsecure(),
+    options);
 
 console.log("Starting server in: " + argv.grpc_address + ':'+ argv.grpc_port);
 
