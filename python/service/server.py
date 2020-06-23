@@ -6,10 +6,8 @@ import signal
 from concurrent import futures
 from grpc_reflection.v1alpha import reflection
 
-from opencensus.common.transports.async_ import AsyncTransport
 from opencensus.ext.grpc.server_interceptor import OpenCensusServerInterceptor
 from opencensus.ext.jaeger.trace_exporter import JaegerExporter
-from opencensus.trace import tracer as tracer_module
 from opencensus.trace.samplers import AlwaysOnSampler
 
 from types import FrameType
@@ -23,7 +21,9 @@ SERVICE_NAMES = [
     reflection.SERVICE_NAME,
     *[service.full_name for service in feb_stats_pb2.DESCRIPTOR.services_by_name.values()],
 ]
-def get_parser()-> argparse.ArgumentParser:
+
+
+def get_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser('FEB stats API Service')
     parser.add_argument('-port',
                         action='store_true',
@@ -31,17 +31,17 @@ def get_parser()-> argparse.ArgumentParser:
                         default=50001)
     return parser
 
+
 class Server:
     def __init__(self,
                  address: str) -> None:
         exporter = JaegerExporter(service_name='feb_stats_service',
-                                  agent_host_name='tracing.istio-system',
+                                  agent_host_name='localhost',
+                                  # TODO: Eventually switch to another service (e.g. istio)
                                   agent_port=6831  # <- accept jaeger.thrift over compact thrift protocol
                                   )
         tracer_interceptor = OpenCensusServerInterceptor(AlwaysOnSampler(),
                                                          exporter=exporter)
-        # tracer = tracer_module.Tracer(exporter=exporter)
-
         executor = futures.ThreadPoolExecutor(max_workers=min(32, os.cpu_count() + 4))  # Python 3.8 default
         max_message_length = 100 * 1024 * 1024
         options = [
@@ -51,16 +51,16 @@ class Server:
         self.server = grpc.server(thread_pool=executor,
                                   interceptors=(
                                       tracer_interceptor,
-                                                # tracer
-                                                ),
+                                  ),
                                   options=options)
         reflection.enable_server_reflection(SERVICE_NAMES,
                                             self.server)
 
         feb_stats_servicer = FebStatsServiceServicer(
-            SimpleLeagueHandler('localhost:9000',
-                                options=options
-                                )
+            SimpleLeagueHandler(
+                'localhost:9000',
+                options=options
+            )
         )
         # TODO: Add healing
         feb_stats_pb2_grpc.add_FebStatsServiceServicer_to_server(feb_stats_servicer,
