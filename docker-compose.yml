@@ -2,7 +2,7 @@ version: '3'
 
 services:
   stats-analyzer:
-    image: lvapeab/feb-stats:0.2
+    image: lvapeab/feb-stats:latest
     ports:
       - '50001:50001'
     networks:
@@ -17,7 +17,7 @@ services:
         window: 300s
 
   node-app:
-    image: lvapeab/feb-stats_web:0.3
+    image: lvapeab/feb-stats_web:latest
     ports:
       - '80:80'
     environment:
@@ -35,6 +35,22 @@ services:
         delay: 30s
         max_attempts: 5
         window: 120s
+
+  jaeger-tracing:
+    image: jaegertracing/all-in-one:1.18
+    ports:
+      - '5775:5775/udp'
+      - '6831:6831/udp'
+      - '6832:6832/udp'
+      - '5778:5778'
+      - '16686:16686'
+      - '14268:14268'
+      - '14250:14250'
+      - '9411:9411'
+    environment:
+      COLLECTOR_ZIPKIN_HTTP_PORT: '9411'
+    networks:
+      - feb-stats-network
 
 networks:
   feb-stats-network:

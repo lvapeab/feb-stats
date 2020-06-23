@@ -35,7 +35,7 @@ def get_parser() -> argparse.ArgumentParser:
 class Server:
     def __init__(self,
                  address: str) -> None:
-        exporter = JaegerExporter(service_name='feb_stats_service',
+        exporter = JaegerExporter(service_name='stats-analyzer',
                                   agent_host_name='localhost',
                                   # TODO: Eventually switch to another service (e.g. istio)
                                   agent_port=6831  # <- accept jaeger.thrift over compact thrift protocol
