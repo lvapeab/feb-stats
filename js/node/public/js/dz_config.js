@@ -9,7 +9,7 @@ Dropzone.options.uploadWidget = {
     headers: {
         'x-csrf-token': document.querySelector('meta[name=csrf-token]').getAttributeNode('content').value,
     },
-    acceptedFiles: 'image/*,text/html',
+    acceptedFiles: 'text/html',
     init: function () {
         this.on('success', function (file) {
                 console.log(file);

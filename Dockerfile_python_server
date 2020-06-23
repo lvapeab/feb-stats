@@ -21,4 +21,4 @@ COPY . /code/
 WORKDIR /code
 
 EXPOSE 50001
-CMD ["bazel",  "run",  "//python/service:server", "--", "-local"]
+CMD ["bazel",  "run",  "//python/service:server"]

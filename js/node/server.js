@@ -5,7 +5,7 @@ const exphbs = require('express-handlebars');
 const dateFormat = require('dateformat');
 
 var argv = require('yargs')
-    .default('grpc_address', "stats-analyzer" ) //process.env.GRPC_ADDRESS)
+    .default('grpc_address', "stats-analyzer") //process.env.GRPC_ADDRESS)
     .default('grpc_port', process.env.GRPC_PORT)
     .default('port', process.env.WEB_PORT)
     .argv
@@ -31,11 +31,11 @@ let grpc_options = {
     'grpc.max_receive_message_length': 15 * 1024 * 1024,
     'grpc.max_send_message_length': 15 * 1024 * 1024
 };
-var client = new feb_stats_proto.FebStatsService(argv.grpc_address + ':'+ argv.grpc_port,
+var client = new feb_stats_proto.FebStatsService(argv.grpc_address + ':' + argv.grpc_port,
     grpc.credentials.createInsecure(),
     grpc_options);
 
-console.log("Starting server in: " + argv.grpc_address + ':'+ argv.grpc_port);
+console.log("Starting server in: " + argv.grpc_address + ':' + argv.grpc_port);
 
 const app = express();
 app.use(busboy());
@@ -80,27 +80,34 @@ app.route('/analyze').post(function (req, res, next) {
     for (i = 0; i < uploaded_files.length; i++) {
         data.push(getByteArrayFromFilePath(uploaded_files[i]));
         fs.unlink(uploaded_files[i], (err) => {
-          if (err) {
-            console.error(err);
-          }});
+            if (err) {
+                console.error(err);
+            }
+        });
     }
     uploaded_files = [];
     client.GetFebStats({boxscores: data}, function (err, response) {
-        console.log('Response:', response);
-        console.log('Err:', err);
-        var filename = new Date();
-        filename = dateFormat(filename, "dd_mm_yyyy_h:MM");
-        res.writeHead(200, {
-                'Content-Type': 'application/vnd.ms-excel',
-                'Content-disposition': 'attachment; filename=' + 'estadisticas_' + filename + '.xlsx',
-                'Content-Length': response['sheet'].length
-            }
-        );
-        res.end(response['sheet']);
+
+        if (typeof response === 'undefined')  {
+            console.log('Undefined response.');
+            console.log('Error:', err);
+
+        } else {
+            console.log('Response:', response);
+            var filename = new Date();
+            filename = dateFormat(filename, "dd_mm_yyyy_h:MM");
+            res.writeHead(200, {
+                    'Content-Type': 'application/vnd.ms-excel',
+                    'Content-disposition': 'attachment; filename=' + 'estadisticas_' + filename + '.xlsx',
+                    'Content-Length': response['sheet'].length
+                }
+            );
+            res.end(response['sheet']);
+        }
     });
 
 });
 
 app.listen(argv.port, () => {
-    console.log('Express server listening on port '+ argv.port);
+    console.log('Express server listening on port ' + argv.port);
 });
