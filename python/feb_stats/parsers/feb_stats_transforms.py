@@ -1,6 +1,15 @@
 import numpy as np
 import pandas as pd
 
+__all__ = [
+    'transform_cum_stats_shots',
+    'transform_cum_stats_minutes',
+    'transform_cum_stats_blocks',
+    'transform_cum_stats_fouls',
+    'transform_cum_stats_rebounds',
+    'transform_game_stats_df',
+    ]
+
 
 def transform_cum_stats_shots(shots_series: pd.Series,
                               prefix='tiros') -> pd.DataFrame:
@@ -46,8 +55,8 @@ def transform_cum_stats_rebounds(rebs_serie: pd.Series,
                         dtype='float32')
 
 
-def parse_game_stats_df(initial_df: pd.DataFrame,
-                        local_team: bool) -> pd.DataFrame:
+def transform_game_stats_df(initial_df: pd.DataFrame,
+                            local_team: bool) -> pd.DataFrame:
     if local_team:
         rebotes_str = 'Rebotes D O T'
         tapones_str = 'Tapones Fa Co'

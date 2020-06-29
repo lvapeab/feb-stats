@@ -56,21 +56,6 @@ py_library(
     ],
 )
 
-py_library(
-    name = "parser",
-    srcs = [
-        "parser.py",
-    ],
-    srcs_version = "PY3",
-    visibility = ["//python:__subpackages__"],
-    deps = [
-        dependency("lxml"),
-        dependency("requests"),
-        ":entities",
-        ":transforms",
-    ],
-)
-
 [py_test(
     name = file[:-3],
     size = "small",
@@ -78,7 +63,6 @@ py_library(
     srcs_version = "PY3",
     deps = [
         ":entities",
-        ":parser",
         ":transforms",
         ":utils",
     ],

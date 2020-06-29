@@ -1,10 +1,8 @@
 import functools
 import numpy as np
 import pandas as pd
-from pathlib import Path
 from python.feb_stats.entities import League, Team, Boxscore
-from python.feb_stats.entities_ops import get_rival_boxscores, get_team_boxscores, league_to_excel
-from python.feb_stats.parser import parse_boxscores_dir, parse_boxscores_bytes
+from python.feb_stats.entities_ops import get_rival_boxscores, get_team_boxscores
 from python.feb_stats.utils import timedelta_to_minutes
 
 from typing import List
@@ -158,15 +156,3 @@ def compute_league_aggregates(league: League) -> League:
         games=league.games,
         aggregated_games=aggregated_games_df
     )
-
-
-def export_boxscores_from_path(path: Path) -> bytes:
-    league = parse_boxscores_dir(path)
-    new_league = compute_league_aggregates(league)
-    return league_to_excel(new_league)
-
-
-def export_boxscores_from_bytes(boxscores: List[bytes]) -> bytes:
-    league = parse_boxscores_bytes(boxscores)
-    new_league = compute_league_aggregates(league)
-    return league_to_excel(new_league)
