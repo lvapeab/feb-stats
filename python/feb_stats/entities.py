@@ -35,9 +35,9 @@ class Game(Generic[T]):
     hour: str
     league: str
     season: str
-    local_team: Team
+    home_team: Team
     away_team: Team
-    local_score: int
+    home_score: int
     away_score: int
     main_referee: Player
     aux_referee: Player

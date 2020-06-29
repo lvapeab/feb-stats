@@ -19,8 +19,8 @@ class FebStatsTransformsTestCase(unittest.TestCase):
                                        prefix=prefix)
         desired_df = pd.DataFrame(
             {
-                f'{prefix}_metidos': [1, 6],
-                f'{prefix}_intentados': [4, 12],
+                f'{prefix}_made': [1, 6],
+                f'{prefix}_attempted': [4, 12],
             },
             dtype='float32'
         )
@@ -57,8 +57,8 @@ class FebStatsTransformsTestCase(unittest.TestCase):
                                         prefix=prefix)
         desired_df = pd.DataFrame(
             {
-                f'{prefix}_favor': [0, 2],
-                f'{prefix}_contra': [0, 5],
+                f'{prefix}_made': [0, 2],
+                f'{prefix}_received': [0, 5],
             },
             dtype='float32'
         )
@@ -76,8 +76,8 @@ class FebStatsTransformsTestCase(unittest.TestCase):
                                        prefix=prefix)
         desired_df = pd.DataFrame(
             {
-                f'{prefix}_cometidas': [0, 2],
-                f'{prefix}_recibidas': [0, 5],
+                f'{prefix}_made': [0, 2],
+                f'{prefix}_received': [0, 5],
             },
             dtype='float32'
         )
@@ -95,9 +95,9 @@ class FebStatsTransformsTestCase(unittest.TestCase):
                                           prefix=prefix)
         desired_df = pd.DataFrame(
             {
-                f'{prefix}_defensivos': [0, 2],
-                f'{prefix}_ofensivos': [0, 5],
-                f'{prefix}_totales': [0, 7],
+                f'defensive_{prefix}': [0, 2],
+                f'offensive_{prefix}': [0, 5],
+                f'total_{prefix}': [0, 7],
             },
             dtype='float32'
         )

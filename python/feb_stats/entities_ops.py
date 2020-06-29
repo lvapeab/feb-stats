@@ -22,31 +22,31 @@ def get_games_by_team(league: League,
                       team: Team) -> List[Game]:
     matching_games = []
     for game in league.games:
-        if team in {game.local_team, game.away_team}:
+        if team in {game.home_team, game.away_team}:
             matching_games.append(game)
     return matching_games
 
 
 def get_team_boxscores(league: League,
                        team: Team) -> List[Boxscore]:
-    return [game.local_boxscore if game.local_team == team else game.away_boxscore
+    return [game.local_boxscore if game.home_team == team else game.away_boxscore
             for game in get_games_by_team(league, team)]
 
 
 def get_rival_boxscores(league: League,
                         team: Team) -> List[Boxscore]:
-    return [game.local_boxscore if game.local_team != team else game.away_boxscore
+    return [game.local_boxscore if game.home_team != team else game.away_boxscore
             for game in get_games_by_team(league, team)]
 
 
 def average_games(df: pd.DataFrame,
                   individual_columns: bool = False) -> pd.DataFrame:
-    n_games = df.loc[:, 'partidos'].astype(np.float32)
+    n_games = df.loc[:, 'games'].astype(np.float32)
     df.loc[:, get_averageable_numerical_columns(individual_columns=individual_columns)] = \
         df.loc[:, get_averageable_numerical_columns(individual_columns=individual_columns)].astype(np.float32).div(n_games, axis='rows')
-    if 'minutos' in df:
-        df.loc[:, 'minutos'] /= n_games
-    df.loc[:, 'modo'] = 'Media'
+    if 'minutes' in df:
+        df.loc[:, 'minutes'] /= n_games
+    df.loc[:, 'mode'] = 'Media'
     return df
 
 
@@ -71,10 +71,10 @@ def league_to_excel(league,
         aggregated_games = league.aggregated_games
         averaged_games = average_games(aggregated_games.copy())
 
-        aggregated_games.loc[:, 'minutos'] = aggregated_games['minutos'].apply(
+        aggregated_games.loc[:, 'minutes'] = aggregated_games['minutes'].apply(
             lambda x: timedelta_to_str(x) if not pd.isnull(x) else ''
         )
-        averaged_games.loc[:, 'minutos'] = averaged_games['minutos'].apply(
+        averaged_games.loc[:, 'minutes'] = averaged_games['minutes'].apply(
             lambda x: timedelta_to_str(x) if not pd.isnull(x) else ''
         )
         aggregated_games.to_excel(
@@ -103,10 +103,10 @@ def league_to_excel(league,
                                                            individual_columns=True
                                                            )
 
-                aggregated_team_season_games.loc[:, 'minutos'] = aggregated_team_season_games['minutos'].apply(
+                aggregated_team_season_games.loc[:, 'minutes'] = aggregated_team_season_games['minutes'].apply(
                     lambda x: timedelta_to_str(x) if not pd.isnull(x) else ''
                 )
-                averaged_team_season_games.loc[:, 'minutos'] = averaged_team_season_games['minutos'].apply(
+                averaged_team_season_games.loc[:, 'minutes'] = averaged_team_season_games['minutes'].apply(
                     lambda x: timedelta_to_str(x) if not pd.isnull(x) else ''
                 )
                 aggregated_team_season_games.to_excel(
@@ -123,7 +123,6 @@ def league_to_excel(league,
                     header=player_column_names,
                     encoding='latin1',
                     sheet_name=f'medias - {team.name}'[:31])
-
 
         center_alignment = Alignment(horizontal='center')
         for n_sheet, (worksheet_name, worksheet) in enumerate(writer.sheets.items()):

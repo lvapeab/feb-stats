@@ -26,8 +26,7 @@ class ServerTestCase(unittest.TestCase):
             """
 
     def test_timely_shutdown(self):
-        server = Server(local=True,
-                        address='127.0.0.1:0')
+        server = Server(address='127.0.0.1:0')
         server.start()
         self._send_health_check(server.port)
         start = timeit.default_timer()
@@ -37,8 +36,7 @@ class ServerTestCase(unittest.TestCase):
         self.assertLessEqual(delta.total_seconds(), 10.0)
 
     def test_sigterm_shutdown(self):
-        server = Server(local=True,
-                        address='127.0.0.1:0')
+        server = Server(address='127.0.0.1:0')
         server.start()
         self._send_health_check(server.port)
         start = timeit.default_timer()

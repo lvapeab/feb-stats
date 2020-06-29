@@ -43,9 +43,9 @@ class UtilsTestCase(unittest.TestCase):
 
     def test_get_averageable_numerical_columns(self):
         averageable_list = get_averageable_numerical_columns(individual_columns=False)
-        self.assertEqual(len(averageable_list), 24)
+        self.assertEqual(len(averageable_list), 25)
         averageable_list = get_averageable_numerical_columns(individual_columns=True)
-        self.assertEqual(len(averageable_list), 23)
+        self.assertEqual(len(averageable_list), 24)
 
     def test_response_to_excel(self):
         pass

@@ -86,16 +86,16 @@ class GenericParserTestCase(unittest.TestCase):
         game_metadata = self.parser.parse_game_metadata(doc)
 
         desired_dict = {
-            'fecha': '08/03/2020',
-            'hora': '18:00',
-            'liga': 'LIGA EBA',
-            'temporada': '2019/2020',
-            'equipo_local': 'HERO JAIRIS',
-            'resultado_local': '75',
-            'equipo_visitante': 'UCAM MURCIA JIFFY',
-            'resultado_visitante': '68',
-            'arbitro_principal': 'SERRAT MOLINS. ALBERT',
-            'arbitro_auxiliar': 'ARAQUE CACERES. MAURO',
+            'date': '08/03/2020',
+            'hour': '18:00',
+            'league': 'LIGA EBA',
+            'season': '2019/2020',
+            'home_team': 'HERO JAIRIS',
+            'home_score': '75',
+            'away_team': 'UCAM MURCIA JIFFY',
+            'away_score': '68',
+            'main_referee': 'SERRAT MOLINS. ALBERT',
+            'second_referee': 'ARAQUE CACERES. MAURO',
         }
         self.assertDictEqual(game_metadata,
                              desired_dict)
@@ -107,7 +107,7 @@ class GenericParserTestCase(unittest.TestCase):
         self.assertTrue(game.hour, '18:00')
         self.assertTrue(game.league, 'LIGA EBA')
         self.assertTrue(game.season, '2019/2020')
-        self.assertTrue(game.local_score, '75')
+        self.assertTrue(game.home_score, '75')
         self.assertTrue(game.away_team, 'UCAM MURCIA JIFFY')
         self.assertTrue(game.away_score, '68')
         self.assertTrue(game.main_referee, 'SERRAT MOLINS. ALBERT')

@@ -11,11 +11,11 @@ from typing import List
 def oer_from_dataframe(df: pd.DataFrame,
                        key_name='oer') -> pd.DataFrame:
     """OER = scored points / total possessions"""
-    if 'posesiones_totales' not in list(df.index):
+    if 'total_possessions' not in list(df.index):
         df = compute_total_possessions(df)
-    df.loc[:, key_name] = df.loc[:, 'puntos_favor'] / df.loc[:, 'posesiones_totales']
-    df.loc[:, f'{key_name}_por_40_minutos'] = 40 * df.loc[:, key_name].divide(
-        df.loc[:, 'minutos'].apply(lambda x: timedelta_to_minutes(x) if not pd.isnull(x) else np.nan),
+    df.loc[:, key_name] = df.loc[:, 'points_made'] / df.loc[:, 'total_possessions']
+    df.loc[:, f'{key_name}_40_min'] = 40 * df.loc[:, key_name].divide(
+        df.loc[:, 'minutes'].apply(lambda x: timedelta_to_minutes(x) if not pd.isnull(x) else np.nan),
         fill_value=-1)
     return pd.DataFrame(df)
 
@@ -26,10 +26,10 @@ def compute_total_possessions(df: pd.DataFrame) -> pd.DataFrame:
 
     total_index = df.index.isin(['Total'])
 
-    df.loc[:, 'posesiones_totales'] = df.loc[:, 'tiros_campo_intentados'] + \
-                                      df.loc[:, 'tiros_libres_intentados'] / 2 + \
-                                      df.loc[:, 'perdidas']
-    df.loc[~total_index, 'posesiones_totales'] += df.loc[~total_index, 'asistencias']
+    df.loc[:, 'total_possessions'] = df.loc[:, 'field_goal_attempted'] + \
+                                      df.loc[:, 'free_throw_attempted'] / 2 + \
+                                      df.loc[:, 'turnovers']
+    df.loc[~total_index, 'total_possessions'] += df.loc[~total_index, 'assists']
     return df
 
 
@@ -41,14 +41,10 @@ def compute_oer(boxscore: pd.DataFrame
 
 def compute_shots_percentage(df: pd.DataFrame) -> pd.DataFrame:
     """Compute FG%, 3PT% and FT%"""
-    df.loc[:, 'porcentaje_2_puntos'] = df.loc[:, '2_puntos_metidos'].divide(df.loc[:, '2_puntos_intentados'],
-                                                                            fill_value=0.) * 100.
-    df.loc[:, 'porcentaje_3_puntos'] = df.loc[:, '3_puntos_metidos'].divide(df.loc[:, '3_puntos_intentados'],
-                                                                            fill_value=0.) * 100.
-    df.loc[:, 'porcentaje_tiros_campo'] = df.loc[:, 'tiros_campo_metidos'].divide(df.loc[:, 'tiros_campo_intentados'],
-                                                                                  fill_value=0.) * 100.
-    df.loc[:, 'porcentaje_tiros_libres'] = df.loc[:, 'tiros_libres_metidos'].divide(
-        df.loc[:, 'tiros_libres_intentados'], fill_value=0.) * 100.
+    df.loc[:, '2_point_percentage'] = df.loc[:, '2_point_made'].divide(df.loc[:, '2_point_attempted'], fill_value=0.) * 100.
+    df.loc[:, '3_point_percentage'] = df.loc[:, '3_point_made'].divide(df.loc[:, '3_point_attempted'], fill_value=0.) * 100.
+    df.loc[:, 'field_goal_percentage'] = df.loc[:, 'field_goal_made'].divide(df.loc[:, 'field_goal_attempted'], fill_value=0.) * 100.
+    df.loc[:, 'free_throw_percentage'] = df.loc[:, 'free_throw_made'].divide(df.loc[:, 'free_throw_attempted'], fill_value=0.) * 100.
     return df
 
 
@@ -56,22 +52,22 @@ def compute_volumes(df: pd.DataFrame) -> pd.DataFrame:
     """Compute the volume of a player w.r.t. the team."""
 
     volume_keys = {
-        'puntos_favor',
-        'posesiones_totales',
-        '2_puntos_metidos',
-        '2_puntos_intentados',
-        '3_puntos_metidos',
-        '3_puntos_intentados',
-        'tiros_campo_metidos',
-        'tiros_campo_intentados',
-        'tiros_libres_metidos',
-        'tiros_libres_intentados',
-        'rebotes_defensivos',
-        'rebotes_ofensivos',
-        'rebotes_totales',
+        'points_made',
+        'total_possessions',
+        '2_point_made',
+        '2_point_attempted',
+        '3_point_made',
+        '3_point_attempted',
+        'field_goal_made',
+        'field_goal_attempted',
+        'free_throw_made',
+        'free_throw_attempted',
+        'offensive_rebounds',
+        'defensive_rebounds',
+        'total_rebounds',
     }
     for volume_key in volume_keys:
-        df.loc[:, f'volumen_{volume_key}'] = df.loc[:, volume_key].divide(df.loc['Total', volume_key],
+        df.loc[:, f'{volume_key}_volume'] = df.loc[:, volume_key].divide(df.loc['Total', volume_key],
                                                                           fill_value=0.) * 100.
     return df
 
@@ -86,27 +82,28 @@ def compute_der(boxscore: pd.DataFrame) -> pd.DataFrame:
 
 def sum_boxscores(df1: pd.DataFrame,
                   df2: pd.DataFrame) -> pd.DataFrame:
-    """Add the numerical statistics from two dataframes. Set `'jugador'` as index."""
-    dorsales1 = df1.loc[:, 'dorsal']
-    dorsales2 = df2.loc[:, 'dorsal']
-    dorsales = dorsales1.combine(dorsales2, lambda x, y: x if pd.isna(y) else y)
+    """Add the numerical statistics from two dataframes."""
+    numbers1 = df1.loc[:, 'number']
+    numbers2 = df2.loc[:, 'number']
+    dorsales = numbers1.combine(numbers2, lambda x, y: x if pd.isna(y) else y)
 
-    minutes1 = df1.loc[:, 'minutos']
-    minutes2 = df2.loc[:, 'minutos']
+    minutes1 = df1.loc[:, 'minutes']
+    minutes2 = df2.loc[:, 'minutes']
     minutes_sum = minutes1.add(minutes2, fill_value=pd.to_timedelta(0.))
 
-    df1 = df1.drop('dorsal', axis='columns')
-    df2 = df2.drop('dorsal', axis='columns')
-    df1 = df1.drop('minutos', axis='columns')
-    df2 = df2.drop('minutos', axis='columns')
+    df1 = df1.drop('number', axis='columns')
+    df2 = df2.drop('number', axis='columns')
+    df1 = df1.drop('minutes', axis='columns')
+    df2 = df2.drop('minutes', axis='columns')
     df_sum = df1.add(df2, fill_value=0)
-    df_sum.loc[:, 'dorsal'] = dorsales
-    df_sum.loc[:, 'minutos'] = minutes_sum
+    df_sum.loc[:, 'number'] = dorsales
+    df_sum.loc[:, 'minutes'] = minutes_sum
     return df_sum
 
 
 def aggregate_boxscores(boxscores: List[Boxscore]) -> Boxscore:
-    all_dfs = [boxscore.boxscore.set_index('jugador') for boxscore in boxscores]
+    """Aggregate boxscores.  Set `'player'` as index."""
+    all_dfs = [boxscore.boxscore.set_index('player') for boxscore in boxscores]
     agg_df = functools.reduce(lambda df1, df2: sum_boxscores(df1, df2), all_dfs)
     return Boxscore(boxscore=agg_df)
 
@@ -137,16 +134,16 @@ def compute_league_aggregates(league: League) -> League:
         rivals_df = compute_der(rivals_boxscores.boxscore)
 
         team_df.loc['der'] = rivals_df.loc['Total', 'der']
-        team_df.loc['equipo'] = team.name
-        team_df.loc['puntos_contra'] = rivals_df.loc['Total', 'puntos_favor']
-        team_df.pop('dorsal')
+        team_df.loc['team'] = team.name
+        team_df.loc['points_received'] = rivals_df.loc['Total', 'points_made']
+        team_df.pop('number')
         team_df = team_df.reset_index().transpose()
         team_df.columns = team_df.loc['index']
         team_df = team_df.drop(['index'])
         aggregated_games_df = pd.concat([aggregated_games_df, team_df])
 
     aggregated_games_df = aggregated_games_df.reset_index()
-    aggregated_games_df = aggregated_games_df.rename(columns={'index': 'modo'})
+    aggregated_games_df = aggregated_games_df.rename(columns={'index': 'mode'})
 
     return League(
         id=league.id,
