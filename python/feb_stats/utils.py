@@ -18,6 +18,8 @@ def timedelta_to_minutes(timedelta: pd.Timedelta) -> float:
 
 
 def get_sorted_list_of_columns(individual_columns: bool = False) -> List[str]:
+    """Returns a list of columns to export in the xlsx file in that order."""
+
     column_list = ['oer',
                    'partidos',
                    'puntos_favor',
@@ -75,7 +77,8 @@ def get_sorted_list_of_columns(individual_columns: bool = False) -> List[str]:
     return column_list
 
 
-def averageable_numerical_columns(individual_columns: bool = False) -> List[str]:
+def get_averageable_numerical_columns(individual_columns: bool = False) -> List[str]:
+    """List of numerical columns that makes sense to average across multiple games. """
     column_list = [
         'partidos',
         'posesiones_totales',
@@ -108,7 +111,7 @@ def averageable_numerical_columns(individual_columns: bool = False) -> List[str]
 
 def response_to_excel(response: str,
                       output: str) -> None:
-    """Saves the response of the server into an xls file."""
+    """Exports the response of the server into xls workbook."""
     with open(response, mode='rb') as f:
         response = json.load(f)
     xls_file = b64decode(response['sheet'])

@@ -13,3 +13,5 @@ docker-compose up --build
 [ ] Temporal data (evolution)
 
 [ ] Database
+
+[ ] Write more tests

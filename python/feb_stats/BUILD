@@ -44,7 +44,6 @@ py_library(
 py_library(
     name = "transforms",
     srcs = [
-        "game_stats_transforms.py",
         "transforms.py",
     ],
     srcs_version = "PY3",

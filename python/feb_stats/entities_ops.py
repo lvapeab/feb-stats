@@ -6,7 +6,7 @@ from openpyxl.utils import get_column_letter
 from openpyxl.styles import Alignment
 
 from python.feb_stats.entities import League, Team, Game, Boxscore
-from python.feb_stats.utils import averageable_numerical_columns, get_sorted_list_of_columns, timedelta_to_str
+from python.feb_stats.utils import get_averageable_numerical_columns, get_sorted_list_of_columns, timedelta_to_str
 
 
 # TODO: These ops should be done in a DB
@@ -42,8 +42,8 @@ def get_rival_boxscores(league: League,
 def average_games(df: pd.DataFrame,
                   individual_columns: bool = False) -> pd.DataFrame:
     n_games = df.loc[:, 'partidos'].astype(np.float32)
-    df.loc[:, averageable_numerical_columns(individual_columns=individual_columns)] = \
-        df.loc[:, averageable_numerical_columns(individual_columns=individual_columns)].astype(np.float32).div(n_games, axis='rows')
+    df.loc[:, get_averageable_numerical_columns(individual_columns=individual_columns)] = \
+        df.loc[:, get_averageable_numerical_columns(individual_columns=individual_columns)].astype(np.float32).div(n_games, axis='rows')
     if 'minutos' in df:
         df.loc[:, 'minutos'] /= n_games
     df.loc[:, 'modo'] = 'Media'
