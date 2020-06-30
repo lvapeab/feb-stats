@@ -54,7 +54,7 @@ def get_sorted_list_of_columns(individual_columns: bool = False) -> List[str]:
         column_list.insert(-1, 'mode')
     else:
         column_list.insert(3, 'points_made_volume')
-        column_list.insert(5, 'total_points_volume')
+        column_list.insert(5, 'total_possessions_volume')
         column_list.insert(11, '2_point_made_volume')
         column_list.insert(13, '2_point_attempted_volume')
         column_list.insert(16, '3_point_made_volume')

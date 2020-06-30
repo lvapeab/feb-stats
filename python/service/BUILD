@@ -20,8 +20,8 @@ py_library(
         dependency("grpcio"),
         dependency("grpcio-status"),
         dependency("opencensus"),
-        "//python/feb_stats:parser",
         "//python/feb_stats:transforms",
+        "//python/feb_stats/parsers:feb_parser",
     ],
 )
 

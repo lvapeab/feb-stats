@@ -15,11 +15,18 @@ __all__ = [
     'sum_boxscores',
     'aggregate_boxscores',
     'compute_league_aggregates',
-    ]
+]
 
 
-def compute_oer(df: pd.DataFrame, key_name='oer') -> pd.DataFrame:
-    """OER = scored points / total possessions"""
+def compute_oer(df: pd.DataFrame,
+                key_name='oer') -> pd.DataFrame:
+    """Computes the offensive efficiency rate (OER) from a dataframe, following:
+        OER = scored points / total possessions
+    Also extrapolates the OER value to 40 played minutes.
+    :param df: Dataframe to use.
+    :param key_name: Name of the key to store the OER.
+    :return: The input dataframe including oer columns.
+    """
     if 'total_possessions' not in list(df.index):
         df = compute_total_possessions(df)
     df.loc[:, key_name] = df.loc[:, 'points_made'] / df.loc[:, 'total_possessions']
@@ -30,9 +37,12 @@ def compute_oer(df: pd.DataFrame, key_name='oer') -> pd.DataFrame:
 
 
 def compute_total_possessions(df: pd.DataFrame) -> pd.DataFrame:
-    """Estimation of total possessions:
-        attempted shots (FG) + attempted FT / 2 + turnovers """
-
+    """Estimates the number of possessions from a dataframe, as:
+        number_of_possessions = attempted FG + attempted FT / 2 + turnovers
+    If the indices of the dataframe are the players, the assists are added to the formula above .
+    :param df: Dataframe to use.
+    :return: Input dataframe including the `'total_possessions'` column.
+    """
     total_index = df.index.isin(['Total'])
 
     df.loc[:, 'total_possessions'] = df.loc[:, 'field_goal_attempted'] + \
@@ -42,22 +52,34 @@ def compute_total_possessions(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def compute_shots_percentage(df: pd.DataFrame) -> pd.DataFrame:
-    """Compute FG%, 3PT% and FT%"""
-    df.loc[:, '2_point_percentage'] = df.loc[:, '2_point_made'].divide(df.loc[:, '2_point_attempted'],
-                                                                       fill_value=0.) * 100.
-    df.loc[:, '3_point_percentage'] = df.loc[:, '3_point_made'].divide(df.loc[:, '3_point_attempted'],
-                                                                       fill_value=0.) * 100.
-    df.loc[:, 'field_goal_percentage'] = df.loc[:, 'field_goal_made'].divide(df.loc[:, 'field_goal_attempted'],
-                                                                             fill_value=0.) * 100.
-    df.loc[:, 'free_throw_percentage'] = df.loc[:, 'free_throw_made'].divide(df.loc[:, 'free_throw_attempted'],
-                                                                             fill_value=0.) * 100.
+def compute_shots_percentage(df: pd.DataFrame,
+                             shot_columns: Set = None) -> pd.DataFrame:
+    """Compute percentage of shots, including 2PT, 3PT, FG and FT.
+    :param df: Dataframe to use.
+    :param shot_columns: Prefix of the columns from which to compute percentages.
+    :return: Input dataframe including the *_percentage columns.
+    """
+    shot_columns = shot_columns or {
+        '2_point',
+        '3_point',
+        'field_goal',
+        'free_throw'
+    }
+
+    for shot_column in shot_columns:
+        df.loc[:, f'{shot_column}_percentage'] = \
+            df.loc[:, f'{shot_column}_made'].divide(df.loc[:, f'{shot_column}_attempted'], fill_value=0.) * 100.
     return df
 
 
 def compute_volumes(df: pd.DataFrame,
                     volume_keys: Set = None) -> pd.DataFrame:
-    """Compute the volume of a player w.r.t. the team."""
+    """Compute the volume of stats for a player w.r.t. the team. The volume is the percentage of the stat that is
+    accountable to that player.
+    :param df: Dataframe to use.
+    :param volume_keys: Dataframe columns from which to compute volumes.
+    :return: Input dataframe including the *_percentage columns.
+    """
 
     volume_keys = volume_keys or {
         'points_made',
@@ -80,17 +102,24 @@ def compute_volumes(df: pd.DataFrame,
     return df
 
 
-def compute_der(boxscore: pd.DataFrame) -> pd.DataFrame:
-    """DER is computed as the OER of the rivals when they play against `team`.
+def compute_der(df: pd.DataFrame) -> pd.DataFrame:
+    """Computes the defensive efficiency rate (DER). The DER of a team is computed as the OER of the rivals when they
+    play against this team
+    :param df: Dataframe to use. Needs to contain the data from the rivals.
+    :return: Input dataframe including the *_percentage columns.
     """
-    der = compute_oer(pd.DataFrame(boxscore.loc['Total', :]).T,
-                      key_name='der')
-    return der
+    df = compute_oer(pd.DataFrame(df.loc['Total', :]).T,
+                     key_name='der')
+    return df
 
 
 def sum_boxscores(df1: pd.DataFrame,
                   df2: pd.DataFrame) -> pd.DataFrame:
-    """Add the numerical statistics from two dataframes."""
+    """Adds two dataframes. It won't sum the `'number'` column.
+    :param df1: First dataframe to add.
+    :param df2: Second dataframe to add.
+    :return: The sum of the dataframes.
+    """
     numbers1 = df1.loc[:, 'number']
     numbers2 = df2.loc[:, 'number']
     dorsales = numbers1.combine(numbers2, lambda x, y: x if pd.isna(y) else y)
@@ -110,14 +139,20 @@ def sum_boxscores(df1: pd.DataFrame,
 
 
 def aggregate_boxscores(boxscores: List[Boxscore]) -> Boxscore:
-    """Aggregate boxscores.  Set `'player'` as index."""
+    """Reduces a list of Boxscores by summation. Set `'player'` as the index of the output Boxscore.
+    :param boxscores: List of Boxscores to sum.
+    :return: A Boxscore as the sum of `boxscores`.
+    """
     all_dfs = [boxscore.boxscore.set_index('player') for boxscore in boxscores]
     agg_df = functools.reduce(lambda df1, df2: sum_boxscores(df1, df2), all_dfs)
     return Boxscore(boxscore=agg_df)
 
 
 def compute_league_aggregates(league: League) -> League:
-    """Aggregates the games of a League. Computes DER and OER."""
+    """Aggregates the games of a League. Computes DER and OER.
+    :param league: League to aggregate the results.
+    :return: League with the aggregated games.
+    """
     aggregated_games_df = pd.DataFrame()
     aggregated_league_teams = list()
     for team in league.teams:
