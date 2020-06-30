@@ -4,28 +4,24 @@ load("@poetry//:dependencies.bzl", "dependency")
 package(default_visibility = ["//python:__subpackages__"])
 
 py_binary(
-    name = "launch_gui",
+    name = "export_boxscores",
     srcs = [
-        "launch_gui.py",
+        "export_boxscores_binary.py",
     ],
-    main = "launch_gui.py",
+    main = "export_boxscores_binary.py",
     srcs_version = "PY3",
     deps = [
-        "//python/feb_stats:parser",
+        "//python/feb_stats:saving",
         "//python/feb_stats:transforms",
+        "//python/feb_stats/parsers:feb_parser",
     ],
 )
 
 py_binary(
-    name = "analyze_boxscores",
+    name = "save_server_response",
     srcs = [
-        "analyze_boxscores.py",
+        "save_server_response.py",
     ],
-    main = "analyze_boxscores.py",
+    main = "save_server_response.py",
     srcs_version = "PY3",
-    deps = [
-        "//python/feb_stats:entities_ops",
-        "//python/feb_stats:parser",
-        "//python/feb_stats:transforms",
-    ],
 )

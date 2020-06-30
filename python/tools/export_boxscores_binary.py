@@ -1,11 +1,23 @@
 import json
 from base64 import b64decode
 from argparse import ArgumentParser
-
 from openpyxl import load_workbook
 from io import BytesIO
+from typing import List
 
-from python.feb_stats.entities_ops import export_boxscores_from_bytes
+from python.feb_stats.parsers.feb_parser import FEBParser
+from python.feb_stats.transforms import compute_league_aggregates
+from python.feb_stats.saving import league_to_xlsx
+
+
+def export_boxscores_from_bytes(boxscores: List[bytes]) -> bytes:
+    """Export a league to xlsx format from a list of boxscores.
+    :param boxscores: The list of boxscores to read.
+    :return: xlsx file as bytes.
+    """
+    league = FEBParser().parse_boxscores(boxscores)
+    new_league = compute_league_aggregates(league)
+    return league_to_xlsx(new_league)
 
 
 def get_parser() -> ArgumentParser:
