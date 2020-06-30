@@ -1,15 +1,24 @@
 import functools
 import numpy as np
 import pandas as pd
+from typing import List, Set
 from python.feb_stats.entities import League, Team, Boxscore
 from python.feb_stats.entities_ops import get_rival_boxscores, get_team_boxscores
 from python.feb_stats.utils import timedelta_to_minutes
 
-from typing import List
+__all__ = [
+    'compute_oer',
+    'compute_total_possessions',
+    'compute_shots_percentage',
+    'compute_volumes',
+    'compute_der',
+    'sum_boxscores',
+    'aggregate_boxscores',
+    'compute_league_aggregates',
+    ]
 
 
-def oer_from_dataframe(df: pd.DataFrame,
-                       key_name='oer') -> pd.DataFrame:
+def compute_oer(df: pd.DataFrame, key_name='oer') -> pd.DataFrame:
     """OER = scored points / total possessions"""
     if 'total_possessions' not in list(df.index):
         df = compute_total_possessions(df)
@@ -27,31 +36,30 @@ def compute_total_possessions(df: pd.DataFrame) -> pd.DataFrame:
     total_index = df.index.isin(['Total'])
 
     df.loc[:, 'total_possessions'] = df.loc[:, 'field_goal_attempted'] + \
-                                      df.loc[:, 'free_throw_attempted'] / 2 + \
-                                      df.loc[:, 'turnovers']
+                                     df.loc[:, 'free_throw_attempted'] / 2 + \
+                                     df.loc[:, 'turnovers']
     df.loc[~total_index, 'total_possessions'] += df.loc[~total_index, 'assists']
     return df
 
 
-def compute_oer(boxscore: pd.DataFrame
-                ) -> pd.DataFrame:
-    oer = oer_from_dataframe(boxscore)
-    return oer
-
-
 def compute_shots_percentage(df: pd.DataFrame) -> pd.DataFrame:
     """Compute FG%, 3PT% and FT%"""
-    df.loc[:, '2_point_percentage'] = df.loc[:, '2_point_made'].divide(df.loc[:, '2_point_attempted'], fill_value=0.) * 100.
-    df.loc[:, '3_point_percentage'] = df.loc[:, '3_point_made'].divide(df.loc[:, '3_point_attempted'], fill_value=0.) * 100.
-    df.loc[:, 'field_goal_percentage'] = df.loc[:, 'field_goal_made'].divide(df.loc[:, 'field_goal_attempted'], fill_value=0.) * 100.
-    df.loc[:, 'free_throw_percentage'] = df.loc[:, 'free_throw_made'].divide(df.loc[:, 'free_throw_attempted'], fill_value=0.) * 100.
+    df.loc[:, '2_point_percentage'] = df.loc[:, '2_point_made'].divide(df.loc[:, '2_point_attempted'],
+                                                                       fill_value=0.) * 100.
+    df.loc[:, '3_point_percentage'] = df.loc[:, '3_point_made'].divide(df.loc[:, '3_point_attempted'],
+                                                                       fill_value=0.) * 100.
+    df.loc[:, 'field_goal_percentage'] = df.loc[:, 'field_goal_made'].divide(df.loc[:, 'field_goal_attempted'],
+                                                                             fill_value=0.) * 100.
+    df.loc[:, 'free_throw_percentage'] = df.loc[:, 'free_throw_made'].divide(df.loc[:, 'free_throw_attempted'],
+                                                                             fill_value=0.) * 100.
     return df
 
 
-def compute_volumes(df: pd.DataFrame) -> pd.DataFrame:
+def compute_volumes(df: pd.DataFrame,
+                    volume_keys: Set = None) -> pd.DataFrame:
     """Compute the volume of a player w.r.t. the team."""
 
-    volume_keys = {
+    volume_keys = volume_keys or {
         'points_made',
         'total_possessions',
         '2_point_made',
@@ -68,15 +76,15 @@ def compute_volumes(df: pd.DataFrame) -> pd.DataFrame:
     }
     for volume_key in volume_keys:
         df.loc[:, f'{volume_key}_volume'] = df.loc[:, volume_key].divide(df.loc['Total', volume_key],
-                                                                          fill_value=0.) * 100.
+                                                                         fill_value=0.) * 100.
     return df
 
 
 def compute_der(boxscore: pd.DataFrame) -> pd.DataFrame:
     """DER is computed as the OER of the rivals when they play against `team`.
     """
-    der = oer_from_dataframe(pd.DataFrame(boxscore.loc['Total', :]).T,
-                             key_name='der')
+    der = compute_oer(pd.DataFrame(boxscore.loc['Total', :]).T,
+                      key_name='der')
     return der
 
 

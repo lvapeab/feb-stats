@@ -1,7 +1,7 @@
 import unittest
 import pandas as pd
 from python.feb_stats.utils import timedelta_to_minutes, timedelta_to_str, get_sorted_list_of_columns, \
-    get_averageable_numerical_columns, response_to_excel
+    get_averageable_numerical_columns
 
 
 class UtilsTestCase(unittest.TestCase):
@@ -46,9 +46,6 @@ class UtilsTestCase(unittest.TestCase):
         self.assertEqual(len(averageable_list), 25)
         averageable_list = get_averageable_numerical_columns(individual_columns=True)
         self.assertEqual(len(averageable_list), 24)
-
-    def test_response_to_excel(self):
-        pass
 
 
 if __name__ == '__main__':

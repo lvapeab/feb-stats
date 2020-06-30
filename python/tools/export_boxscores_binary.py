@@ -5,7 +5,7 @@ from argparse import ArgumentParser
 from openpyxl import load_workbook
 from io import BytesIO
 
-from python.feb_stats.transforms import export_boxscores_from_bytes
+from python.feb_stats.entities_ops import export_boxscores_from_bytes
 
 
 def get_parser() -> ArgumentParser:

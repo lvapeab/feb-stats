@@ -1,9 +1,6 @@
 import pandas as pd
 from typing import List
-import json
-from base64 import b64decode
-from openpyxl import load_workbook
-from io import BytesIO
+
 
 def timedelta_to_str(timedelta: pd.Timedelta) -> str:
     minutes = timedelta.components.days * 24 * 60 + timedelta.components.hours * 60 + timedelta.components.minutes
@@ -107,14 +104,3 @@ def get_averageable_numerical_columns(individual_columns: bool = False) -> List[
     if not individual_columns:
         column_list.append('points_received')
     return column_list
-
-
-def response_to_excel(response: str,
-                      output: str) -> None:
-    """Exports the response of the server into xls workbook."""
-    with open(response, mode='rb') as f:
-        response = json.load(f)
-    xls_file = b64decode(response['sheet'])
-    workbook = load_workbook(filename=BytesIO(xls_file))
-    workbook.save(output)
-    return

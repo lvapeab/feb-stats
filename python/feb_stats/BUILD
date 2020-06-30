@@ -17,26 +17,12 @@ py_library(
     name = "entities",
     srcs = [
         "entities.py",
-    ],
-    srcs_version = "PY3",
-    visibility = ["//python:__subpackages__"],
-    deps = [
-        dependency("pandas"),
-    ],
-)
-
-py_library(
-    name = "entities_ops",
-    srcs = [
         "entities_ops.py",
     ],
     srcs_version = "PY3",
     visibility = ["//python:__subpackages__"],
     deps = [
-        dependency("numpy"),
         dependency("pandas"),
-        dependency("openpyxl"),
-        ":entities",
         ":utils",
     ],
 )
@@ -51,7 +37,25 @@ py_library(
     deps = [
         dependency("pandas"),
         ":entities",
-        ":entities_ops",
+        ":utils",
+    ],
+)
+
+py_library(
+    name = "saving",
+    srcs = [
+        "saving.py",
+    ],
+    srcs_version = "PY3",
+    visibility = ["//python:__subpackages__"],
+    deps = [
+        dependency("numpy"),
+        dependency("pandas"),
+        dependency("openpyxl"),
+        ":entities",
+        ":transforms",
+        ":utils",
+        "//python/feb_stats/parsers:feb_parser",
     ],
 )
 
@@ -62,6 +66,7 @@ py_library(
     srcs_version = "PY3",
     deps = [
         ":entities",
+        ":saving",
         ":transforms",
         ":utils",
     ],
