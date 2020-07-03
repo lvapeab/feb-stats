@@ -7,11 +7,9 @@ service FebStatsService {
 }
 
 message GetFebStatsRequest {
-//    string id = 1;
     repeated bytes boxscores = 1;
 }
 
 message GetFebStatsResponse {
-//    string id = 1;
     bytes sheet = 1;
 }

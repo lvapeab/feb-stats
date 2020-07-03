@@ -14,6 +14,15 @@ py_library(
 )
 
 py_library(
+    name = "locale",
+    srcs = [
+        "locale.py",
+    ],
+    srcs_version = "PY3",
+    visibility = ["//python:__subpackages__"],
+)
+
+py_library(
     name = "entities",
     srcs = [
         "entities.py",

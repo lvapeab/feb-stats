@@ -20,6 +20,8 @@ py_library(
         dependency("grpcio"),
         dependency("grpcio-status"),
         dependency("opencensus"),
+        "//python/feb_stats:locale",
+        "//python/feb_stats:saving",
         "//python/feb_stats:transforms",
         "//python/feb_stats/parsers:feb_parser",
     ],
@@ -29,6 +31,10 @@ py_test(
     name = "api_test",
     size = "small",
     srcs = [":api_test.py"],
+    data = [
+        "//test_data:1.html",
+        "//test_data:2.html",
+    ],
     python_version = "PY3",
     deps = [
         ":api",

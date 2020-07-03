@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from grpc import insecure_channel
 from python.feb_stats.parsers.feb_parser import FEBParser
 from python.feb_stats.transforms import compute_league_aggregates
-from python.feb_stats.entities_ops import league_to_excel
+from python.feb_stats.saving import league_to_xlsx
 from typing import List, Tuple, Optional
 
 
@@ -27,5 +27,5 @@ class SimpleLeagueHandler(LeagueHandler):
                          input_boxscores: List[bytes]) -> bytes:
         league = FEBParser().parse_boxscores(input_boxscores)
         new_league = compute_league_aggregates(league)
-        return league_to_excel(new_league)
+        return league_to_xlsx(new_league)
 

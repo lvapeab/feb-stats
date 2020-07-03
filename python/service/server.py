@@ -36,8 +36,8 @@ class Server:
     def __init__(self,
                  address: str) -> None:
         exporter = JaegerExporter(service_name='stats-analyzer',
-                                  agent_host_name='localhost',
-                                  # TODO: Eventually switch to another service (e.g. istio)
+                                  agent_host_name='localhost', # TODO: Eventually switch to another service (e.g. istio)
+
                                   agent_port=6831  # <- accept jaeger.thrift over compact thrift protocol
                                   )
         tracer_interceptor = OpenCensusServerInterceptor(AlwaysOnSampler(),
@@ -46,7 +46,8 @@ class Server:
         max_message_length = 100 * 1024 * 1024
         options = [
             ('grpc.max_receive_message_length', max_message_length),
-            ('grpc.max_send_message_length', max_message_length)]
+            ('grpc.max_send_message_length', max_message_length)
+        ]
 
         self.server = grpc.server(thread_pool=executor,
                                   interceptors=(
