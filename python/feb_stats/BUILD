@@ -16,7 +16,7 @@ py_library(
 py_library(
     name = "locale",
     srcs = [
-        "locale.py",
+        "loc.py",
     ],
     srcs_version = "PY3",
     visibility = ["//python:__subpackages__"],
