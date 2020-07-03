@@ -6,12 +6,19 @@ Stats parser for FEB
 ```
 docker-compose up --build
 ```
+
+# Run tests
+
+```shell script
+bazel test //...
+```
+
+
 # TODO:
 
 [x] Webapp
 
-[ ] Temporal data (evolution)
+[ ] Temporal data (evolution of teams/players).
 
-[ ] Database
+[ ] Link with a database.
 
-[ ] Write more tests
