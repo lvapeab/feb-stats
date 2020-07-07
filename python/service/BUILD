@@ -47,7 +47,6 @@ py_binary(
     main = "server.py",
     visibility = ["//visibility:public"],
     deps = [
-        dependency("grpcio-health-checking"),
         dependency("grpcio-reflection"),
         dependency("opencensus-ext-grpc"),
         dependency("opencensus-ext-jaeger"),
@@ -69,7 +68,6 @@ py3_image(
     main = "server.py",
     visibility = ["//visibility:public"],  # TODO: Constrain the visibility
     deps = [
-        dependency("grpcio-health-checking"),
         dependency("grpcio-reflection"),
         dependency("opencensus-ext-grpc"),
         dependency("opencensus-ext-jaeger"),

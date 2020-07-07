@@ -7,23 +7,19 @@ license = "MIT"
 
 [tool.poetry.dependencies]
 python = "^3.7"
-pandas = "^1.0.3"
-lxml = "^4.5.1"
-requests = "^2.23.0"
-pysimplegui = "^4.19.0"
-numpy = "^1.18.5"
-django = "^3.0.7"
 grpcio = "^1.29.0"
-mypy-protobuf = "^1.21"
-grpcio-health-checking = "^1.29.0"
 grpcio-reflection = "^1.29.0"
 grpcio-status = "^1.29.0"
 grpcio-tools = "^1.29.0"
+lxml = "^4.5.1"
+numpy = "^1.18.5"
 opencensus = "^0.7.7"
 opencensus-ext-grpc = "^0.7.1"
 opencensus-ext-jaeger = "^0.7.1"
 opencensus-ext-stackdriver = "^0.7.2"
 openpyxl = "^3.0.3"
+pandas = "^1.0.3"
+requests = "^2.23.0"
 
 [tool.poetry.dev-dependencies]
 
