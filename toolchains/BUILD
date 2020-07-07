@@ -2,7 +2,7 @@ load("@rules_python//python:defs.bzl", "py_runtime", "py_runtime_pair")
 load(":venv.bzl", "py_venv_toolchain")
 load(":wrapper.bzl", "py_wrapper")
 
-py_venv(
+py_venv_toolchain(
     name = "py3_venv",
 
     # caching the venv interpreter doesn't work for two reasons:
