@@ -4,9 +4,11 @@ jobs:
   checks:
     name: run
     runs-on: ubuntu-18.04
-    python-version: 3.7
     steps:
-    - uses: actions/checkout@master
+    - name: Set up
+      uses: actions/checkout@master
+      with:
+        python-version: "3.7"
 
     - name: run tests
       uses: ngalaiko/bazel-action/1.2.1@master
