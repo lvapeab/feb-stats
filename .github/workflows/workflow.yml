@@ -7,10 +7,9 @@ jobs:
     steps:
     - name: Set up
       uses: actions/checkout@master
-      with:
-        python-version: "3.7"
 
     - name: run tests
       uses: ngalaiko/bazel-action/1.2.1@master
       with:
-        args: test //...
+        python-version: "3.7"
+        args: test --sandbox_debug //...
