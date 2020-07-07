@@ -3,11 +3,11 @@ name: Bazel tests
 jobs:
   checks:
     name: run
-    runs-on: ubuntu-18.04
+    runs-on: python3.7
     steps:
     - uses: actions/checkout@master
 
-    - name: run
+    - name: run tests
       uses: ngalaiko/bazel-action/1.2.1@master
       with:
         args: test //...

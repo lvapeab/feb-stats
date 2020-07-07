@@ -1,4 +1,4 @@
-def _impl(ctx):
+def _py_env_toolchain_impl(ctx):
     version = ctx.attr.version.split(".", 2)
     if len(version) != 2:
         fail("Expected version in major.minor format, e.g. 3.7. Found: {}".format(ctx.attr.version))
@@ -24,8 +24,8 @@ def _impl(ctx):
         ),
     ]
 
-py_venv = rule(
-    implementation = _impl,
+py_venv_toolchain = rule(
+    implementation = _py_env_toolchain_impl,
     executable = True,
     attrs = {
         "version": attr.string(default = "3.7"),

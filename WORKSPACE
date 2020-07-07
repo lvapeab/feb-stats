@@ -3,7 +3,7 @@ workspace(
 )
 
 # register local toolchains before loading other workspaces
-#register_toolchains("//toolchains:container_python")
+register_toolchains("//toolchains:container_python")
 
 register_toolchains("//toolchains:python")
 
@@ -70,10 +70,17 @@ http_archive(
 
 load(
     "@io_bazel_rules_docker//repositories:repositories.bzl",
-    _container_repositories = "repositories",
+    container_repositories = "repositories",
 )
 
-_container_repositories()
+container_repositories()
+
+load(
+    "@io_bazel_rules_docker//python3:image.bzl",
+    _py_image_repos = "repositories",
+)
+
+_py_image_repos()
 
 load("@io_bazel_rules_docker//repositories:deps.bzl", _container_deps = "deps")
 

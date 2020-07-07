@@ -62,20 +62,18 @@ py_test(
     deps = [":server"],
 )
 
-py_layer(
-    name = "externals",
-    filter = "@",  # only include labels in external workspaces e.g. @poetry//
-    deps = [":server"],
-)
-
 py3_image(
     name = "image",
-    srcs = [":server"],
+    srcs = ["server.py"],
     base = "//images:python",
-    layers = [
-        ":externals",
-    ],
     main = "server.py",
-    visibility = ["//visibility:public"],
-    deps = [],
+    visibility = ["//visibility:public"],  # TODO: Constrain the visibility
+    deps = [
+        dependency("grpcio-health-checking"),
+        dependency("grpcio-reflection"),
+        dependency("opencensus-ext-grpc"),
+        dependency("opencensus-ext-jaeger"),
+        dependency("opencensus-ext-stackdriver"),
+        ":api",
+    ],
 )
