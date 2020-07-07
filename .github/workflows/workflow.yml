@@ -1,15 +1,35 @@
-on: push
-name: Bazel tests
+name: CI
+
+on: [push]
+
 jobs:
-  checks:
-    name: run
+  build:
     runs-on: ubuntu-18.04
     steps:
-    - name: Set up
-      uses: actions/checkout@master
+    - uses: actions/checkout@v2
 
-    - name: run tests
-      uses: ngalaiko/bazel-action/1.2.1@master
+    - name: Set up Python 3.7
+      uses: actions/setup-python@v2
       with:
-        python-version: "3.7"
-        args: test --sandbox_debug //...
+        python-version: 3.7
+
+    - name: Mount bazel cache
+      uses: actions/cache@v1
+      with:
+        path: "/home/runner/.cache/bazel"
+        key: bazel
+
+    - name: Install bazelisk
+      run: |
+        curl -LO "https://github.com/bazelbuild/bazelisk/releases/download/v1.5.0/bazelisk-linux-amd64"
+        mkdir -p "${GITHUB_WORKSPACE}/bin/"
+        mv bazelisk-linux-amd64 "${GITHUB_WORKSPACE}/bin/bazel"
+        chmod +x "${GITHUB_WORKSPACE}/bin/bazel"
+
+    - name: Test
+      run: |
+        "${GITHUB_WORKSPACE}/bin/bazel" test //...
+
+    - name: Build
+      run: |
+        "${GITHUB_WORKSPACE}/bin/bazel" build //...
