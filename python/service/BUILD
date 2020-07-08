@@ -57,6 +57,7 @@ py_binary(
 
 py_test(
     name = "server_test",
+    size = "small",
     srcs = [":server_test.py"],
     deps = [":server"],
 )
