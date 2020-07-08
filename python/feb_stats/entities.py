@@ -2,12 +2,13 @@ from dataclasses import dataclass
 import pandas as pd
 from typing import TypeVar, Generic, List, Optional
 
-T = TypeVar('T')
+T = TypeVar("T")
 
 
 @dataclass(frozen=True)
 class Player(Generic[T]):
     """Player from a team."""
+
     id: int
     name: str
     season_stats: Optional[pd.DataFrame] = None
@@ -16,6 +17,7 @@ class Player(Generic[T]):
 @dataclass(frozen=True)
 class Team(Generic[T]):
     """Team from a league."""
+
     id: int
     name: str
     season_stats: Optional[pd.DataFrame] = None
@@ -27,6 +29,7 @@ class Team(Generic[T]):
 @dataclass(frozen=True)
 class Boxscore(Generic[T]):
     """Boxscore from a game."""
+
     boxscore: pd.DataFrame
     id: Optional[int] = None
 
@@ -34,6 +37,7 @@ class Boxscore(Generic[T]):
 @dataclass(frozen=True)
 class Game(Generic[T]):
     """Game from a league."""
+
     id: int
     date: str
     hour: str
@@ -52,6 +56,7 @@ class Game(Generic[T]):
 @dataclass(frozen=True)
 class League(Generic[T]):
     """Basketball league."""
+
     id: int
     name: str
     season: str
@@ -60,4 +65,4 @@ class League(Generic[T]):
     aggregated_games: Optional[pd.DataFrame] = None
 
     def __str__(self):
-        return f'{self.name} - {self.season}'
+        return f"{self.name} - {self.season}"

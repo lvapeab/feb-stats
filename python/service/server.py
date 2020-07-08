@@ -19,55 +19,51 @@ from python.service.codegen import feb_stats_pb2, feb_stats_pb2_grpc
 
 SERVICE_NAMES = [
     reflection.SERVICE_NAME,
-    *[service.full_name for service in feb_stats_pb2.DESCRIPTOR.services_by_name.values()],
+    *[
+        service.full_name
+        for service in feb_stats_pb2.DESCRIPTOR.services_by_name.values()
+    ],
 ]
 
 
 def get_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser('FEB stats API Service')
-    parser.add_argument('-port',
-                        action='store_true',
-                        dest='port',
-                        default=50001)
+    parser = argparse.ArgumentParser("FEB stats API Service")
+    parser.add_argument("-port", action="store_true", dest="port", default=50001)
     return parser
 
 
 class Server:
-    def __init__(self,
-                 address: str) -> None:
-        exporter = JaegerExporter(service_name='stats-analyzer',
-                                  agent_host_name='localhost', # TODO: Eventually switch to another service (e.g. istio)
-
-                                  agent_port=6831  # <- accept jaeger.thrift over compact thrift protocol
-                                  )
-        tracer_interceptor = OpenCensusServerInterceptor(AlwaysOnSampler(),
-                                                         exporter=exporter)
-        executor = futures.ThreadPoolExecutor(max_workers=min(32, os.cpu_count() + 4))  # Python 3.8 default
+    def __init__(self, address: str) -> None:
+        exporter = JaegerExporter(
+            service_name="stats-analyzer",
+            agent_host_name="localhost",  # TODO: Eventually switch to another service (e.g. istio)
+            agent_port=6831,  # <- accept jaeger.thrift over compact thrift protocol
+        )
+        tracer_interceptor = OpenCensusServerInterceptor(
+            AlwaysOnSampler(), exporter=exporter
+        )
+        executor = futures.ThreadPoolExecutor(
+            max_workers=min(32, os.cpu_count() + 4)
+        )  # Python 3.8 default
         max_message_length = 100 * 1024 * 1024
         options = [
-            ('grpc.max_receive_message_length', max_message_length),
-            ('grpc.max_send_message_length', max_message_length)
+            ("grpc.max_receive_message_length", max_message_length),
+            ("grpc.max_send_message_length", max_message_length),
         ]
 
-        self.server = grpc.server(thread_pool=executor,
-                                  interceptors=(
-                                      tracer_interceptor,
-                                  ),
-                                  options=options)
-        reflection.enable_server_reflection(SERVICE_NAMES,
-                                            self.server)
+        self.server = grpc.server(
+            thread_pool=executor, interceptors=(tracer_interceptor,), options=options
+        )
+        reflection.enable_server_reflection(SERVICE_NAMES, self.server)
 
         feb_stats_servicer = FebStatsServiceServicer(
-            SimpleLeagueHandler(
-                'localhost:9000',
-                options=options
-            )
+            SimpleLeagueHandler("localhost:9000", options=options)
         )
         # TODO: Add healing
-        feb_stats_pb2_grpc.add_FebStatsServiceServicer_to_server(feb_stats_servicer,
-                                                                 self.server)
-        signal.signal(signalnum=signal.Signals.SIGTERM,
-                      handler=self._sigterm_handler)
+        feb_stats_pb2_grpc.add_FebStatsServiceServicer_to_server(
+            feb_stats_servicer, self.server
+        )
+        signal.signal(signalnum=signal.Signals.SIGTERM, handler=self._sigterm_handler)
         self.port = self.server.add_insecure_port(address)
         print(f"Server built. Port: {self.port}")
 
@@ -84,11 +80,10 @@ class Server:
         self.server.wait_for_termination()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     parser = get_parser()
     args = parser.parse_args()
-    server = Server(
-        address=f'[::]:{args.port}')
+    server = Server(address=f"[::]:{args.port}")
     server.start()
     server.wait_for_termination()
     server.stop()

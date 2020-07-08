@@ -7,21 +7,18 @@ import unittest
 
 class ContextStub:
     def invocation_metadata(self):
-        return [('tenant', 'test')]
+        return [("tenant", "test")]
 
 
 class FebStatsServiceServicerTest(unittest.TestCase):
-
     def test_GetFebStats(self):
-        input_files = glob.iglob('test_data/*html')
+        input_files = glob.iglob("test_data/*html")
         boxscores = []
         for file in input_files:
-            with open(file, mode='rb') as f:
+            with open(file, mode="rb") as f:
                 boxscores.append(f.read())
-        request = GetFebStatsRequest(
-            boxscores=boxscores,
-        )
-        service = FebStatsServiceServicer(SimpleLeagueHandler(address='8008'))
+        request = GetFebStatsRequest(boxscores=boxscores,)
+        service = FebStatsServiceServicer(SimpleLeagueHandler(address="8008"))
         result = service.GetFebStats(request, ContextStub())
         self.assertTrue(result.sheet)
 

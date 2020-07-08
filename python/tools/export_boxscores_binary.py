@@ -21,19 +21,20 @@ def export_boxscores_from_bytes(boxscores: List[bytes]) -> bytes:
 
 
 def get_parser() -> ArgumentParser:
-    parser = ArgumentParser(description='Boxscore analysis')
-    parser.add_argument('--data', action='store', type=str, dest='data',
-                        default='protos/data.json')
-    parser.add_argument('--output', action='store', type=str, dest='output')
+    parser = ArgumentParser(description="Boxscore analysis")
+    parser.add_argument(
+        "--data", action="store", type=str, dest="data", default="protos/data.json"
+    )
+    parser.add_argument("--output", action="store", type=str, dest="output")
 
     return parser
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     args = get_parser().parse_args()
-    with open(args.data, mode='rb') as f:
+    with open(args.data, mode="rb") as f:
         data = json.load(f)
-    excel_data = export_boxscores_from_bytes([b64decode(d) for d in data['boxscores']])
+    excel_data = export_boxscores_from_bytes([b64decode(d) for d in data["boxscores"]])
     wb = load_workbook(filename=BytesIO(excel_data))
     wb.save(args.output)
     exit(0)

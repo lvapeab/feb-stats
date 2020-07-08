@@ -4,13 +4,11 @@ from python.service.codegen import feb_stats_pb2, feb_stats_pb2_grpc
 
 
 class FebStatsServiceServicer(feb_stats_pb2_grpc.FebStatsServiceServicer):
-
-    def __init__(self,
-                 league_handler: SimpleLeagueHandler):
+    def __init__(self, league_handler: SimpleLeagueHandler):
         self.league_handler = league_handler
 
     def GetFebStats(self, request, context):
-        with get_opencensus_tracer().span(name='GetFebStats') as span:
+        with get_opencensus_tracer().span(name="GetFebStats") as span:
             boxscores = request.boxscores
 
             # TODO: Add tenants when distributing the computations
@@ -18,8 +16,8 @@ class FebStatsServiceServicer(feb_stats_pb2_grpc.FebStatsServiceServicer):
             response = feb_stats_pb2.GetFebStatsResponse()
 
             response.sheet = result
-            span.add_annotation('League',
-                                sheet=str(result),
-                                )
+            span.add_annotation(
+                "League", sheet=str(result),
+            )
 
             return response

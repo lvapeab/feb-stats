@@ -11,7 +11,7 @@ from typing import Dict, Tuple, Union
 from typing import TypeVar, List, Optional
 from python.feb_stats.entities import Game, Team, League
 
-T = TypeVar('T')
+T = TypeVar("T")
 
 
 class GenericParser(ABC):
@@ -21,21 +21,23 @@ class GenericParser(ABC):
 
     @staticmethod
     def parse_str(input_str: str):
-        return ' '.join(
-            input_str.replace('\n', ' ').replace('\t', ' ').replace('\r', ' ').replace(',', '.').split()).strip()
+        return " ".join(
+            input_str.replace("\n", " ")
+            .replace("\t", " ")
+            .replace("\r", " ")
+            .replace(",", ".")
+            .split()
+        ).strip()
 
     @staticmethod
-    def get_elements(doc: Element,
-                     id: str) -> List[Element]:
+    def get_elements(doc: Element, id: str) -> List[Element]:
         # Parse data by id
         table_elements = doc.xpath(id)
         return table_elements
 
-    def elements_to_df(self,
-                       tr_elements: List[Element],
-                       initial_row: int = 2,
-                       n_elem: int = 0
-                       ) -> pd.DataFrame:
+    def elements_to_df(
+        self, tr_elements: List[Element], initial_row: int = 2, n_elem: int = 0
+    ) -> pd.DataFrame:
         col = []
         i = 0
         # For each row, store each first element (header) and an empty list
@@ -65,8 +67,7 @@ class GenericParser(ABC):
         df = pd.DataFrame(data_dict)
         return df
 
-    def parse_boxscores(self,
-                        boxscores_bytes: List[bytes]) -> League:
+    def parse_boxscores(self, boxscores_bytes: List[bytes]) -> League:
         all_games = []
         all_teams = set()
         for link in boxscores_bytes:
@@ -78,20 +79,24 @@ class GenericParser(ABC):
 
         if all_games:
             league = League(
-                id=int(md5(str.encode(f"{all_games[0].league}", encoding='UTF-8')).hexdigest(), 16),
+                id=int(
+                    md5(
+                        str.encode(f"{all_games[0].league}", encoding="UTF-8")
+                    ).hexdigest(),
+                    16,
+                ),
                 name=all_games[0].league,
                 season=all_games[0].season,
                 teams=list(all_teams),
-                games=all_games
+                games=all_games,
             )
             return league
         else:
-            raise ValueError(f'No games found in {boxscores_bytes}')
-
+            raise ValueError(f"No games found in {boxscores_bytes}")
 
     @staticmethod
     def read_link_bytes(link: bytes) -> Element:
-        document_string = link.decode('latin1')
+        document_string = link.decode("latin1")
         doc = lh.fromstring(document_string)
         return doc
 
@@ -104,24 +109,22 @@ class GenericParser(ABC):
                 # Store the contents of the website under doc
                 document_string = lh.fromstring(page.content)
             elif os.path.isfile(link):
-                with open(link,
-                          mode="r",
-                          encoding='latin1') as f:
+                with open(link, mode="r", encoding="latin1") as f:
                     document_string = f.read()
             else:
-                raise ValueError(f'Unable to find the resource {link} (not a valid URL nor an existing file.)')
+                raise ValueError(
+                    f"Unable to find the resource {link} (not a valid URL nor an existing file.)"
+                )
         doc = lh.fromstring(document_string)
 
         return doc
 
-
     @abstractmethod
-    def parse_game_metadata(self,
-                            doc: Element) -> Dict[str, str]:
+    def parse_game_metadata(self, doc: Element) -> Dict[str, str]:
         pass
 
     @abstractmethod
-    def parse_game_stats(self,
-                         doc: Element,
-                         ids: List[Optional[str]] = None) -> Tuple[Game, Tuple[Team, Team]]:
+    def parse_game_stats(
+        self, doc: Element, ids: List[Optional[str]] = None
+    ) -> Tuple[Game, Tuple[Team, Team]]:
         pass
