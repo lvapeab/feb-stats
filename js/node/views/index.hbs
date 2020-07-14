@@ -3,10 +3,9 @@
 <head>
     <meta charset="utf-8">
     <title>Analizador de estadísticas FEB</title>
-    <link rel="shortcut icon" href="assets/images/basketball.png">
-
+    <link rel="shortcut icon" href="assets/basketball.png">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="css/main.css">
+    <link rel="stylesheet" type="text/css" href="main.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.5.1/min/dropzone.min.css">
 
     <script src="https://kit.fontawesome.com/fbe4d58721.js" crossorigin="anonymous"></script>
@@ -15,7 +14,6 @@
 <body>
 
 
-<!-- Sidebar-->
 <section id="sidebar">
     <div class="inner">
         <nav>
@@ -30,7 +28,6 @@
     </div>
 </section>
 
-<!-- Wrapper -->
 <div id="wrapper">
     <section id="intro" class="wrapper style1 fullscreen fade-up">
         <div class="inner">
@@ -41,6 +38,7 @@
                 <li> Si no, puedes encontrar el funcionamiento en <a href="#instructions">la sección de instrucciones.</a> </li>
                 <li> La sección <a href="#analysis">la sección de datos analizados</a> contiene una explicación de los datos extraídos.</li>
             </ul>
+        </div>
     </section>
 
     <section id="data" class="wrapper style1 fullscreen fade-up">
@@ -56,6 +54,8 @@
             <form method="post" id="analyze_button" action="/analyze" enctype="multipart/form-data">
                 <button type="submit" style="float: right;" class="button">Analizar</button>
             </form>
+        </div>
+
     </section>
 
     <section id="instructions" class="wrapper style1 fullscreen fade-up">
@@ -69,7 +69,6 @@
                 <li> Este archivo se puede abrir con cualquier gestor de hojas de cálculo (Excel, Google Forms, LibreOffice).</li>
                 <li> Consulta <a href="#analyze_button">la sección de datos analizados</a> para obtener una explicación de las estadísticas analizadas.</li>
             </ol>
-
         </div>
     </section>
 
@@ -100,7 +99,7 @@
 
 
     </section>
-    <!-- contact -->
+
     <section id="contact" class="wrapper style1 fade-up">
         <div class="inner">
             <h3>Autor: Álvaro Peris</h3>
@@ -130,7 +129,7 @@
     </footer>
 </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.5.1/min/dropzone.min.js"></script>
-    <script src="js/dz_config.js"></script>
+    <script src="dz_config.js"></script>
 
 </body>
 </html>

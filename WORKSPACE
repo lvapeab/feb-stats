@@ -1,5 +1,8 @@
 workspace(
     name = "feb_stats",
+    managed_directories = {
+        "@npm": ["node_modules"],
+    },
 )
 
 # register local toolchains before loading other workspaces
@@ -63,9 +66,9 @@ poetry(
 # Docker rules
 http_archive(
     name = "io_bazel_rules_docker",
-    sha256 = "5b5941ba81a8f92d6cf1af5176ccfd3b5f2f7e5672741c3fa64f4023c22bed01",
-    strip_prefix = "rules_docker-9e5b065ed0699bd8491ba1f6bef6eb428f2d230c",
-    urls = ["https://github.com/bazelbuild/rules_docker/archive/9e5b065ed0699bd8491ba1f6bef6eb428f2d230c.tar.gz"],
+    sha256 = "363a8b03f7af8bdd5b44a9d4e19566870b520f8c155fb72837f7fd4a3bdc2538",
+    strip_prefix = "rules_docker-2ae5f7f0c43b7efd32a4d7f927bb701f060972af",  # v0.14.4 version is buggy (https://github.com/bazelbuild/rules_docker/issues/1550)
+    urls = ["https://github.com/bazelbuild/rules_docker/archive/2ae5f7f0c43b7efd32a4d7f927bb701f060972af.zip"],
 )
 
 load(
@@ -75,6 +78,14 @@ load(
 
 container_repositories()
 
+load("@io_bazel_rules_docker//repositories:deps.bzl", container_deps = "deps")
+
+container_deps()
+
+load("@io_bazel_rules_docker//repositories:pip_repositories.bzl", "pip_deps")
+
+pip_deps()
+
 load(
     "@io_bazel_rules_docker//python3:image.bzl",
     _py_image_repos = "repositories",
@@ -82,10 +93,23 @@ load(
 
 _py_image_repos()
 
-load("@io_bazel_rules_docker//repositories:deps.bzl", _container_deps = "deps")
-
-_container_deps()
-
 load("//images:deps.bzl", "image_deps")
 
 image_deps()
+
+# NodeJS rules
+http_archive(
+    name = "build_bazel_rules_nodejs",
+    sha256 = "f9e7b9f42ae202cc2d2ce6d698ccb49a9f7f7ea572a78fd451696d03ef2ee116",
+    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/1.6.0/rules_nodejs-1.6.0.tar.gz"],
+)
+
+load("@build_bazel_rules_nodejs//:index.bzl", "node_repositories", "yarn_install")
+
+# The yarn_install rule runs yarn anytime the package.json or yarn.lock file changes.
+# It also extracts and installs any Bazel rules distributed in an npm package.
+yarn_install(
+    name = "npm",  # Name this npm so that Bazel Label references look like @npm//package
+    package_json = "//:package.json",
+    yarn_lock = "//:yarn.lock",
+)

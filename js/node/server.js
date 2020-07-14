@@ -1,8 +1,8 @@
 const express = require('express');
+const hbs = require('hbs');
 var busboy = require('connect-busboy'); //middleware for form/file upload
 var path = require('path');     //used for file path
-const exphbs = require('express-handlebars');
-const dateFormat = require('dateformat');
+const dateFormat = require('date-format');
 
 var argv = require('yargs')
     .default('grpc_address', "stats-analyzer") //process.env.GRPC_ADDRESS)
@@ -13,7 +13,8 @@ var argv = require('yargs')
 
 var fs = require('fs-extra');       //File System - for file manipulation
 var grpc = require('grpc');
-var PROTO_PATH = __dirname + '../../../protos/feb_stats.proto';
+// var PROTO_PATH = __dirname + '../../../protos/feb_stats.proto';
+var PROTO_PATH = "protos/feb_stats.proto";
 
 var protoLoader = require('@grpc/proto-loader');
 var packageDefinition = protoLoader.loadSync(
@@ -39,12 +40,14 @@ console.log("Starting server in: " + argv.grpc_address + ':' + argv.grpc_port);
 
 const app = express();
 app.use(busboy());
-app.use(express.static(path.join(__dirname, 'public')));  // serve files from the public directory
+app.use(express.static('js/node/style'));  // serve files from the public directory
+app.use(express.static('js/node/config'));  // serve files from the public directory
 
-app.engine('.hbs', exphbs({extname: '.hbs'}));
+// app.engine('.hbs', exphbs({extname: '.hbs'}));
+app.set('views', 'js/node/views');
 app.set('view engine', '.hbs');
 app.get('/', (req, res) => {
-    return res.render('index', {layout: false});
+    return res.render('index.hbs', {layout: false});
 });
 
 function getByteArrayFromFilePath(filePath) {
