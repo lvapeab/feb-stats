@@ -1,15 +1,21 @@
 # feb-stats
 Basketball stats parser.
  
- 
- 
- 
-for FEB
-
-
 # Build and run app
 ```
 docker-compose up --build
+```
+
+# Run the python service
+
+```shell script
+bazel run //python/service:image
+```
+
+# Run the NodeJS app
+
+```shell script
+bazel run //js/node:app
 ```
 
 # Run tests
@@ -21,7 +27,7 @@ bazel test //...
 
 # TODO:
 
-- [x] Webapp (very simple).
+- [x] Webapp (although now it's quite simple).
 - [ ] Temporal data (evolution of teams/players).
 - [ ] Link with a database.
-
+- [ ] Query/crawl data from sources.
