@@ -17,7 +17,7 @@ services:
 
   node-app:
     image: lvapeab/feb-stats:latest
-    command: bazel run //js/node:image
+    command: bazel run //js/node:app
     networks:
       - feb-stats
     depends_on:
