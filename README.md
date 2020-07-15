@@ -1,4 +1,5 @@
-# feb-stats
+# [FEB Stats](http://35.209.155.221/)
+
 Basketball stats parser and analyzer [→ Go to the website (in Spanish)](http://35.209.155.221/).
 
 
@@ -11,7 +12,7 @@ The boxscores are analyzed from the game stats pages (`.html`).
 
 ***
 
-# Build and run app
+## Build and run app
 
 Builds and tests are done with [Bazel](https://bazel.build/). There are two main services:
 
@@ -19,6 +20,9 @@ Builds and tests are done with [Bazel](https://bazel.build/). There are two main
 * A Python service that analyzes the data and returns the .xls file. 
 
 Both services are connected via [gRPC](https://grpc.io/). 
+
+These services are in Docker images managed by Bazel. 
+There are also rules to directly run them in the local machine (without images). 
 
 ### Run the python service
 
@@ -40,20 +44,13 @@ bazel test //...
 
 ### Run using docker-compose
 
-
-In case you want to build your own images, you can tell Bazel to build and push them. You'll need to edit the 
-`WORKSPACE` files, the rules `//python/service:push_feb-stats` and `//js/node:push_feb-stats_web` and the 
-`docker-compose.yml` file, with your own paths. Next, you can run the app using 
-[docker-compose](https://docs.docker.com/compose/compose-file): 
-
+You can also run the app using [docker-compose](https://docs.docker.com/compose/compose-file): 
 
 ```shell script
-bazel run //python/service:push_feb-stats; 
-bazel run //js/node:push_feb-stats_web ; 
 docker-compose up
 ```
 
-# TODO:
+## TODO
 
 This is an ongoing project that I code in my free time. I'm also using it to try out new things (tools, software, etc). 
 Despite this, PRs are always welcome!
@@ -68,5 +65,6 @@ As a rough roadmap, some of the next steps to take are:
 - [ ] Link with a database.
 - [ ] Query/crawl data from sources.
 - [ ] Improve docker layering.
-- [ ] Streamline image push and deployment.
-
+- [ ] Expose images from bazel.
+- [ ] Streamline the image push and deployment workflow.
+- [ ] Add support for another orchestrator (Kubernetes). Likely unnecessary given the expected traffic, but fun to do :) 

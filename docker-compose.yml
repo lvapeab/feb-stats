@@ -3,8 +3,9 @@ version: '3'
 services:
   stats-analyzer:
     image: lvapeab/feb-stats:latest
+    command: bazel run //python/service:server
     networks:
-      - feb-stats-network
+      - feb-stats
     deploy:
       mode: replicated
       replicas: 1
@@ -15,9 +16,10 @@ services:
         window: 300s
 
   node-app:
-    image: lvapeab/feb-stats_web:latest
+    image: lvapeab/feb-stats:latest
+    command: bazel run //js/node:image
     networks:
-      - feb-stats-network
+      - feb-stats
     depends_on:
       - stats-analyzer
     deploy:
@@ -28,5 +30,6 @@ services:
         delay: 30s
         max_attempts: 5
         window: 120s
+
 networks:
-  feb-stats-network:
+  feb-stats:
