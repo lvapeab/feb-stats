@@ -1,9 +1,12 @@
+
 version: '3'
 
 services:
   stats-analyzer:
     image: lvapeab/feb-stats:latest
     command: bazel run //python/service:server
+    ports:
+      - '50001:50001'
     networks:
       - feb-stats
     deploy:
@@ -18,6 +21,8 @@ services:
   node-app:
     image: lvapeab/feb-stats:latest
     command: bazel run //js/node:app
+    ports:
+      - '80:80'
     networks:
       - feb-stats
     depends_on:
