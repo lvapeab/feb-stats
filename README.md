@@ -4,13 +4,7 @@ Basketball stats parser and analyzer [→ Go to the website (in Spanish)](http:/
 
 It takes game boxscores and analyzes them, 
 computing simple and advanced statistics of players and teams. The stats are saved with XLS 
-format. For example:
- 
-<iframe width="1024" height="250" src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTBm11WzDj0wUubFFsrNZPamKL4NOGHe-4qakapU2CDoxO8anFhkDg8RxnYVaNLy0unGBnaeSJ_HsHq/pubhtml?widget=true&amp;headers=false"></iframe>
-
-Refer to [the website](http://35.209.155.221) to know the stats extracted.
-
-
+format. Refer to [the website](http://35.209.155.221) for examples and docs about the data extracted.
 
 It currently supports boxscores from all [FEB (Federación Española de Baloncesto)](http://www.feb.es) categories. 
 The boxscores are analyzed from the game stats pages (`.html`). 
@@ -72,4 +66,8 @@ As a rough roadmap, some of the next steps to take are:
 - [ ] Improve docker layering.
 - [ ] Expose images from bazel.
 - [ ] Streamline the image push and deployment workflow.
-- [ ] Add support for another orchestrator (Kubernetes). Likely unnecessary given the expected traffic, but fun to do :) 
+- [ ] Add support for another orchestrator (Kubernetes). Likely unnecessary given the expected traffic, but fun to do :)
+
+***
+
+*Disclaimer: This is not a* Federación Española de Baloncesto *product nor has any relationship with it.*
