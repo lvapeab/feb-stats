@@ -1,4 +1,5 @@
 load("@io_bazel_rules_docker//container:image.bzl", "container_image")
+load("@io_bazel_rules_docker//container:container.bzl", "container_push")
 load("@io_bazel_rules_docker//python3:image.bzl", "py3_image")
 load("@io_bazel_rules_docker//python:image.bzl", "py_layer")
 load("@poetry//:dependencies.bzl", "dependency")
@@ -75,4 +76,13 @@ py3_image(
         dependency("opencensus-ext-stackdriver"),
         ":api",
     ],
+)
+
+container_push(
+    name = "push_feb-stats",
+    format = "Docker",
+    image = ":image",
+    registry = "index.docker.io",
+    repository = "lvapeab/feb-stats",
+    tag = "latest",
 )

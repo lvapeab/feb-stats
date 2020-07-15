@@ -12,3 +12,11 @@ container_image(
         "//python:__subpackages__",
     ],
 )
+#
+#container_image(
+#    name = "nodejs",
+#    base = "@nodejs//image",
+#    visibility = [
+#        "//js:__subpackages__",
+#    ],
+#)

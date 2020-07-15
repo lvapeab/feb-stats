@@ -63,12 +63,40 @@ poetry(
     tags = ["no-remote-cache"],  # optional, if you would like to pull from pip instead of a Bazel cache
 )
 
+# NodeJS rules
+http_archive(
+    name = "build_bazel_rules_nodejs",
+    sha256 = "f9e7b9f42ae202cc2d2ce6d698ccb49a9f7f7ea572a78fd451696d03ef2ee116",
+    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/1.6.0/rules_nodejs-1.6.0.tar.gz"],
+)
+
+load("@build_bazel_rules_nodejs//:index.bzl", "node_repositories", "yarn_install")
+
+# The yarn_install rule runs yarn anytime the package.json or yarn.lock file changes.
+# It also extracts and installs any Bazel rules distributed in an npm package.
+yarn_install(
+    name = "npm",  # Name this npm so that Bazel Label references look like @npm//package
+    package_json = "//:package.json",
+    yarn_lock = "//:yarn.lock",
+)
+
 # Docker rules
 http_archive(
     name = "io_bazel_rules_docker",
     sha256 = "363a8b03f7af8bdd5b44a9d4e19566870b520f8c155fb72837f7fd4a3bdc2538",
     strip_prefix = "rules_docker-2ae5f7f0c43b7efd32a4d7f927bb701f060972af",  # v0.14.4 version is buggy (https://github.com/bazelbuild/rules_docker/issues/1550)
     urls = ["https://github.com/bazelbuild/rules_docker/archive/2ae5f7f0c43b7efd32a4d7f927bb701f060972af.zip"],
+)
+
+load(
+    "@io_bazel_rules_docker//toolchains/docker:toolchain.bzl",
+    docker_toolchain_configure = "toolchain_configure",
+)
+
+docker_toolchain_configure(
+    name = "docker_config",
+    # OPTIONAL: Path to a directory which has a custom docker client config.json.
+    client_config = "/home/lvapeab/.docker",
 )
 
 load(
@@ -97,19 +125,9 @@ load("//images:deps.bzl", "image_deps")
 
 image_deps()
 
-# NodeJS rules
-http_archive(
-    name = "build_bazel_rules_nodejs",
-    sha256 = "f9e7b9f42ae202cc2d2ce6d698ccb49a9f7f7ea572a78fd451696d03ef2ee116",
-    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/1.6.0/rules_nodejs-1.6.0.tar.gz"],
+load(
+    "@io_bazel_rules_docker//nodejs:image.bzl",
+    _nodejs_image_repos = "repositories",
 )
 
-load("@build_bazel_rules_nodejs//:index.bzl", "node_repositories", "yarn_install")
-
-# The yarn_install rule runs yarn anytime the package.json or yarn.lock file changes.
-# It also extracts and installs any Bazel rules distributed in an npm package.
-yarn_install(
-    name = "npm",  # Name this npm so that Bazel Label references look like @npm//package
-    package_json = "//:package.json",
-    yarn_lock = "//:yarn.lock",
-)
+_nodejs_image_repos()
