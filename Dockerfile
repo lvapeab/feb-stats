@@ -17,5 +17,7 @@ RUN python3 -m pip install --user --upgrade pip
 RUN python3 -m pip install --user -U keyrings.alt
 RUN curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python3
 
-COPY . /code/
+COPY ./ /code/
 WORKDIR /code
+
+EXPOSE 80 50001

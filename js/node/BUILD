@@ -5,7 +5,7 @@ load("@io_bazel_rules_docker//container:container.bzl", "container_push")
 nodejs_binary(
     name = "app",
     args = [
-        "--grpc_port 50001 --port 8080 --grpc_address localhost",
+        "--grpc_port 50001 --port 80 --grpc_address localhost",
     ],
     data = [
         "server.js",
@@ -36,7 +36,7 @@ nodejs_image(
         "--grpc_port",
         "50001",
         "--port",
-        "8080",
+        "80",
         "--grpc_address",
         "localhost",
     ],
