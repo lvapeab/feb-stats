@@ -6,7 +6,7 @@ from openpyxl.styles import Alignment
 from python.feb_stats.entities import League
 from python.feb_stats.entities_ops import average_games
 from python.feb_stats.utils import get_sorted_list_of_columns, timedelta_to_str
-from python.feb_stats.loc import spanish_columns
+from python.feb_stats.lang import spanish_columns
 
 
 def league_to_xlsx(
