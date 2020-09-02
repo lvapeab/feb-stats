@@ -16,10 +16,11 @@ numpy = "^1.18.5"
 opencensus = "^0.7.7"
 opencensus-ext-grpc = "^0.7.1"
 opencensus-ext-jaeger = "^0.7.1"
-opencensus-ext-stackdriver = "^0.7.2"
 openpyxl = "^3.0.3"
 pandas = "^1.0.3"
 requests = "^2.23.0"
+opencensus-ext-prometheus = "^0.2.1"
+prometheus-client = "^0.8.0"
 
 [tool.poetry.dev-dependencies]
 
