@@ -6,11 +6,14 @@ import signal
 from concurrent import futures
 from grpc_reflection.v1alpha import reflection
 
+from opencensus.ext.prometheus import stats_exporter as prometheus
+
 from opencensus.ext.grpc.server_interceptor import OpenCensusServerInterceptor
 from opencensus.ext.jaeger.trace_exporter import JaegerExporter
 from opencensus.trace.samplers import AlwaysOnSampler
 
 from types import FrameType
+from typing import Optional
 from datetime import timedelta
 
 from python.service.api import FebStatsServiceServicer
@@ -28,16 +31,32 @@ SERVICE_NAMES = [
 
 def get_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser("FEB stats API Service")
-    parser.add_argument("-port", action="store_true", dest="port", default=50001)
+
+    parser.add_argument("--port", action="store", dest="port", default=50001, type=str)
+    parser.add_argument(
+        "--exporter-host-name",
+        action="store",
+        dest="exporter_host_name",
+        default="jaeger",
+        type=str,
+    )
+    parser.add_argument(
+        "--exporter-port", action="store", dest="exporter_port", default=6831, type=int,
+    )
     return parser
 
 
 class Server:
-    def __init__(self, address: str) -> None:
+    def __init__(
+        self,
+        address: str,
+        exporter_host_name: Optional[str] = "localhost",
+        exporter_port: Optional[int] = 6831,
+    ) -> None:
         exporter = JaegerExporter(
             service_name="stats-analyzer",
-            agent_host_name="localhost",  # TODO: Eventually switch to another service (e.g. istio)
-            agent_port=6831,  # <- accept jaeger.thrift over compact thrift protocol
+            agent_host_name=exporter_host_name,  # TODO: Eventually switch to another service (e.g. istio)
+            agent_port=exporter_port,  # <- accept jaeger.thrift over compact thrift protocol
         )
         tracer_interceptor = OpenCensusServerInterceptor(
             AlwaysOnSampler(), exporter=exporter
@@ -83,7 +102,11 @@ class Server:
 if __name__ == "__main__":
     parser = get_parser()
     args = parser.parse_args()
-    server = Server(address=f"[::]:{args.port}")
+    server = Server(
+        address=f"[::]:{args.port}",
+        exporter_host_name=args.exporter_host_name,
+        exporter_port=args.exporter_port,
+    )
     server.start()
     server.wait_for_termination()
     server.stop()

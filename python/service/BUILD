@@ -51,7 +51,7 @@ py_binary(
         dependency("grpcio-reflection"),
         dependency("opencensus-ext-grpc"),
         dependency("opencensus-ext-jaeger"),
-        dependency("opencensus-ext-stackdriver"),
+        dependency("opencensus-ext-prometheus"),
         ":api",
     ],
 )
@@ -70,11 +70,8 @@ py3_image(
     main = "server.py",
     visibility = ["//visibility:public"],  # TODO: Constrain the visibility
     deps = [
-        dependency("grpcio-reflection"),
-        dependency("opencensus-ext-grpc"),
-        dependency("opencensus-ext-jaeger"),
-        dependency("opencensus-ext-stackdriver"),
         ":api",
+        ":server" ,
     ],
 )
 
