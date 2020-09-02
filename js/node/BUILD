@@ -4,10 +4,6 @@ load("@io_bazel_rules_docker//container:container.bzl", "container_push")
 
 nodejs_binary(
     name = "app",
-    args = [
-        # TODO: Replace hardcoded values with variables
-        "--grpc_port 50001 --port 80 --grpc_address stats-analyzer",
-    ],
     data = [
         "server.js",
         "//protos:feb_stats.proto",
@@ -33,15 +29,6 @@ nodejs_binary(
 
 nodejs_image(
     name = "image",
-    args = [
-        # TODO: Replace hardcoded values with variables
-        "--grpc_port",
-        "50001",
-        "--port",
-        "80",
-        "--grpc_address",
-        "stats-analyzer",
-    ],
     data = [
         "server.js",
         "//protos:feb_stats.proto",

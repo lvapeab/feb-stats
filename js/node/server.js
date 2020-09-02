@@ -5,15 +5,14 @@ var path = require('path');     //used for file path
 const dateFormat = require('date-format');
 
 var argv = require('yargs')
-    .default('grpc_address', "stats-analyzer") //process.env.GRPC_ADDRESS)
-    .default('grpc_port', process.env.GRPC_PORT)
-    .default('port', process.env.WEB_PORT)
+    .default('grpc_address', "stats-analyzer")
+    .default('grpc_port', "50001")
+    .default('port', "80")
     .argv
 ;
 
 var fs = require('fs-extra');       //File System - for file manipulation
 var grpc = require('grpc');
-// var PROTO_PATH = __dirname + '../../../protos/feb_stats.proto';
 var PROTO_PATH = "protos/feb_stats.proto";
 
 var protoLoader = require('@grpc/proto-loader');
@@ -36,7 +35,7 @@ var client = new feb_stats_proto.FebStatsService(argv.grpc_address + ':' + argv.
     grpc.credentials.createInsecure(),
     grpc_options);
 
-console.log("Starting server in: " + argv.grpc_address + ':' + argv.grpc_port);
+console.log("Service address: " + argv.grpc_address + ':' + argv.grpc_port);
 
 const app = express();
 app.use(busboy());
@@ -112,5 +111,5 @@ app.route('/analyze').post(function (req, res, next) {
 });
 
 app.listen(argv.port, () => {
-    console.log('Express server listening on port ' + argv.port);
+    console.log('Express app listening at port: ' + argv.port);
 });

@@ -1,12 +1,25 @@
 
-version: '3'
+version: '3.5'
 
 services:
+  jaeger:
+    image: jaegertracing/all-in-one:1.19
+    ports:
+      - '6831:6831/udp'
+      - '16686:16686'
+    networks:
+      - feb-stats
+
   stats-analyzer:
-    image: lvapeab/feb-stats:latest
-    command: bazel run //python/service:server
+#    image: lvapeab/feb-stats:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: bazel run //python/service:server  -- --port 50001 --exporter-host-name jaeger --exporter-port 6831
     ports:
       - '50001:50001'
+    depends_on:
+      - jaeger
     networks:
       - feb-stats
     deploy:
@@ -19,8 +32,11 @@ services:
         window: 300s
 
   node-app:
-    image: lvapeab/feb-stats:latest
-    command: bazel run //js/node:app
+    # image: lvapeab/feb-stats:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: bazel run //js/node:app -- --grpc_port 50001 --port 80 --grpc_address stats-analyzer
     ports:
       - '80:80'
     networks:
