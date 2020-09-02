@@ -56,7 +56,7 @@ def transform_cum_stats_rebounds(
     """Fouls with the format made/received"""
     return pd.DataFrame(
         rebs_series.str.split(" ").tolist(),
-        columns=[f"defensive_{prefix}", f"offensive_{prefix}", f"total_{prefix}",],
+        columns=[f"defensive_{prefix}", f"offensive_{prefix}", f"total_{prefix}"],
         dtype="float32",
     )
 

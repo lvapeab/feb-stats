@@ -13,7 +13,7 @@ class FebStatsTransformsTestCase(unittest.TestCase):
         prefix = "x"
         df = transform_cum_stats_shots(series, prefix=prefix)
         desired_df = pd.DataFrame(
-            {f"{prefix}_made": [1, 6], f"{prefix}_attempted": [4, 12],}, dtype="float32"
+            {f"{prefix}_made": [1, 6], f"{prefix}_attempted": [4, 12]}, dtype="float32"
         )
         pd.testing.assert_frame_equal(df, desired_df)
 
@@ -23,7 +23,7 @@ class FebStatsTransformsTestCase(unittest.TestCase):
         prefix = "x"
         df = transform_cum_stats_minutes(series, prefix=prefix)
         desired_df = pd.DataFrame(
-            {f"{prefix}": ["00:26:15", "00:26:12"],}, dtype="float32"
+            {f"{prefix}": ["00:26:15", "00:26:12"]}, dtype="float32"
         )
         pd.testing.assert_frame_equal(df, desired_df)
 
@@ -33,7 +33,7 @@ class FebStatsTransformsTestCase(unittest.TestCase):
         prefix = "x"
         df = transform_cum_stats_blocks(series, prefix=prefix)
         desired_df = pd.DataFrame(
-            {f"{prefix}_made": [0, 2], f"{prefix}_received": [0, 5],}, dtype="float32"
+            {f"{prefix}_made": [0, 2], f"{prefix}_received": [0, 5]}, dtype="float32"
         )
         pd.testing.assert_frame_equal(df, desired_df)
 
@@ -43,7 +43,7 @@ class FebStatsTransformsTestCase(unittest.TestCase):
         prefix = "x"
         df = transform_cum_stats_fouls(series, prefix=prefix)
         desired_df = pd.DataFrame(
-            {f"{prefix}_made": [0, 2], f"{prefix}_received": [0, 5],}, dtype="float32"
+            {f"{prefix}_made": [0, 2], f"{prefix}_received": [0, 5]}, dtype="float32"
         )
         pd.testing.assert_frame_equal(df, desired_df)
 

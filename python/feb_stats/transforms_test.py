@@ -71,21 +71,21 @@ class TransformsTestCase(unittest.TestCase):
 
     def test_compute_shots_percentage(self):
         desired_series_2pt = pd.Series(
-            {0: 100 * 130.0 / 293.0, 1: 100 * 134.0 / 288.0, 2: 100 * 159.0 / 306.0,},
+            {0: 100 * 130.0 / 293.0, 1: 100 * 134.0 / 288.0, 2: 100 * 159.0 / 306.0},
             name="2_point_percentage",
         )
         desired_series_3pt = pd.Series(
-            {0: 100 * 55.0 / 190.0, 1: 100 * 58.0 / 202.0, 2: 100 * 63.0 / 180.0,},
+            {0: 100 * 55.0 / 190.0, 1: 100 * 58.0 / 202.0, 2: 100 * 63.0 / 180.0},
             name="3_point_percentage",
         )
 
         desired_series_fg = pd.Series(
-            {0: 100 * 185.0 / 483.0, 1: 100 * 192.0 / 490.0, 2: 100 * 222.0 / 486.0,},
+            {0: 100 * 185.0 / 483.0, 1: 100 * 192.0 / 490.0, 2: 100 * 222.0 / 486.0},
             name="field_goal_percentage",
         )
 
         desired_series_ft = pd.Series(
-            {0: 100 * 127.0 / 165.0, 1: 100 * 86.0 / 124.0, 2: 100 * 57.0 / 92.0,},
+            {0: 100 * 127.0 / 165.0, 1: 100 * 86.0 / 124.0, 2: 100 * 57.0 / 92.0},
             name="free_throw_percentage",
         )
 
