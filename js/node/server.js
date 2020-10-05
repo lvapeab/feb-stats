@@ -42,7 +42,6 @@ app.use(busboy());
 app.use(express.static('js/node/style'));  // serve files from the public directory
 app.use(express.static('js/node/config'));  // serve files from the public directory
 
-// app.engine('.hbs', exphbs({extname: '.hbs'}));
 app.set('views', 'js/node/views');
 app.set('view engine', '.hbs');
 app.get('/', (req, res) => {

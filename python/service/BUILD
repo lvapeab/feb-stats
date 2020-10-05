@@ -44,8 +44,8 @@ py_test(
 
 py_binary(
     name = "server",
-    srcs = ["server.py"],
-    main = "server.py",
+    srcs = ["webapp.py"],
+    main = "webapp.py",
     visibility = ["//visibility:public"],
     deps = [
         dependency("grpcio-reflection"),
@@ -65,13 +65,13 @@ py_test(
 
 py3_image(
     name = "image",
-    srcs = ["server.py"],
+    srcs = ["webapp.py"],
     base = "//images:python",
-    main = "server.py",
+    main = "webapp.py",
     visibility = ["//visibility:public"],  # TODO: Constrain the visibility
     deps = [
         ":api",
-        ":server" ,
+        ":server",
     ],
 )
 

@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from grpc import insecure_channel
 from python.feb_stats.parsers.feb_parser import FEBParser
+from python.feb_stats.entities import League
 from python.feb_stats.transforms import compute_league_aggregates
 from python.feb_stats.saving import league_to_xlsx
 from typing import List, Tuple, Optional
@@ -17,8 +18,17 @@ class SimpleLeagueHandler(LeagueHandler):
         self.options = options
         self.address = address
         self.channel = insecure_channel(self.address, options=self.options)
+        self.league: League = None
 
-    def export_boxscores(self, input_boxscores: List[bytes]) -> bytes:
+    def parse_boxscores(self, input_boxscores: List[bytes]) -> None:
         league = FEBParser().parse_boxscores(input_boxscores)
-        new_league = compute_league_aggregates(league)
-        return league_to_xlsx(new_league)
+        self.league = compute_league_aggregates(league)
+        return None
+
+    def export_boxscores(self, input_boxscores: Optional[List[bytes]]) -> bytes:
+        if not input_boxscores or self.league is None:
+            self.parse_boxscores(input_boxscores)
+        return league_to_xlsx(self.league)
+
+    def clean_league(self) -> None:
+        self.league = None

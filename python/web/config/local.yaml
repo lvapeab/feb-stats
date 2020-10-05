@@ -1,0 +1,22 @@
+runtime: python37
+
+handlers:
+- url: /static
+  static_dir: static
+
+- url: /templates
+
+  static_dir: templates
+
+- url: /.*
+  script: auto
+
+upload_folder: uploads
+max_content_length: 16777216 # 16 * 1024 * 1024
+
+database:
+  username: ''
+  password: ''
+  hostname: 'localhost'
+  engine: 'sqlite'
+  db_name: 'local_feb_stats.db'

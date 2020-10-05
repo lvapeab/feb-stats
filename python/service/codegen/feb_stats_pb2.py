@@ -17,7 +17,8 @@ DESCRIPTOR = _descriptor.FileDescriptor(
     package="feb_stats",
     syntax="proto3",
     serialized_options=None,
-    serialized_pb=b'\n\x0f\x66\x65\x62_stats.proto\x12\tfeb_stats"\'\n\x12GetFebStatsRequest\x12\x11\n\tboxscores\x18\x01 \x03(\x0c"$\n\x13GetFebStatsResponse\x12\r\n\x05sheet\x18\x01 \x01(\x0c\x32_\n\x0f\x46\x65\x62StatsService\x12L\n\x0bGetFebStats\x12\x1d.feb_stats.GetFebStatsRequest\x1a\x1e.feb_stats.GetFebStatsResponseb\x06proto3',
+    create_key=_descriptor._internal_create_key,
+    serialized_pb=b'\n\x0f\x66\x65\x62_stats.proto\x12\tfeb_stats"\'\n\x12GetFebStatsRequest\x12\x11\n\tboxscores\x18\x01 \x03(\x0c"3\n\x13GetFebStatsResponse\x12\r\n\x05sheet\x18\x01 \x01(\x0c\x12\r\n\x05teams\x18\x02 \x03(\t2_\n\x0f\x46\x65\x62StatsService\x12L\n\x0bGetFebStats\x12\x1d.feb_stats.GetFebStatsRequest\x1a\x1e.feb_stats.GetFebStatsResponseb\x06proto3',
 )
 
 
@@ -27,6 +28,7 @@ _GETFEBSTATSREQUEST = _descriptor.Descriptor(
     filename=None,
     file=DESCRIPTOR,
     containing_type=None,
+    create_key=_descriptor._internal_create_key,
     fields=[
         _descriptor.FieldDescriptor(
             name="boxscores",
@@ -45,6 +47,7 @@ _GETFEBSTATSREQUEST = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
     ],
     extensions=[],
@@ -66,6 +69,7 @@ _GETFEBSTATSRESPONSE = _descriptor.Descriptor(
     filename=None,
     file=DESCRIPTOR,
     containing_type=None,
+    create_key=_descriptor._internal_create_key,
     fields=[
         _descriptor.FieldDescriptor(
             name="sheet",
@@ -84,6 +88,26 @@ _GETFEBSTATSRESPONSE = _descriptor.Descriptor(
             extension_scope=None,
             serialized_options=None,
             file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
+        ),
+        _descriptor.FieldDescriptor(
+            name="teams",
+            full_name="feb_stats.GetFebStatsResponse.teams",
+            index=1,
+            number=2,
+            type=9,
+            cpp_type=9,
+            label=3,
+            has_default_value=False,
+            default_value=[],
+            message_type=None,
+            enum_type=None,
+            containing_type=None,
+            is_extension=False,
+            extension_scope=None,
+            serialized_options=None,
+            file=DESCRIPTOR,
+            create_key=_descriptor._internal_create_key,
         ),
     ],
     extensions=[],
@@ -95,7 +119,7 @@ _GETFEBSTATSRESPONSE = _descriptor.Descriptor(
     extension_ranges=[],
     oneofs=[],
     serialized_start=71,
-    serialized_end=107,
+    serialized_end=122,
 )
 
 DESCRIPTOR.message_types_by_name["GetFebStatsRequest"] = _GETFEBSTATSREQUEST
@@ -131,8 +155,9 @@ _FEBSTATSSERVICE = _descriptor.ServiceDescriptor(
     file=DESCRIPTOR,
     index=0,
     serialized_options=None,
-    serialized_start=109,
-    serialized_end=204,
+    create_key=_descriptor._internal_create_key,
+    serialized_start=124,
+    serialized_end=219,
     methods=[
         _descriptor.MethodDescriptor(
             name="GetFebStats",
@@ -142,6 +167,7 @@ _FEBSTATSSERVICE = _descriptor.ServiceDescriptor(
             input_type=_GETFEBSTATSREQUEST,
             output_type=_GETFEBSTATSRESPONSE,
             serialized_options=None,
+            create_key=_descriptor._internal_create_key,
         ),
     ],
 )
