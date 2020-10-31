@@ -12,10 +12,7 @@ class ContextStub:
 
 class FebStatsServiceServicerTest(unittest.TestCase):
     def test_GetFebStats(self):
-        input_files = glob.glob(
-            "/home/lvapeab/projects/feb-stats/test_data/*livescore*html"
-        )
-        # input_files = glob.glob("test_data/*html")
+        input_files = glob.glob("test_data/*livescore*html")
         boxscores = []
         for file in input_files:
             with open(file, mode="rb") as f:
