@@ -16,8 +16,14 @@ class FebStatsServiceServicer(feb_stats_pb2_grpc.FebStatsServiceServicer):
             response = feb_stats_pb2.GetFebStatsResponse()
 
             response.sheet = result
-            span.add_annotation(
-                "League", sheet=str(result),
-            )
+            response.teams.extend([str(t) for t in self.league_handler.league.teams])
 
+            span.add_annotation(
+                "League",
+                name=str(self.league_handler.league.name),
+                season=str(self.league_handler.league.season),
+                number_of_teams=str(len(self.league_handler.league.teams)),
+                number_of_games=str(len(self.league_handler.league.games)),
+            )
+            self.league_handler.clean_league()
             return response

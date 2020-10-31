@@ -64,7 +64,6 @@ py_library(
         ":entities",
         ":transforms",
         ":utils",
-        "//python/feb_stats/parsers:feb_parser",
     ],
 )
 

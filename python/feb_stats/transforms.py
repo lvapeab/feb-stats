@@ -31,7 +31,7 @@ def compute_oer(df: pd.DataFrame, key_name="oer") -> pd.DataFrame:
     df.loc[:, key_name] = df.loc[:, "points_made"] / df.loc[:, "total_possessions"]
     df.loc[:, f"{key_name}_40_min"] = 40 * df.loc[:, key_name].divide(
         df.loc[:, "minutes"].apply(
-            lambda x: timedelta_to_minutes(x) if not pd.isnull(x) else np.nan
+            lambda x: timedelta_to_minutes(x) if not pd.isnull(x) else 0.0
         ),
         fill_value=-1,
     )
