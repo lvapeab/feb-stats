@@ -30,15 +30,32 @@ py_library(
     ],
 )
 
+py_library(
+    name = "feb_livescore_parser",
+    srcs = [
+        "feb_livescore_parser.py",
+        "feb_livescore_stats_transforms.py",
+    ],
+    srcs_version = "PY3",
+    visibility = ["//python:__subpackages__"],
+    deps = [
+        dependency("numpy"),
+        dependency("pandas"),
+        ":generic_parser",
+    ],
+)
+
 [py_test(
     name = file[:-3],
     size = "small",
     srcs = [file],
     data = [
         "//test_data:1.html",
+        "//test_data:1_livescore.html",
     ],
     srcs_version = "PY3",
     deps = [
+        ":feb_livescore_parser",
         ":feb_parser",
     ],
 ) for file in glob(["**/*_test.py"])]

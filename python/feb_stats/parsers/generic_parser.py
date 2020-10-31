@@ -7,8 +7,7 @@ import requests
 from urllib.parse import urlparse
 from abc import ABC, abstractmethod
 
-from typing import Dict, Tuple, Union
-from typing import TypeVar, List, Optional
+from typing import TypeVar, List, Optional, Set, Tuple, Dict, Callable, Union
 from python.feb_stats.entities import Game, Team, League
 
 T = TypeVar("T")
@@ -20,7 +19,8 @@ class GenericParser(ABC):
     season_stats: Optional[pd.DataFrame] = None
 
     @staticmethod
-    def parse_str(input_str: str):
+    def parse_str(input_str: Union[str, bytes]) -> str:
+        input_str = bytes(str(input_str), "iso-8859-1").decode("utf-8")
         return " ".join(
             input_str.replace("\n", " ")
             .replace("\t", " ")
@@ -35,62 +35,33 @@ class GenericParser(ABC):
         table_elements = doc.xpath(id)
         return table_elements
 
-    def elements_to_df(
-        self, tr_elements: List[Element], initial_row: int = 2, n_elem: int = 0
-    ) -> pd.DataFrame:
-        col = []
-        i = 0
-        # For each row, store each first element (header) and an empty list
-        for t in tr_elements[0]:
-            i += 1
-            name = self.parse_str(t.text_content())
-            col.append((name, []))
-        if n_elem == 0:
-            n_elem = len(col)
-        # Since out first row is the header, data is stored on the second row onwards
-        for j in range(initial_row, len(tr_elements)):
-            # T is our j'th row
-            T = tr_elements[j]
-            # If row is not of size 16, the //tr data is not from our table
-            if len(T) == n_elem:
-                # i is the index of our column
-                i = 0
-                # Iterate through each element of the row
-                for t in T.iterchildren():
-                    data = self.parse_str(t.text_content())
-                    # Append the data to the empty list of the i'th column
-                    col[i][1].append(data)
-                    # Increment i for the next column
-                    i += 1
+    def create_league(self, all_games: List[Game], all_teams: Set[Team]) -> League:
+        return League(
+            id=int(
+                md5(str.encode(f"{all_games[0].league}", encoding="UTF-8")).hexdigest(),
+                16,
+            ),
+            name=all_games[0].league,
+            season=all_games[0].season,
+            teams=list(all_teams),
+            games=all_games,
+        )
 
-        data_dict = {title: column for (title, column) in col}
-        df = pd.DataFrame(data_dict)
-        return df
-
-    def parse_boxscores(self, boxscores_bytes: List[bytes]) -> League:
+    def parse_boxscores(
+        self, boxscores_bytes: List[TypeVar], reader_fn: Optional[Callable] = None
+    ) -> League:
         all_games = []
         all_teams = set()
+        reader_fn = reader_fn or self.read_link_bytes
         for link in boxscores_bytes:
-            doc = self.read_link_bytes(link)
+            doc = reader_fn(link)
             game, teams = self.parse_game_stats(doc)
             all_games.append(game)
             for team in teams:
                 all_teams.add(team)
 
         if all_games:
-            league = League(
-                id=int(
-                    md5(
-                        str.encode(f"{all_games[0].league}", encoding="UTF-8")
-                    ).hexdigest(),
-                    16,
-                ),
-                name=all_games[0].league,
-                season=all_games[0].season,
-                teams=list(all_teams),
-                games=all_games,
-            )
-            return league
+            return self.create_league(all_games, all_teams)
         else:
             raise ValueError(f"No games found in {boxscores_bytes}")
 
@@ -118,6 +89,12 @@ class GenericParser(ABC):
         doc = lh.fromstring(document_string)
 
         return doc
+
+    @abstractmethod
+    def elements_to_df(
+        self, tr_elements: List[Element], initial_row: int = 2, n_elem: int = 0
+    ) -> pd.DataFrame:
+        pass
 
     @abstractmethod
     def parse_game_metadata(self, doc: Element) -> Dict[str, str]:

@@ -6,9 +6,9 @@ package(default_visibility = ["//python:__subpackages__"])
 py_binary(
     name = "export_boxscores",
     srcs = [
-        "export_boxscores_binary.py",
+        "export_boxscores.py",
     ],
-    main = "export_boxscores_binary.py",
+    main = "export_boxscores.py",
     srcs_version = "PY3",
     deps = [
         "//python/feb_stats:saving",

@@ -1,62 +1,85 @@
+import codecs
 from lxml.html import Element
-from typing import Dict, Optional, List, Tuple
-from hashlib import md5
+from typing import Dict, List, Tuple
 import pandas as pd
+from hashlib import md5
 
 from python.feb_stats.parsers.generic_parser import GenericParser
-from python.feb_stats.parsers.feb_stats_transforms import transform_game_stats_df
+from python.feb_stats.parsers.feb_livescore_stats_transforms import (
+    transform_game_stats_df,
+)
 from python.feb_stats.entities import Game, Boxscore, Team, Player
 
 
-class FEBParser(GenericParser):
+class FEBLivescoreParser(GenericParser):
     def parse_game_metadata(self, doc: Element) -> Dict[str, str]:
         # Parse data by id
-        date = doc.xpath('//span[@id="fechaLabel"]')
-        hour = doc.xpath('//span[@id="horaLabel"]')
-        league = doc.xpath('//span[@id="paginaTitulo_ligaLabel"]')
-        season = doc.xpath('//span[@id="paginaTitulo_temporadaLabel"]')
-        home_team = doc.xpath('//a[@id="equipoLocalHyperLink"]')
-        home_score = doc.xpath('//span[@id="resultadoLocalLabel"]')
-        away_team = doc.xpath('//a[@id="equipoVisitanteHyperLink"]')
-        away_score = doc.xpath('//span[@id="resultadoVisitanteLabel"]')
+        hour_date = doc.xpath('//div[@class="fecha"]')
 
-        main_referee = doc.xpath('//span[@id="arbitroPrincipalLabel"]')
-        second_referee = doc.xpath('//span[@id="arbitroAuxiliarLabel"]')
+        hour_date = self.parse_str(
+            hour_date[0].text_content()
+        ).split()  # Format: "Fecha XX/XX/XXXX - HH:MM
+        date = hour_date[1]
+        hour = hour_date[-1]
 
+        league = doc.xpath('//span[@class="liga"]')
+        season = doc.xpath('//span[@class="temporada"]')
+
+        home_team = doc.xpath(
+            '//span[@id="_ctl0_MainContentPlaceHolderMaster_equipoLocalNombre"]'
+        )
+        home_score = doc.xpath(
+            '//div[@class="columna equipo local"]//span[@class="resultado"]'
+        )
+        away_team = doc.xpath(
+            '//span[@id="_ctl0_MainContentPlaceHolderMaster_equipoVisitanteNombre"]'
+        )
+        away_score = doc.xpath(
+            '//div[@class="columna equipo visitante"]//span[@class="resultado"]'
+        )
+        referees = doc.xpath(
+            '//div[@class="arbitros"]'
+        )  # Format: Arbitros X W. Z | A B. C |
+
+        # ref = " ".join(self.parse_str(referees[0].text_content()).split()[1:]).split(
+        #     "|"
+        # )
+
+        # main_referee = ref[0]
+        # second_referee = ref[1]
+        # home_team = codecs.latin_1_encode(self.parse_str(home_score[0].text_content()))
         metadata_dict = {
-            "date": self.parse_str(date[0].text_content()),
-            "hour": self.parse_str(hour[0].text_content()),
-            "league": self.parse_str(league[0].text_content()),
-            "season": self.parse_str(season[0].text_content()),
-            "home_team": self.parse_str(home_team[0].text_content()),
-            "home_score": self.parse_str(home_score[0].text_content()),
-            "away_team": self.parse_str(away_team[0].text_content()),
-            "away_score": self.parse_str(away_score[0].text_content()),
-            "main_referee": self.parse_str(main_referee[0].text_content()),
-            "second_referee": self.parse_str(second_referee[0].text_content()),
+            "date": date,
+            "hour": hour,
+            "league": self.parse_str(league[0].text),
+            "season": self.parse_str(season[0].text),
+            "home_team": self.parse_str(home_team[0].text),
+            "home_score": self.parse_str(home_score[0].text),
+            "away_team": self.parse_str(away_team[0].text),
+            "away_score": self.parse_str(away_score[0].text),
+            # TODO(alvaro): Parse referees
+            "main_referee": "-",  # self.parse_str(main_referee),
+            "second_referee": "-",  # self.parse_str(second_referee),
         }
 
         return metadata_dict
 
     def parse_game_stats(
-        self, doc: Element, ids: List[Optional[str]] = None
+        self, doc: Element, ids: str = None
     ) -> Tuple[Game, Tuple[Team, Team]]:
-        ids = ids or [
-            ('//table[@id="jugadoresLocalDataGrid"]//tr', True),
-            ('//table[@id="jugadoresVisitanteDataGrid"]//tr', False),
-        ]
+        ids = ids or '//table[@cellpadding="0"]//tbody'
         game_stats = {}
         metadata = self.parse_game_metadata(doc)
 
-        for (doc_id, local) in ids:
-            elements = self.get_elements(doc, doc_id)
+        table_local, table_away = self.get_elements(doc, ids)
+        if table_away is None or table_local is None:
+            raise ValueError(f"Unable to parse stats from {ids}")
+
+        for local, table in zip((True, False), (table_local, table_away)):
             key = "home_boxscore" if local else "away_boxscore"
-            if elements:
-                ori_df = self.elements_to_df(elements, initial_row=2, n_elem=18)
-                df = transform_game_stats_df(ori_df, home_team=local)
-                game_stats[key] = df
-            else:
-                raise ValueError(f"Unable to parse stats from {doc_id}")
+            ori_df = self.elements_to_df(table, initial_row=2)
+            df = transform_game_stats_df(ori_df, home_team=local)
+            game_stats[key] = df
         home_team = Team(
             id=int(
                 md5(str.encode(metadata["home_team"], encoding="UTF-8")).hexdigest(), 16
@@ -133,33 +156,22 @@ class FEBParser(GenericParser):
         return game, (home_team, away_team)
 
     def elements_to_df(
-        self, tr_elements: List[Element], initial_row: int = 2, n_elem: int = 0
+        self, tr_elements: List[Element], initial_row: int = 2, discard_last: int = 0,
     ) -> pd.DataFrame:
-        col = []
-        i = 0
-        # For each row, store each first element (header) and an empty list
-        for t in tr_elements[0]:
-            i += 1
-            name = self.parse_str(t.text_content())
-            col.append((name, []))
-        if n_elem == 0:
-            n_elem = len(col)
+        table_rows = []
         # Since out first row is the header, data is stored on the second row onwards
-        for j in range(initial_row, len(tr_elements)):
+        for j in range(initial_row, len(tr_elements) - discard_last):
             # T is our j'th row
             T = tr_elements[j]
-            # If row is not of size 16, the //tr data is not from our table
-            if len(T) == n_elem:
-                # i is the index of our column
-                i = 0
-                # Iterate through each element of the row
-                for t in T.iterchildren():
-                    data = self.parse_str(t.text_content())
-                    # Append the data to the empty list of the i'th column
-                    col[i][1].append(data)
-                    # Increment i for the next column
-                    i += 1
+            row = {}
+            for t in T.iterchildren():
 
-        data_dict = {title: column for (title, column) in col}
-        df = pd.DataFrame(data_dict)
+                column_title = t.attrib["class"]
+                data = self.parse_str(t.text_content())
+                # Append the data to the empty list of the i'th column
+                row[column_title] = data
+            table_rows.append(row)
+
+        # data_dict = {title: column for (title, column) in table_rows}
+        df = pd.DataFrame(table_rows)
         return df

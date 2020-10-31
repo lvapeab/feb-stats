@@ -12,4 +12,5 @@ message GetFebStatsRequest {
 
 message GetFebStatsResponse {
     bytes sheet = 1;
+    repeated string teams = 2;
 }
