@@ -1,7 +1,6 @@
 exports_files(
     [
-        "index.hbs",
-        "main.css",
+        "index.html",
     ],
     visibility = ["//visibility:public"],
 )

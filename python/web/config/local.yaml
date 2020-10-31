@@ -13,10 +13,17 @@ handlers:
 
 upload_folder: uploads
 max_content_length: 16777216 # 16 * 1024 * 1024
+secret_key: 'secret_key'
 
-database:
-  username: ''
-  password: ''
-  hostname: 'localhost'
-  engine: 'sqlite'
-  db_name: 'local_feb_stats.db'
+ports:
+  grpc_address: 'localhost'
+  grpc_port: '50001'
+  webapp_port: '80'
+
+
+#database:
+#  username: ''
+#  password: ''
+#  hostname: 'localhost'
+#  engine: 'sqlite'
+#  db_name: 'local_feb_stats.db'
