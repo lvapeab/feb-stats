@@ -22,8 +22,11 @@ class Team(Generic[T]):
     name: str
     season_stats: Optional[pd.DataFrame] = None
 
-    def __str__(self):
-        return self.name
+    def __str__(self) -> str:
+        return str(self.name)
+
+    def __repr__(self) -> str:
+        return str(self.name)
 
 
 @dataclass(frozen=True)

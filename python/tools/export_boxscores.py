@@ -6,7 +6,7 @@ from io import BytesIO
 from typing import List
 
 from python.feb_stats.parsers.feb_parser import FEBParser
-from python.feb_stats.parsers.feb_parser_livescore import FEBLivescoreParser
+from python.feb_stats.parsers.feb_livescore_parser import FEBLivescoreParser
 from python.feb_stats.transforms import compute_league_aggregates
 from python.feb_stats.saving import league_to_xlsx
 
