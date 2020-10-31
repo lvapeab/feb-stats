@@ -1,4 +1,3 @@
-
 version: '3.5'
 
 services:
@@ -12,9 +11,9 @@ services:
 
   stats-analyzer:
     image: lvapeab/feb-stats:latest
-#    build:
-#      context: .
-#      dockerfile: Dockerfile
+    #    build:
+    #      context: .
+    #      dockerfile: Dockerfile
     command: bazel run //python/service:server  -- --port 50001 --exporter-host-name jaeger --exporter-port 6831
     ports:
       - '50001:50001'
@@ -32,10 +31,10 @@ services:
         window: 300s
 
   node-app:
-     image: lvapeab/feb-stats:latest
-#    build:
-#      context: .
-#      dockerfile: Dockerfile
+    image: lvapeab/feb-stats:latest
+    #    build:
+    #      context: .
+    #      dockerfile: Dockerfile
     command: bazel run //js/node:app -- --grpc_port 50001 --port 80 --grpc_address stats-analyzer
     ports:
       - '80:80'
