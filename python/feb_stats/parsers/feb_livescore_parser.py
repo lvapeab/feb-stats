@@ -17,7 +17,7 @@ class FEBLivescoreParser(GenericParser):
         hour_date = doc.xpath('//div[@class="fecha"]')
 
         hour_date = self.parse_str(
-            hour_date[0].text_content()
+            hour_date[0].text_content(), decode_bytes=True
         ).split()  # Format: "Fecha XX/XX/XXXX - HH:MM
         date = hour_date[1]
         hour = hour_date[-1]
@@ -51,12 +51,12 @@ class FEBLivescoreParser(GenericParser):
         metadata_dict = {
             "date": date,
             "hour": hour,
-            "league": self.parse_str(league[0].text),
-            "season": self.parse_str(season[0].text),
-            "home_team": self.parse_str(home_team[0].text),
-            "home_score": self.parse_str(home_score[0].text),
-            "away_team": self.parse_str(away_team[0].text),
-            "away_score": self.parse_str(away_score[0].text),
+            "league": self.parse_str(league[0].text, decode_bytes=True),
+            "season": self.parse_str(season[0].text, decode_bytes=True),
+            "home_team": self.parse_str(home_team[0].text, decode_bytes=True),
+            "home_score": self.parse_str(home_score[0].text, decode_bytes=True),
+            "away_team": self.parse_str(away_team[0].text, decode_bytes=True),
+            "away_score": self.parse_str(away_score[0].text, decode_bytes=True),
             # TODO(alvaro): Parse referees
             "main_referee": "-",  # self.parse_str(main_referee),
             "second_referee": "-",  # self.parse_str(second_referee),
@@ -167,7 +167,7 @@ class FEBLivescoreParser(GenericParser):
             for t in T.iterchildren():
 
                 column_title = t.attrib["class"]
-                data = self.parse_str(t.text_content())
+                data = self.parse_str(t.text_content(), decode_bytes=True)
                 # Append the data to the empty list of the i'th column
                 row[column_title] = data
             table_rows.append(row)
