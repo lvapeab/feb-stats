@@ -1,3 +1,4 @@
+import codecs
 from lxml.html import Element
 from typing import Dict, List, Tuple
 import pandas as pd
@@ -40,24 +41,25 @@ class FEBLivescoreParser(GenericParser):
             '//div[@class="arbitros"]'
         )  # Format: Arbitros X W. Z | A B. C |
 
-        ref = " ".join(self.parse_str(referees[0].text_content()).split()[1:]).split(
-            "|"
-        )
+        # ref = " ".join(self.parse_str(referees[0].text_content()).split()[1:]).split(
+        #     "|"
+        # )
 
-        main_referee = ref[0]
-        second_referee = ref[1]
-
+        # main_referee = ref[0]
+        # second_referee = ref[1]
+        # home_team = codecs.latin_1_encode(self.parse_str(home_score[0].text_content()))
         metadata_dict = {
             "date": date,
             "hour": hour,
-            "league": self.parse_str(league[0].text_content()),
-            "season": self.parse_str(season[0].text_content()),
-            "home_team": self.parse_str(home_team[0].text_content()),
-            "home_score": self.parse_str(home_score[0].text_content()),
-            "away_team": self.parse_str(away_team[0].text_content()),
-            "away_score": self.parse_str(away_score[0].text_content()),
-            "main_referee": self.parse_str(main_referee),
-            "second_referee": self.parse_str(second_referee),
+            "league": self.parse_str(league[0].text),
+            "season": self.parse_str(season[0].text),
+            "home_team": self.parse_str(home_team[0].text),
+            "home_score": self.parse_str(home_score[0].text),
+            "away_team": self.parse_str(away_team[0].text),
+            "away_score": self.parse_str(away_score[0].text),
+            # TODO(alvaro): Parse referees
+            "main_referee": "-",  # self.parse_str(main_referee),
+            "second_referee": "-",  # self.parse_str(second_referee),
         }
 
         return metadata_dict

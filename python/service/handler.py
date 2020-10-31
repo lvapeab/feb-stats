@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from grpc import insecure_channel
-from python.feb_stats.parsers.feb_parser import FEBParser
+from python.feb_stats.parsers.feb_livescore_parser import FEBLivescoreParser
 from python.feb_stats.entities import League
 from python.feb_stats.transforms import compute_league_aggregates
 from python.feb_stats.saving import league_to_xlsx
@@ -21,7 +21,7 @@ class SimpleLeagueHandler(LeagueHandler):
         self.league: League = None
 
     def parse_boxscores(self, input_boxscores: List[bytes]) -> None:
-        league = FEBParser().parse_boxscores(input_boxscores)
+        league = FEBLivescoreParser().parse_boxscores(input_boxscores)
         self.league = compute_league_aggregates(league)
         return None
 

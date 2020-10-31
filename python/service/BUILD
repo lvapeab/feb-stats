@@ -24,6 +24,7 @@ py_library(
         "//python/feb_stats:locale",
         "//python/feb_stats:saving",
         "//python/feb_stats:transforms",
+        "//python/feb_stats/parsers:feb_livescore_parser",
         "//python/feb_stats/parsers:feb_parser",
     ],
 )
@@ -34,7 +35,9 @@ py_test(
     srcs = [":api_test.py"],
     data = [
         "//test_data:1.html",
+        "//test_data:1_livescore.html",
         "//test_data:2.html",
+        "//test_data:2_livescore.html",
     ],
     python_version = "PY3",
     deps = [

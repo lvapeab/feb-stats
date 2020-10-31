@@ -123,8 +123,8 @@ class GenericParserTestCase(unittest.TestCase):
             "home_score": "75",
             "away_team": "UCAM MURCIA JIFFY",
             "away_score": "68",
-            "main_referee": "SERRAT MOLINS. ALBERT",
-            "second_referee": "ARAQUE CACERES. MAURO",
+            "main_referee": "-",  # "SERRAT MOLINS. ALBERT",
+            "second_referee": "-",  # "ARAQUE CACERES. MAURO",
         }
         self.assertDictEqual(game_metadata, desired_dict)
 

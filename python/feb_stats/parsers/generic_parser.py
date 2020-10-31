@@ -7,7 +7,7 @@ import requests
 from urllib.parse import urlparse
 from abc import ABC, abstractmethod
 
-from typing import TypeVar, List, Optional, Set, Tuple, Dict, Callable
+from typing import TypeVar, List, Optional, Set, Tuple, Dict, Callable, Union
 from python.feb_stats.entities import Game, Team, League
 
 T = TypeVar("T")
@@ -19,7 +19,8 @@ class GenericParser(ABC):
     season_stats: Optional[pd.DataFrame] = None
 
     @staticmethod
-    def parse_str(input_str: str):
+    def parse_str(input_str: Union[str, bytes]) -> str:
+        input_str = bytes(str(input_str), "iso-8859-1").decode("utf-8")
         return " ".join(
             input_str.replace("\n", " ")
             .replace("\t", " ")

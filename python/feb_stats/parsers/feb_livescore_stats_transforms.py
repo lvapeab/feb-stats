@@ -104,14 +104,22 @@ def transform_game_stats_df(
     df.at[df.shape[0] - 1, "point_balance"] = 0.0
 
     cast_keys = {
+        # "number": np.int,
         "starter": np.bool,
         "points_made": np.float32,
-        "point_balance": np.float32,
         "assists": np.float32,
         "turnovers": np.float32,
         "steals": np.float32,
         "dunks": np.float32,
         "ranking": np.float32,
+        "total_rebounds": np.float32,
+        "defensive_rebounds": np.float32,
+        "offensive_rebounds": np.float32,
+        "fouls_made": np.float32,
+        "fouls_received": np.float32,
+        "blocks_made": np.float32,
+        "blocks_received": np.float32,
+        "point_balance": np.float32,
     }
     df = df.astype(cast_keys)
     df.loc[:, "minutes"] = pd.to_timedelta(df.loc[:, "minutes"])
