@@ -71,7 +71,7 @@ class FEBLivescoreParser(GenericParser):
         game_stats = {}
         metadata = self.parse_game_metadata(doc)
 
-        table_local, table_away = self.get_elements(doc, ids)
+        table_local, table_away = self.get_elements(doc, ids)[:2]
         if table_away is None or table_local is None:
             raise ValueError(f"Unable to parse stats from {ids}")
 
