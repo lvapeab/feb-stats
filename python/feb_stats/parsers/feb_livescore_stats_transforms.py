@@ -8,7 +8,17 @@ __all__ = [
     "transform_cum_stats_fouls",
     "transform_cum_stats_rebounds",
     "transform_game_stats_df",
+    "transform_starter",
 ]
+
+
+def transform_starter(initial_series: pd.Series, prefix="shots") -> pd.DataFrame:
+    """Shots with the format made-attempted"""
+    return pd.DataFrame(
+        initial_series.map(lambda x: int(x.strip() == "*")).tolist(),
+        columns=[prefix],
+        dtype="int8",
+    )
 
 
 def transform_cum_stats_shots(shots_series: pd.Series, prefix="shots") -> pd.DataFrame:
@@ -67,7 +77,6 @@ def transform_game_stats_df(
 
     no_transform_keys = {
         "dorsal": "number",
-        "inicial": "starter",
         "nombre jugador": "player",
         "puntos": "points_made",
         "asistencias": "assists",
@@ -93,6 +102,7 @@ def transform_game_stats_df(
         "tiros tres": ("3_point", transform_cum_stats_shots),
         "tiros campo": ("field_goal", transform_cum_stats_shots),
         "tiros libres": ("free_throw", transform_cum_stats_shots),
+        "inicial": ("starter", transform_starter),
     }
 
     for transform_key, transform_tuple in transform_keys.items():
@@ -105,7 +115,7 @@ def transform_game_stats_df(
 
     cast_keys = {
         # "number": np.int,
-        "starter": np.bool,
+        "starter": np.int8,
         "points_made": np.float32,
         "assists": np.float32,
         "turnovers": np.float32,
