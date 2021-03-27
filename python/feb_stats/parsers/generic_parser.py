@@ -19,8 +19,9 @@ class GenericParser(ABC):
     season_stats: Optional[pd.DataFrame] = None
 
     @staticmethod
-    def parse_str(input_str: Union[str, bytes]) -> str:
-        input_str = bytes(str(input_str), "iso-8859-1").decode("utf-8")
+    def parse_str(input_str: Union[str, bytes], decode_bytes: bool = False) -> str:
+        if decode_bytes:
+            input_str = bytes(str(input_str), "iso-8859-1").decode("utf-8")
         return " ".join(
             input_str.replace("\n", " ")
             .replace("\t", " ")

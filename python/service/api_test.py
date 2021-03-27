@@ -1,6 +1,6 @@
 import glob
 from python.service.api import FebStatsServiceServicer
-from python.service.handler import LeagueHandler, SimpleLeagueHandler
+from python.service.handler import SimpleLeagueHandler
 from python.service.codegen.feb_stats_pb2 import GetFebStatsRequest
 import unittest
 
@@ -12,10 +12,7 @@ class ContextStub:
 
 class FebStatsServiceServicerTest(unittest.TestCase):
     def test_GetFebStats(self):
-        input_files = glob.glob(
-            "/home/lvapeab/projects/feb-stats/test_data/*livescore*html"
-        )
-        # input_files = glob.glob("test_data/*html")
+        input_files = glob.glob("test_data/*livescore*html")
         boxscores = []
         for file in input_files:
             with open(file, mode="rb") as f:

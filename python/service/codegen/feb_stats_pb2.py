@@ -18,7 +18,10 @@ DESCRIPTOR = _descriptor.FileDescriptor(
     syntax="proto3",
     serialized_options=None,
     create_key=_descriptor._internal_create_key,
-    serialized_pb=b'\n\x0f\x66\x65\x62_stats.proto\x12\tfeb_stats"\'\n\x12GetFebStatsRequest\x12\x11\n\tboxscores\x18\x01 \x03(\x0c"3\n\x13GetFebStatsResponse\x12\r\n\x05sheet\x18\x01 \x01(\x0c\x12\r\n\x05teams\x18\x02 \x03(\t2_\n\x0f\x46\x65\x62StatsService\x12L\n\x0bGetFebStats\x12\x1d.feb_stats.GetFebStatsRequest\x1a\x1e.feb_stats.GetFebStatsResponseb\x06proto3',
+    serialized_pb=b"\n\x0f\x66\x65\x62_stats.proto\x12\tfeb_stats\"'\n\x12GetFebStatsRequest\x12\x11\n\tboxscores"
+    b'\x18\x01 \x03(\x0c"3\n\x13GetFebStatsResponse\x12\r\n\x05sheet\x18\x01 \x01(\x0c\x12\r\n\x05teams'
+    b"\x18\x02 \x03(\t2_\n\x0f\x46\x65\x62StatsService\x12L\n\x0bGetFebStats\x12\x1d."
+    b"feb_stats.GetFebStatsRequest\x1a\x1e.feb_stats.GetFebStatsResponseb\x06proto3",
 )
 
 
