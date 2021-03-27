@@ -92,7 +92,7 @@ def analyze() -> Response:
 
     # Output the data sheet
     output_filename = datetime.now().strftime("%d/%m/%Y_%H:%M")
-    response = make_response(grpc_response.sheet)
+    response: Response = make_response(grpc_response.sheet)
     response.headers["Content-Type"] = "application/vnd.ms-excel"
     response.headers[
         "Content-disposition"

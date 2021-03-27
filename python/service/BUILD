@@ -20,7 +20,6 @@ py_library(
     deps = [
         dependency("grpcio"),
         dependency("grpcio-status"),
-        dependency("opencensus"),
         "//python/feb_stats:locale",
         "//python/feb_stats:saving",
         "//python/feb_stats:transforms",
@@ -52,9 +51,6 @@ py_binary(
     visibility = ["//visibility:public"],
     deps = [
         dependency("grpcio-reflection"),
-        dependency("opencensus-ext-grpc"),
-        dependency("opencensus-ext-jaeger"),
-        dependency("opencensus-ext-prometheus"),
         ":api",
     ],
 )
