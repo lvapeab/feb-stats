@@ -1,23 +1,29 @@
-FROM ubuntu:18.04
+FROM python:3.7.9-slim-buster
+
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+
+
 RUN apt-get update -y && \
-    apt-get install -y software-properties-common && \
-    add-apt-repository ppa:deadsnakes/ppa && \
-    apt-get install -y python3.7 python3.7-dev python3-pip git curl wget
+    apt-get install -y  curl wget
 
-RUN curl -LO "https://github.com/bazelbuild/bazelisk/releases/download/v1.1.0/bazelisk-linux-amd64"  && \
-        mkdir -p "/usr/bin/"  && \
-        mv bazelisk-linux-amd64 "/usr/bin/bazel"  && \
-        chmod +x "/usr//bin/bazel"
+RUN python3 -m pip install --user -U keyrings.alt && \
+    curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python3
 
-RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.6 1
-RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.7 2
-RUN update-alternatives --install /usr/bin/python python /usr/bin/python3.7 2
+COPY ./python/pyproject.toml /
 
-RUN python3 -m pip install --user --upgrade pip
-RUN python3 -m pip install --user -U keyrings.alt
-RUN curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python3
+ENV PATH="/root/.poetry/bin:$PATH" \
+    PYTHONPATH="/code:$PYTHONPATH" \
+    FLASK_ENV="development" \
+    FLASK_APP="python/web/webapp.py"
+
+RUN poetry update
 
 COPY ./ /code/
 WORKDIR /code
 
 EXPOSE 80 50001
+
+
+CMD ["poetry", "run", "python", "-m", "flask", "run", "--port", "80", "--host", "0.0.0.0"]

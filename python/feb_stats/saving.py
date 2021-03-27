@@ -25,7 +25,7 @@ def league_to_xlsx(
     :return: The exported xlsx file, as bytes.
     """
 
-    if not league.aggregated_games:
+    if league.aggregated_games is None:
         raise ValueError(f'The league {league} has no aggregated games.')
     filename = filename or f'{league.name}_{league.season.replace("/", "-")}.xlsx'
 

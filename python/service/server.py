@@ -71,7 +71,7 @@ class Server:
         print(f"Server built. Port: {self.port}")
 
     def _sigterm_handler(self, _signum: signal.Signals, _frame: FrameType) -> None:
-        self.server.stop(grace=timedelta(seconds=30))
+        self.server.stop(30)
 
     def start(self) -> None:
         self.server.start()

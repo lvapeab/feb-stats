@@ -61,7 +61,7 @@ class GenericParser(ABC):
         game: Game = Game(
             id=hashlib.md5(
                 f"{metadata['league']}{metadata['date']}{metadata['home_team']}{metadata['away_team']}".encode(
-                    'utf-81')).hexdigest(),
+                    'utf-8')).hexdigest(),
             date=metadata["date"],
             hour=metadata["hour"],
             league=metadata["league"],

@@ -1,14 +1,14 @@
 import unittest
 from typing import Any
 
-from python.feb_stats.parsers.feb_parser import FEBParser
+from python.feb_stats.parsers.feb_livescore_parser import FEBLivescoreParser
 
 
 class GenericParserTestCase(unittest.TestCase):
     def __init__(self, *args: Any, **kwargs: Any):
         super(GenericParserTestCase, self).__init__(*args, **kwargs)
-        self.parser = FEBParser()
-        self.test_file = "test_data/1.html"
+        self.parser = FEBLivescoreParser()
+        self.test_file = "tests/test_data/1_livescore.html"
 
     def test_parse_str(self) -> None:
         test_str = (
@@ -47,43 +47,49 @@ class GenericParserTestCase(unittest.TestCase):
 
     def test_get_elements(self) -> None:
         doc = self.parser.read_link_file(self.test_file)
-        id = '//table[@id="jugadoresLocalDataGrid"]//tr'
-        elements = self.parser.get_elements(doc, id)
-        self.assertEqual(len(elements), 51)
-
-        id = '//table[@id="jugadoresVisitanteDataGrid"]//tr'
-        elements = self.parser.get_elements(doc, id)
-        self.assertEqual(len(elements), 59)
+        id = '//table[@cellpadding="0"]//tbody'
+        table_local, table_away = self.parser.get_elements(doc, id)
+        self.assertEqual(len(table_local), 13)
+        self.assertEqual(len(table_away), 15)
 
     def test_elements_to_df(self) -> None:
         doc = self.parser.read_link_file(self.test_file)
-        id = '//table[@id="jugadoresLocalDataGrid"]//tr'
-        elements = self.parser.get_elements(doc, id)
-        df = self.parser.elements_to_df(elements, initial_row=2, n_elem=0)
-        self.assertEqual(df.shape, (11, 18))
-        self.assertListEqual(
-            list(df.columns),
-            [
-                "I",
-                "N",
-                "Jugador",
-                "Min",
-                "Ptos",
-                "2 pt",
-                "3 pt",
-                "T.Camp",
-                "T.L",
-                "Rebotes D O T",
-                "As",
-                "B.R",
-                "B.P",
-                "Tapones Fa Co",
-                "Mat",
-                "Faltas C R",
-                "Val",
-                "+/-",
-            ],
+        id = '//table[@cellpadding="0"]//tbody'
+        table_local, table_away = self.parser.get_elements(doc, id)
+        local_df = self.parser.elements_to_df(
+            table_local, initial_row=2, discard_last=0
         )
+        away_df = self.parser.elements_to_df(table_away, initial_row=2, discard_last=0)
+        self.assertEqual(local_df.shape, (11, 22))
+        self.assertEqual(away_df.shape, (13, 22))
+        for df in (local_df, away_df):
+            self.assertListEqual(
+                list(df.columns),
+                [
+                    "inicial",
+                    "dorsal",
+                    "nombre jugador",
+                    "minutos",
+                    "puntos",
+                    "tiros dos",
+                    "tiros tres",
+                    "tiros campo",
+                    "tiros libres",
+                    "rebotes total",
+                    "rebotes defensivos",
+                    "rebotes ofensivos",
+                    "asistencias",
+                    "recuperaciones",
+                    "perdidas",
+                    "tapones favor",
+                    "tapones contra",
+                    "mates",
+                    "faltas cometidas",
+                    "faltas recibidas",
+                    "valoracion",
+                    "balance",
+                ],
+            )
 
     def test_parse_boxscores(self) -> None:
         with open(self.test_file, mode="rb") as f:
@@ -119,8 +125,8 @@ class GenericParserTestCase(unittest.TestCase):
             "home_score": "75",
             "away_team": "UCAM MURCIA JIFFY",
             "away_score": "68",
-            "main_referee": "SERRAT MOLINS. ALBERT",
-            "second_referee": "ARAQUE CACERES. MAURO",
+            "main_referee": "-",  # "SERRAT MOLINS. ALBERT",
+            "second_referee": "-",  # "ARAQUE CACERES. MAURO",
         }
         self.assertDictEqual(game_metadata, desired_dict)
 
