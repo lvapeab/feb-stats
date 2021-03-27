@@ -1,14 +1,16 @@
 import unittest
+from typing import Any
+
 from python.feb_stats.parsers.feb_parser import FEBParser
 
 
 class GenericParserTestCase(unittest.TestCase):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Any, **kwargs: Any):
         super(GenericParserTestCase, self).__init__(*args, **kwargs)
         self.parser = FEBParser()
         self.test_file = "test_data/1.html"
 
-    def test_parse_str(self):
+    def test_parse_str(self) -> None:
         test_str = (
             "             Rebotes                            D          O          T "
         )
@@ -43,7 +45,7 @@ class GenericParserTestCase(unittest.TestCase):
         out_str = self.parser.parse_str(test_str)
         self.assertEqual(out_str, desired_test_str)
 
-    def test_get_elements(self):
+    def test_get_elements(self) -> None:
         doc = self.parser.read_link_file(self.test_file)
         id = '//table[@id="jugadoresLocalDataGrid"]//tr'
         elements = self.parser.get_elements(doc, id)
@@ -53,7 +55,7 @@ class GenericParserTestCase(unittest.TestCase):
         elements = self.parser.get_elements(doc, id)
         self.assertEqual(len(elements), 59)
 
-    def test_elements_to_df(self):
+    def test_elements_to_df(self) -> None:
         doc = self.parser.read_link_file(self.test_file)
         id = '//table[@id="jugadoresLocalDataGrid"]//tr'
         elements = self.parser.get_elements(doc, id)
@@ -83,14 +85,14 @@ class GenericParserTestCase(unittest.TestCase):
             ],
         )
 
-    def test_parse_boxscores(self):
+    def test_parse_boxscores(self) -> None:
         with open(self.test_file, mode="rb") as f:
             boxscores_bytes = f.read()
         league = self.parser.parse_boxscores([boxscores_bytes])
         self.assertEqual(2, len(league.teams))
         self.assertEqual(1, len(league.games))
 
-    def test_read_link_bytes(self):
+    def test_read_link_bytes(self) -> None:
         with open(self.test_file, mode="rb") as f:
             link_bytes = f.read()
         doc = self.parser.read_link_bytes(link_bytes)
@@ -98,13 +100,13 @@ class GenericParserTestCase(unittest.TestCase):
         self.assertIsNotNone(doc.body)
         self.assertIsNotNone(doc.head)
 
-    def test_read_link_file(self):
+    def test_read_link_file(self) -> None:
         doc = self.parser.read_link_file(self.test_file)
         self.assertIsNotNone(doc.forms)
         self.assertIsNotNone(doc.body)
         self.assertIsNotNone(doc.head)
 
-    def test_parse_game_metadata(self):
+    def test_parse_game_metadata(self) -> None:
         doc = self.parser.read_link_file(self.test_file)
         game_metadata = self.parser.parse_game_metadata(doc)
 
@@ -122,7 +124,7 @@ class GenericParserTestCase(unittest.TestCase):
         }
         self.assertDictEqual(game_metadata, desired_dict)
 
-    def test_parse_game_stats(self):
+    def test_parse_game_stats(self) -> None:
         doc = self.parser.read_link_file(self.test_file)
         game, (local_team, away_team) = self.parser.parse_game_stats(doc)
         self.assertTrue(game.date, "08/03/2020")

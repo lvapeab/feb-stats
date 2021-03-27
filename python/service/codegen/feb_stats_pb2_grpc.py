@@ -51,16 +51,16 @@ class FebStatsService(object):
 
     @staticmethod
     def GetFebStats(
-        request,
-        target,
-        options=(),
-        channel_credentials=None,
-        call_credentials=None,
-        insecure=False,
-        compression=None,
-        wait_for_ready=None,
-        timeout=None,
-        metadata=None,
+            request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None,
     ):
         return grpc.experimental.unary_unary(
             request,

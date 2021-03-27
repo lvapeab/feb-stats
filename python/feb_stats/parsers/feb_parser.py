@@ -1,11 +1,11 @@
-from lxml.html import Element
-from typing import Dict, Optional, List, Tuple
-from hashlib import md5
-import pandas as pd
+from typing import Dict, Optional, List, Tuple, Union
 
-from python.feb_stats.parsers.generic_parser import GenericParser
+import pandas as pd
+from lxml.html import Element
+
+from python.feb_stats.entities import Game, Team
 from python.feb_stats.parsers.feb_stats_transforms import transform_game_stats_df
-from python.feb_stats.entities import Game, Boxscore, Team, Player
+from python.feb_stats.parsers.generic_parser import GenericParser
 
 
 class FEBParser(GenericParser):
@@ -38,16 +38,18 @@ class FEBParser(GenericParser):
 
         return metadata_dict
 
-    def parse_game_stats(
-        self, doc: Element, ids: List[Optional[str]] = None
-    ) -> Tuple[Game, Tuple[Team, Team]]:
+    def parse_game_stats(self,
+                         doc: Element,
+                         ids: Optional[Union[List[Tuple[str, bool]], str]] = None
+                         ) -> Tuple[Game, Tuple[Team, Team]]:
         ids = ids or [
             ('//table[@id="jugadoresLocalDataGrid"]//tr', True),
             ('//table[@id="jugadoresVisitanteDataGrid"]//tr', False),
         ]
         game_stats = {}
-        metadata = self.parse_game_metadata(doc)
+        metadata: Dict[str, str] = self.parse_game_metadata(doc)
 
+        assert not isinstance(ids, str)
         for (doc_id, local) in ids:
             elements = self.get_elements(doc, doc_id)
             key = "home_boxscore" if local else "away_boxscore"
@@ -57,85 +59,13 @@ class FEBParser(GenericParser):
                 game_stats[key] = df
             else:
                 raise ValueError(f"Unable to parse stats from {doc_id}")
-        home_team = Team(
-            id=int(
-                md5(str.encode(metadata["home_team"], encoding="UTF-8")).hexdigest(), 16
-            ),
-            name=metadata["home_team"],
-        )
-        away_team = Team(
-            id=int(
-                md5(str.encode(metadata["away_team"], encoding="UTF-8")).hexdigest(), 16
-            ),
-            name=metadata["away_team"],
-        )
-        game = Game(
-            id=int(
-                md5(
-                    str.encode(
-                        f"{metadata['league']}_{metadata['date']}_{metadata['home_team']}_{metadata['away_team']}",
-                        encoding="UTF-8",
-                    )
-                ).hexdigest(),
-                16,
-            ),
-            date=metadata["date"],
-            hour=metadata["hour"],
-            league=metadata["league"],
-            season=metadata["season"],
-            home_team=home_team,
-            home_score=int(metadata["home_score"]),
-            away_team=away_team,
-            away_score=int(metadata["away_score"]),
-            main_referee=Player(
-                id=int(
-                    md5(
-                        str.encode(metadata["main_referee"], encoding="UTF-8")
-                    ).hexdigest(),
-                    16,
-                ),
-                name=metadata["main_referee"],
-            ),
-            aux_referee=Player(
-                id=int(
-                    md5(
-                        str.encode(metadata["second_referee"], encoding="UTF-8")
-                    ).hexdigest(),
-                    16,
-                ),
-                name=metadata["second_referee"],
-            ),
-            local_boxscore=Boxscore(
-                id=int(
-                    md5(
-                        str.encode(
-                            f"{metadata['league']}_{metadata['date']}_{metadata['home_team']}",
-                            encoding="UTF-8",
-                        )
-                    ).hexdigest(),
-                    16,
-                ),
-                boxscore=game_stats["home_boxscore"],
-            ),
-            away_boxscore=Boxscore(
-                id=int(
-                    md5(
-                        str.encode(
-                            f"{metadata['league']}_{metadata['date']}_{metadata['away_team']}",
-                            encoding="UTF-8",
-                        )
-                    ).hexdigest(),
-                    16,
-                ),
-                boxscore=game_stats["away_boxscore"],
-            ),
-        )
-        return game, (home_team, away_team)
+        assert game_stats
+        return self.create_objects(metadata, game_stats)
 
     def elements_to_df(
-        self, tr_elements: List[Element], initial_row: int = 2, n_elem: int = 0
+            self, tr_elements: List[Element], initial_row: int = 2, n_elem: int = 0
     ) -> pd.DataFrame:
-        col = []
+        col: List = []
         i = 0
         # For each row, store each first element (header) and an empty list
         for t in tr_elements[0]:

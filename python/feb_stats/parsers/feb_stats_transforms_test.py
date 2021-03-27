@@ -1,13 +1,16 @@
 import unittest
+from typing import Any
+
 import pandas as pd
+
 from python.feb_stats.parsers.feb_stats_transforms import *
 
 
 class FebStatsTransformsTestCase(unittest.TestCase):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Any, **kwargs: Any):
         super(FebStatsTransformsTestCase, self).__init__(*args, **kwargs)
 
-    def test_transform_cum_stats_shots(self):
+    def test_transform_cum_stats_shots(self) -> None:
         # feb.es boxscore format.
         series = pd.Series(["1/4 25%", "6/12 50%"])
         prefix = "x"
@@ -17,7 +20,7 @@ class FebStatsTransformsTestCase(unittest.TestCase):
         )
         pd.testing.assert_frame_equal(df, desired_df)
 
-    def test_transform_cum_stats_minutes(self):
+    def test_transform_cum_stats_minutes(self) -> None:
         # feb.es boxscore format.
         series = pd.Series(["26:15", "26:12"])
         prefix = "x"
@@ -27,7 +30,7 @@ class FebStatsTransformsTestCase(unittest.TestCase):
         )
         pd.testing.assert_frame_equal(df, desired_df)
 
-    def test_transform_cum_stats_blocks(self):
+    def test_transform_cum_stats_blocks(self) -> None:
         # feb.es boxscore format.
         series = pd.Series(["0 0", "2 5"])
         prefix = "x"
@@ -37,7 +40,7 @@ class FebStatsTransformsTestCase(unittest.TestCase):
         )
         pd.testing.assert_frame_equal(df, desired_df)
 
-    def test_transform_cum_stats_fouls(self):
+    def test_transform_cum_stats_fouls(self) -> None:
         # feb.es boxscore format.
         series = pd.Series(["0 0", "2 5"])
         prefix = "x"
@@ -47,7 +50,7 @@ class FebStatsTransformsTestCase(unittest.TestCase):
         )
         pd.testing.assert_frame_equal(df, desired_df)
 
-    def test_transform_cum_stats_rebounds(self):
+    def test_transform_cum_stats_rebounds(self) -> None:
         # feb.es boxscore format.
         series = pd.Series(["0 0 0", "2 5 7"])
         prefix = "x"

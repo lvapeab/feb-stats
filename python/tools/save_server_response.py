@@ -1,8 +1,9 @@
 import json
-from base64 import b64decode
-from openpyxl import load_workbook
 from argparse import ArgumentParser
+from base64 import b64decode
 from io import BytesIO
+
+from openpyxl import load_workbook
 
 
 def get_parser() -> ArgumentParser:
@@ -21,7 +22,7 @@ def response_to_xls(response: str, output_name: str, xsl_key: str = "sheet") -> 
     """
     with open(response, mode="rb") as f:
         response = json.load(f)
-    xls_file = b64decode(response[xsl_key])
+    xls_file = b64decode(response[xsl_key])  # type:ignore
     workbook = load_workbook(filename=BytesIO(xls_file))
     workbook.save(output_name)
     return

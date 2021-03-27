@@ -1,10 +1,13 @@
 import unittest
+from typing import Any
+
 import pandas as pd
+
 from python.feb_stats.transforms import *
 
 
 class TransformsTestCase(unittest.TestCase):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Any, **kwargs: Any):
         super(TransformsTestCase, self).__init__(*args, **kwargs)
         data_dict = {
             "mode": {0: "Total", 1: "Total", 2: "Total"},
@@ -43,7 +46,7 @@ class TransformsTestCase(unittest.TestCase):
         }
         self.data_df = pd.DataFrame(data_dict)
 
-    def test_compute_oer(self):
+    def test_compute_oer(self) -> None:
         # OER = scored points / total possessions
         desired_series = pd.Series(
             {
@@ -56,7 +59,7 @@ class TransformsTestCase(unittest.TestCase):
         df = compute_oer(self.data_df)
         pd.testing.assert_series_equal(df.loc[:, "oer"], desired_series)
 
-    def test_compute_total_possessions(self):
+    def test_compute_total_possessions(self) -> None:
         # possessions = field_goal_attempted + free_throw_attempted / 2 + turnovers + assists
         desired_series = pd.Series(
             {
@@ -69,7 +72,7 @@ class TransformsTestCase(unittest.TestCase):
         df = compute_total_possessions(self.data_df)
         pd.testing.assert_series_equal(df.loc[:, "total_possessions"], desired_series)
 
-    def test_compute_shots_percentage(self):
+    def test_compute_shots_percentage(self) -> None:
         desired_series_2pt = pd.Series(
             {0: 100 * 130.0 / 293.0, 1: 100 * 134.0 / 288.0, 2: 100 * 159.0 / 306.0},
             name="2_point_percentage",
@@ -103,19 +106,19 @@ class TransformsTestCase(unittest.TestCase):
             df.loc[:, "free_throw_percentage"], desired_series_ft
         )
 
-    def test_compute_volumes(self):
+    def test_compute_volumes(self) -> None:
         pass
 
-    def test_compute_der(self):
+    def test_compute_der(self) -> None:
         pass
 
-    def test_sum_boxscores(self):
+    def test_sum_boxscores(self) -> None:
         pass
 
-    def test_aggregate_boxscores(self):
+    def test_aggregate_boxscores(self) -> None:
         pass
 
-    def test_compute_league_aggregates(self):
+    def test_compute_league_aggregates(self) -> None:
         pass
 
 

@@ -11,7 +11,8 @@ __all__ = [
 ]
 
 
-def transform_cum_stats_shots(shots_series: pd.Series, prefix="shots") -> pd.DataFrame:
+def transform_cum_stats_shots(shots_series: pd.Series, prefix: str = "shots"
+                              ) -> pd.DataFrame:
     """Shots with the format made-attempted"""
     split_fn = lambda x: x.split()[0]  # Remove percentage
     return pd.DataFrame(
@@ -21,16 +22,15 @@ def transform_cum_stats_shots(shots_series: pd.Series, prefix="shots") -> pd.Dat
     )
 
 
-def transform_cum_stats_minutes(
-    minutes_timeseries: pd.Series, prefix="minutes"
-) -> pd.DataFrame:
+def transform_cum_stats_minutes(minutes_timeseries: pd.Series,
+                                prefix: str = "minutes") -> pd.DataFrame:
     """Shots with the format made-attempted"""
     cast_fn = lambda x: "00:" + str(x)  # Add hours to min:seconds
     return pd.DataFrame({prefix: minutes_timeseries.map(cast_fn)})
 
 
 def transform_cum_stats_blocks(
-    blocks_series: pd.Series, prefix="blocks"
+        blocks_series: pd.Series, prefix: str = "blocks"
 ) -> pd.DataFrame:
     """Blocks with the format made/received"""
 
@@ -41,7 +41,7 @@ def transform_cum_stats_blocks(
     )
 
 
-def transform_cum_stats_fouls(fouls_series: pd.Series, prefix="fouls") -> pd.DataFrame:
+def transform_cum_stats_fouls(fouls_series: pd.Series, prefix: str = "fouls") -> pd.DataFrame:
     """Fouls with the format made/received"""
     return pd.DataFrame(
         fouls_series.str.split(" ").tolist(),
@@ -51,7 +51,7 @@ def transform_cum_stats_fouls(fouls_series: pd.Series, prefix="fouls") -> pd.Dat
 
 
 def transform_cum_stats_rebounds(
-    rebs_series: pd.Series, prefix="rebounds"
+        rebs_series: pd.Series, prefix: str = "rebounds"
 ) -> pd.DataFrame:
     """Fouls with the format made/received"""
     return pd.DataFrame(

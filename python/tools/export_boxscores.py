@@ -1,14 +1,21 @@
 import json
-from base64 import b64decode
 from argparse import ArgumentParser
-from openpyxl import load_workbook
+from base64 import b64decode
 from io import BytesIO
 from typing import List
 
-from python.feb_stats.parsers.feb_parser import FEBParser
+from openpyxl import load_workbook
+
 from python.feb_stats.parsers.feb_livescore_parser import FEBLivescoreParser
-from python.feb_stats.transforms import compute_league_aggregates
+from python.feb_stats.parsers.feb_parser import FEBParser
 from python.feb_stats.saving import league_to_xlsx
+from python.feb_stats.transforms import compute_league_aggregates
+
+
+def read_file(filename: str) -> bytes:
+    with open(filename, mode="rb") as f:
+        read_f = f.read()
+    return read_f
 
 
 def export_boxscores_from_files(boxscores: List[str]) -> bytes:
@@ -17,7 +24,12 @@ def export_boxscores_from_files(boxscores: List[str]) -> bytes:
     :return: xlsx file as bytes.
     """
     parser = FEBLivescoreParser()
-    league = parser.parse_boxscores(boxscores, reader_fn=parser.read_link_file)
+    read_boxscores = [
+        read_file(filename)
+        for filename in boxscores
+    ]
+
+    league = parser.parse_boxscores(read_boxscores, reader_fn=parser.read_link_file)
     new_league = compute_league_aggregates(league)
     return league_to_xlsx(new_league)
 

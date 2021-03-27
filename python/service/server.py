@@ -1,24 +1,17 @@
 # -*- coding: utf-8 -*-
 import argparse
-import grpc
 import os
 import signal
 from concurrent import futures
+from datetime import timedelta
+from types import FrameType
+
+import grpc
 from grpc_reflection.v1alpha import reflection
 
-from opencensus.ext.prometheus import stats_exporter as prometheus
-
-from opencensus.ext.grpc.server_interceptor import OpenCensusServerInterceptor
-from opencensus.ext.jaeger.trace_exporter import JaegerExporter
-from opencensus.trace.samplers import AlwaysOnSampler
-
-from types import FrameType
-from typing import Optional
-from datetime import timedelta
-
 from python.service.api import FebStatsServiceServicer
-from python.service.handler import SimpleLeagueHandler
 from python.service.codegen import feb_stats_pb2, feb_stats_pb2_grpc
+from python.service.handler import SimpleLeagueHandler
 
 SERVICE_NAMES = [
     reflection.SERVICE_NAME,
@@ -48,21 +41,11 @@ def get_parser() -> argparse.ArgumentParser:
 
 class Server:
     def __init__(
-        self,
-        address: str,
-        exporter_host_name: Optional[str] = "localhost",
-        exporter_port: Optional[int] = 6831,
+            self,
+            address: str,
     ) -> None:
-        exporter = JaegerExporter(
-            service_name="stats-analyzer",
-            agent_host_name=exporter_host_name,  # TODO: Eventually switch to another service (e.g. istio)
-            agent_port=exporter_port,  # <- accept jaeger.thrift over compact thrift protocol
-        )
-        tracer_interceptor = OpenCensusServerInterceptor(
-            AlwaysOnSampler(), exporter=exporter
-        )
         executor = futures.ThreadPoolExecutor(
-            max_workers=min(32, os.cpu_count() + 4)
+            max_workers=min(32, os.cpu_count() or 1)
         )  # Python 3.8 default
         max_message_length = 100 * 1024 * 1024
         options = [
@@ -71,7 +54,7 @@ class Server:
         ]
 
         self.server = grpc.server(
-            thread_pool=executor, interceptors=(tracer_interceptor,), options=options
+            thread_pool=executor, options=options
         )
         reflection.enable_server_reflection(SERVICE_NAMES, self.server)
 
@@ -82,7 +65,8 @@ class Server:
         feb_stats_pb2_grpc.add_FebStatsServiceServicer_to_server(
             feb_stats_servicer, self.server
         )
-        signal.signal(signalnum=signal.Signals.SIGTERM, handler=self._sigterm_handler)
+        signal.signal(signal.Signals.SIGTERM,
+                      self._sigterm_handler)
         self.port = self.server.add_insecure_port(address)
         print(f"Server built. Port: {self.port}")
 
@@ -92,7 +76,7 @@ class Server:
     def start(self) -> None:
         self.server.start()
 
-    def stop(self, grace=None) -> None:
+    def stop(self, grace: int = 30) -> None:
         self.server.stop(grace)
 
     def wait_for_termination(self) -> None:
@@ -104,8 +88,6 @@ if __name__ == "__main__":
     args = parser.parse_args()
     server = Server(
         address=f"[::]:{args.port}",
-        exporter_host_name=args.exporter_host_name,
-        exporter_port=args.exporter_port,
     )
     server.start()
     server.wait_for_termination()
