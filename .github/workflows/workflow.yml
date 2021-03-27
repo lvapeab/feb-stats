@@ -20,11 +20,11 @@ jobs:
       with:
         python-version: 3.7
 
-   - name: Run image
-        uses: abatilo/actions-poetry@v2.0.0
-        with:
-          poetry-version: 3.7
-      - name: Run tests
-        run: poetry run python -m pytest tests
-        with:
-          path: 'python/'
+  - name: Run image
+       uses: abatilo/actions-poetry@v2.0.0
+       with:
+         poetry-version: 3.7
+     - name: Run tests
+       run: poetry run python -m pytest tests
+       with:
+         path: 'python/'
