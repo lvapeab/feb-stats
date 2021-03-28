@@ -24,9 +24,9 @@ from feb_stats.tools.export_boxscores import read_file
 logger = logging.getLogger(__name__)
 
 if os.environ.get("SERVER_ENVIRONMENT", "") == "PRODUCTION":
-    config_filename = "python/web/config/production.yaml"
+    config_filename = "feb_stats/web/config/production.yaml"
 else:
-    config_filename = "python/web/config/local.yaml"
+    config_filename = "feb_stats/web/config/local.yaml"
 
 with open(config_filename) as f:
     config = yaml.safe_load(f)
