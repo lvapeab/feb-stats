@@ -27,5 +27,3 @@ jobs:
 
     - name: Run tests
       run: poetry run python -m pytest tests
-      with:
-        path: 'python/'

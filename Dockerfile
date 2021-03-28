@@ -11,7 +11,7 @@ RUN apt-get update -y && \
 RUN python3 -m pip install --user -U keyrings.alt && \
     curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python3
 
-COPY ./python/pyproject.toml /
+COPY pyproject.toml /
 
 ENV PATH="/root/.poetry/bin:$PATH" \
     PYTHONPATH="/code:$PYTHONPATH" \
