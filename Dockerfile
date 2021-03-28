@@ -1,29 +1,32 @@
 FROM python:3.7.9-slim-buster
 
-# Set environment variables
-ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1
-
+ENV PYTHONFAULTHANDLER=1 \
+  PYTHONUNBUFFERED=1 \
+  PYTHONHASHSEED=random \
+  PIP_NO_CACHE_DIR=off \
+  PIP_DISABLE_PIP_VERSION_CHECK=on \
+  PIP_DEFAULT_TIMEOUT=100 \
+  POETRY_VERSION=1.0.0
 
 RUN apt-get update -y && \
     apt-get install -y  curl wget
 
-RUN python3 -m pip install --user -U keyrings.alt && \
-    curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python3
+# System deps:
+RUN pip install "poetry==$POETRY_VERSION"
 
 COPY pyproject.toml /
 
-ENV PATH="/root/.poetry/bin:$PATH" \
-    PYTHONPATH="/code:$PYTHONPATH" \
-    FLASK_ENV="development" \
-    FLASK_APP="python/web/webapp.py"
+RUN poetry config virtualenvs.create false \
+  && poetry install --no-dev --no-interaction --no-ansi
 
-RUN poetry update
+ENV PATH="/root/.poetry/bin:$PATH" \
+    PYTHONPATH="/code:$PYTHONPATH"
+
+RUN poetry install
 
 COPY ./ /code/
 WORKDIR /code
 
 EXPOSE 80 50001
 
-
-CMD ["poetry", "run", "python", "-m", "flask", "run", "--port", "80", "--host", "0.0.0.0"]
+CMD ["poetry", "run", "gunicorn", "--umask", "4", "--bind", "0.0.0.0:80", "feb_stats.web.webapp:app"]

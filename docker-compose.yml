@@ -3,37 +3,10 @@ version: '3.5'
 services:
   stats-analyzer:
     image: lvapeab/feb-stats:latest
-    #    build:
-    #      context: .
-    #      dockerfile: Dockerfile
-    command: bazel run //python/service:server  -- --port 50001
-    ports:
-      - '50001:50001'
-    depends_on:
-      - jaeger
-    networks:
-      - feb-stats
-    deploy:
-      mode: replicated
-      replicas: 1
-      restart_policy:
-        condition: any
-        delay: 60s
-        max_attempts: 5
-        window: 300s
-
-  node-app:
-    image: lvapeab/feb-stats:latest
-    #    build:
-    #      context: .
-    #      dockerfile: Dockerfile
-    command: bazel run //js/node:app -- --grpc_port 50001 --port 80 --grpc_address stats-analyzer
     ports:
       - '80:80'
     networks:
       - feb-stats
-    depends_on:
-      - stats-analyzer
     deploy:
       mode: replicated
       replicas: 2
