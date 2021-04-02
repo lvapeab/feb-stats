@@ -98,7 +98,7 @@ def analyze() -> Response:
         "Content-disposition"
     ] = f"attachment; filename=estadisticas_{output_filename}.xlsx"
     response.headers["Content-Length"] = len(grpc_response.sheet)
-    # remove_boxscores()
+    remove_boxscores()
     return response
 
 
