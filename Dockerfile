@@ -1,23 +1,32 @@
-FROM ubuntu:18.04
+FROM python:3.7.9-slim-buster
+
+ENV PYTHONFAULTHANDLER=1 \
+  PYTHONUNBUFFERED=1 \
+  PYTHONHASHSEED=random \
+  PIP_NO_CACHE_DIR=off \
+  PIP_DISABLE_PIP_VERSION_CHECK=on \
+  PIP_DEFAULT_TIMEOUT=100 \
+  POETRY_VERSION=1.0.0
+
 RUN apt-get update -y && \
-    apt-get install -y software-properties-common && \
-    add-apt-repository ppa:deadsnakes/ppa && \
-    apt-get install -y python3.7 python3.7-dev python3-pip git curl wget
+    apt-get install -y  curl wget
 
-RUN curl -LO "https://github.com/bazelbuild/bazelisk/releases/download/v1.1.0/bazelisk-linux-amd64"  && \
-        mkdir -p "/usr/bin/"  && \
-        mv bazelisk-linux-amd64 "/usr/bin/bazel"  && \
-        chmod +x "/usr//bin/bazel"
+# System deps:
+RUN pip install "poetry==$POETRY_VERSION"
 
-RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.6 1
-RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.7 2
-RUN update-alternatives --install /usr/bin/python python /usr/bin/python3.7 2
+COPY pyproject.toml /
 
-RUN python3 -m pip install --user --upgrade pip
-RUN python3 -m pip install --user -U keyrings.alt
-RUN curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python3
+RUN poetry config virtualenvs.create false \
+  && poetry install --no-dev --no-interaction --no-ansi
+
+ENV PATH="/root/.poetry/bin:$PATH" \
+    PYTHONPATH="/code:$PYTHONPATH"
+
+RUN poetry install
 
 COPY ./ /code/
 WORKDIR /code
 
 EXPOSE 80 50001
+
+CMD ["poetry", "run", "gunicorn", "--umask", "4", "--bind", "0.0.0.0:80", "feb_stats.web.webapp:app"]
