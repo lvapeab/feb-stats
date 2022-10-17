@@ -1,9 +1,9 @@
 import functools
-from typing import Optional, List, Set
+from typing import List, Optional, Set
 
 import pandas as pd
 
-from feb_stats.core.entities import League, Team, Boxscore
+from feb_stats.core.entities import Boxscore, League, Team
 from feb_stats.core.entities_ops import get_rival_boxscores, get_team_boxscores
 from feb_stats.core.utils import timedelta_to_minutes
 

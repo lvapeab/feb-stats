@@ -1,7 +1,7 @@
 import glob
 import unittest
 
-from feb_stats.service.api import FebStatsServiceServicer, ContextStub
+from feb_stats.service.api import ContextStub, FebStatsServiceServicer
 from feb_stats.service.codegen.feb_stats_pb2 import GetFebStatsRequest
 from feb_stats.service.handler import SimpleLeagueHandler
 

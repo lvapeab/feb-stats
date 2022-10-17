@@ -4,10 +4,10 @@ from typing import Any
 import pandas as pd
 
 from feb_stats.core.utils import (
+    get_averageable_numerical_columns,
+    get_sorted_list_of_columns,
     timedelta_to_minutes,
     timedelta_to_str,
-    get_sorted_list_of_columns,
-    get_averageable_numerical_columns,
 )
 
 

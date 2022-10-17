@@ -1,9 +1,9 @@
-from typing import List, Tuple, Optional
+from typing import List, Optional, Tuple
 
 from feb_stats.service.codegen import feb_stats_pb2_grpc
 from feb_stats.service.codegen.feb_stats_pb2 import (
-    GetFebStatsResponse,
     GetFebStatsRequest,
+    GetFebStatsResponse,
 )
 from feb_stats.service.handler import SimpleLeagueHandler
 

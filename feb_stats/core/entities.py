@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import TypeVar, Generic, List, Optional
+from typing import Generic, List, Optional, TypeVar
 
 import pandas as pd
 

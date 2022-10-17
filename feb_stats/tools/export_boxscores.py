@@ -6,10 +6,10 @@ from typing import List
 
 from openpyxl import load_workbook
 
-from feb_stats.parsers.feb_livescore_parser import FEBLivescoreParser
-from feb_stats.parsers.feb_parser import FEBParser
 from feb_stats.core.saving import league_to_xlsx
 from feb_stats.core.transforms import compute_league_aggregates
+from feb_stats.parsers.feb_livescore_parser import FEBLivescoreParser
+from feb_stats.parsers.feb_parser import FEBParser
 
 
 def read_file(filename: str) -> bytes:

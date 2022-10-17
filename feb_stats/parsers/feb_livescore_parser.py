@@ -1,12 +1,10 @@
-from typing import Dict, List, Tuple, Optional, Union
+from typing import Dict, List, Optional, Tuple, Union
 
 import pandas as pd
 from lxml.html import Element
 
 from feb_stats.core.entities import Game, Team
-from feb_stats.parsers.feb_livescore_stats_transforms import (
-    transform_game_stats_df,
-)
+from feb_stats.parsers.feb_livescore_stats_transforms import transform_game_stats_df
 from feb_stats.parsers.generic_parser import GenericParser
 
 

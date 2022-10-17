@@ -1,5 +1,6 @@
 [flake8]
-ignore = E501,E402,E731,E211,F403,F405,W504
+max-line-length = 120
+ignore = E501,E402,E731,E211,F403,F405,W503,W504
 exclude =
     ./venv
     ./.idea

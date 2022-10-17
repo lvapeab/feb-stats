@@ -2,17 +2,10 @@ import glob
 import logging
 import os
 from datetime import datetime
-from typing import List, Union, Optional, Set
+from typing import List, Optional, Set, Union
 
 import yaml
-from flask import (
-    Flask,
-    render_template,
-    make_response,
-    request,
-    flash,
-    redirect,
-)
+from flask import Flask, flash, make_response, redirect, render_template, request
 from werkzeug.utils import secure_filename
 from werkzeug.wrappers import Response
 

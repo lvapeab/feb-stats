@@ -3,7 +3,7 @@ from typing import List
 import numpy as np
 import pandas as pd
 
-from feb_stats.core.entities import League, Team, Game, Boxscore
+from feb_stats.core.entities import Boxscore, Game, League, Team
 from feb_stats.core.utils import get_averageable_numerical_columns
 
 

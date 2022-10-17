@@ -1,7 +1,10 @@
-import json
 import glob
+import json
+import logging
 import os
 from base64 import encodebytes
+
+logger = logging.getLogger(__name__)
 
 if __name__ == "__main__":
     boxscores_dir = "test_data"
@@ -15,4 +18,4 @@ if __name__ == "__main__":
 
     with open("protos/minidata.json", mode="w") as f:  # type:ignore
         json.dump({"boxscores": boxscores_list}, f, ensure_ascii=False)  # type:ignore
-    print(f"Written {len(boxscores_list)} records")
+    logger.info(f"Written {len(boxscores_list)} records")

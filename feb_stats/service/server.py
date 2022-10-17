@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import argparse
+import logging
 import os
 import signal
 from concurrent import futures
@@ -9,9 +10,11 @@ import grpc
 from grpc_reflection.v1alpha import reflection
 
 from feb_stats.service.api import FebStatsServiceServicer
-from feb_stats.service.codegen import feb_stats_pb2
-from feb_stats.service.codegen import feb_stats_pb2_grpc
+from feb_stats.service.codegen import feb_stats_pb2, feb_stats_pb2_grpc
 from feb_stats.service.handler import SimpleLeagueHandler
+
+logger = logging.getLogger(__name__)
+
 
 SERVICE_NAMES = [
     reflection.SERVICE_NAME,
@@ -69,7 +72,7 @@ class Server:
         )
         signal.signal(signal.Signals.SIGTERM, self._sigterm_handler)
         self.port = self.server.add_insecure_port(address)
-        print(f"Server built. Port: {self.port}")
+        logger.info(f"Server built. Port: {self.port}")
 
     def _sigterm_handler(self, _signum: signal.Signals, _frame: FrameType) -> None:
         self.server.stop(30)

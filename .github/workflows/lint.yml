@@ -14,12 +14,12 @@ jobs:
         uses: psf/black@fcf97961061982656a1384ecc1628e217a52a88c
         with:
           path: "."
+      - name: Run Mypy
+        uses: jpetrucciani/mypy-check@master
+        with:
+          path: '.'
       - name: Run flake8
         uses: julianwachholz/flake8-action@v1.1.0
         with:
           checkName: "Flake8"
           path: .
-      - name: Run Mypy
-        uses: jpetrucciani/mypy-check@master
-        with:
-          path: '.'

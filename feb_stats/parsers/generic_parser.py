@@ -1,7 +1,7 @@
 import hashlib
 import os
 from abc import ABC, abstractmethod
-from typing import TypeVar, List, Optional, Set, Tuple, Dict, Callable, Union
+from typing import Callable, Dict, List, Optional, Set, Tuple, TypeVar, Union
 from urllib.parse import urlparse
 
 import lxml.html as lh
@@ -9,7 +9,7 @@ import pandas as pd
 import requests
 from lxml.html import Element
 
-from feb_stats.core.entities import Game, Team, League, Boxscore, Player
+from feb_stats.core.entities import Boxscore, Game, League, Player, Team
 
 T = TypeVar("T")
 
