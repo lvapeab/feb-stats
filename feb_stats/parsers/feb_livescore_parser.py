@@ -36,9 +36,7 @@ class FEBLivescoreParser(GenericParser):
         away_score = doc.xpath(
             '//div[@class="columna equipo visitante"]//span[@class="resultado"]'
         )
-        _ = doc.xpath(
-            '//div[@class="arbitros"]'
-        )  # Format: Arbitros X W. Z | A B. C |
+        _ = doc.xpath('//div[@class="arbitros"]')  # Format: Arbitros X W. Z | A B. C |
 
         # ref = " ".join(self.parse_str(referees[0].text_content()).split()[1:]).split(
         #     "|"
@@ -63,10 +61,9 @@ class FEBLivescoreParser(GenericParser):
 
         return metadata_dict
 
-    def parse_game_stats(self,
-                         doc: Element,
-                         ids: Optional[Union[List[Tuple[str, bool]], str]] = None
-                         ) -> Tuple[Game, Tuple[Team, Team]]:
+    def parse_game_stats(
+        self, doc: Element, ids: Optional[Union[List[Tuple[str, bool]], str]] = None
+    ) -> Tuple[Game, Tuple[Team, Team]]:
         ids = ids or '//table[@cellpadding="0"]//tbody'
         game_stats = {}
         metadata = self.parse_game_metadata(doc)
@@ -85,7 +82,10 @@ class FEBLivescoreParser(GenericParser):
         return self.create_objects(metadata, game_stats)
 
     def elements_to_df(
-            self, tr_elements: List[Element], initial_row: int = 2, discard_last: int = 0,
+        self,
+        tr_elements: List[Element],
+        initial_row: int = 2,
+        discard_last: int = 0,
     ) -> pd.DataFrame:
         table_rows = []
         # Since out first row is the header, data is stored on the second row onwards

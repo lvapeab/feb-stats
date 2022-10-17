@@ -26,34 +26,39 @@ builtin___int = int
 
 DESCRIPTOR: google___protobuf___descriptor___FileDescriptor = ...
 
-
 class GetFebStatsRequest(google___protobuf___message___Message):
     DESCRIPTOR: google___protobuf___descriptor___Descriptor = ...
-    boxscores: google___protobuf___internal___containers___RepeatedScalarFieldContainer[builtin___bytes] = ...
+    boxscores: google___protobuf___internal___containers___RepeatedScalarFieldContainer[
+        builtin___bytes
+    ] = ...
 
-    def __init__(self,
-                 *,
-                 boxscores: typing___Optional[typing___Iterable[builtin___bytes]] = None,
-                 ) -> None: ...
-
-    def ClearField(self, field_name: typing_extensions___Literal[u"boxscores", b"boxscores"]) -> None: ...
-
+    def __init__(
+        self,
+        *,
+        boxscores: typing___Optional[typing___Iterable[builtin___bytes]] = None,
+    ) -> None: ...
+    def ClearField(
+        self, field_name: typing_extensions___Literal["boxscores", b"boxscores"]
+    ) -> None: ...
 
 type___GetFebStatsRequest = GetFebStatsRequest
-
 
 class GetFebStatsResponse(google___protobuf___message___Message):
     DESCRIPTOR: google___protobuf___descriptor___Descriptor = ...
     sheet: builtin___bytes = ...
-    teams: google___protobuf___internal___containers___RepeatedScalarFieldContainer[typing___Text] = ...
+    teams: google___protobuf___internal___containers___RepeatedScalarFieldContainer[
+        typing___Text
+    ] = ...
 
-    def __init__(self,
-                 *,
-                 sheet: typing___Optional[builtin___bytes] = None,
-                 teams: typing___Optional[typing___Iterable[typing___Text]] = None,
-                 ) -> None: ...
-
-    def ClearField(self, field_name: typing_extensions___Literal[u"sheet", b"sheet", u"teams", b"teams"]) -> None: ...
-
+    def __init__(
+        self,
+        *,
+        sheet: typing___Optional[builtin___bytes] = None,
+        teams: typing___Optional[typing___Iterable[typing___Text]] = None,
+    ) -> None: ...
+    def ClearField(
+        self,
+        field_name: typing_extensions___Literal["sheet", b"sheet", "teams", b"teams"],
+    ) -> None: ...
 
 type___GetFebStatsResponse = GetFebStatsResponse

@@ -16,7 +16,9 @@ class LeagueHandler(ABC):
 
 
 class SimpleLeagueHandler(LeagueHandler):
-    def __init__(self, address: str, options: Optional[List[Tuple[str, int]]] = None) -> None:
+    def __init__(
+        self, address: str, options: Optional[List[Tuple[str, int]]] = None
+    ) -> None:
         self.options = options
         self.address = address
         self.channel = insecure_channel(self.address, options=self.options)

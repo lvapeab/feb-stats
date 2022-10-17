@@ -34,15 +34,19 @@ def get_parser() -> argparse.ArgumentParser:
         type=str,
     )
     parser.add_argument(
-        "--exporter-port", action="store", dest="exporter_port", default=6831, type=int,
+        "--exporter-port",
+        action="store",
+        dest="exporter_port",
+        default=6831,
+        type=int,
     )
     return parser
 
 
 class Server:
     def __init__(
-            self,
-            address: str,
+        self,
+        address: str,
     ) -> None:
         executor = futures.ThreadPoolExecutor(
             max_workers=min(32, os.cpu_count() or 1)
@@ -53,9 +57,7 @@ class Server:
             ("grpc.max_send_message_length", max_message_length),
         ]
 
-        self.server = grpc.server(
-            thread_pool=executor, options=options
-        )
+        self.server = grpc.server(thread_pool=executor, options=options)
         reflection.enable_server_reflection(SERVICE_NAMES, self.server)
 
         feb_stats_servicer = FebStatsServiceServicer(
@@ -65,8 +67,7 @@ class Server:
         feb_stats_pb2_grpc.add_FebStatsServiceServicer_to_server(
             feb_stats_servicer, self.server
         )
-        signal.signal(signal.Signals.SIGTERM,
-                      self._sigterm_handler)
+        signal.signal(signal.Signals.SIGTERM, self._sigterm_handler)
         self.port = self.server.add_insecure_port(address)
         print(f"Server built. Port: {self.port}")
 

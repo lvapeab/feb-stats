@@ -5,9 +5,7 @@ from feb_stats.service.handler import SimpleLeagueHandler
 
 
 class BinaryDetectorHandlerTest(unittest.TestCase):
-    def __init__(self,
-                 *args: Any,
-                 **kwargs: Any) -> None:
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         super(BinaryDetectorHandlerTest, self).__init__(*args, **kwargs)
         self.handler = SimpleLeagueHandler(address="8008")
 

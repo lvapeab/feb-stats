@@ -189,14 +189,14 @@ class GenericParserTestCase_3(unittest.TestCase):
     def test_get_elements(self) -> None:
         doc = self.parser.read_link_file(self.test_file)
         id = '//table[@cellpadding="0"]//tbody'
-        table_local, table_away = self.parser.get_elements(doc, id)
+        table_local, table_away = self.parser.get_elements(doc, id)[-2:]
         self.assertEqual(len(table_local), 13)
         self.assertEqual(len(table_away), 15)
 
     def test_elements_to_df(self) -> None:
         doc = self.parser.read_link_file(self.test_file)
         id = '//table[@cellpadding="0"]//tbody'
-        table_local, table_away = self.parser.get_elements(doc, id)
+        table_local, table_away = self.parser.get_elements(doc, id)[-2:]
         local_df = self.parser.elements_to_df(
             table_local, initial_row=2, discard_last=0
         )
@@ -216,9 +216,9 @@ class GenericParserTestCase_3(unittest.TestCase):
                     "tiros tres",
                     "tiros campo",
                     "tiros libres",
-                    "rebotes total",
-                    "rebotes defensivos",
                     "rebotes ofensivos",
+                    "rebotes defensivos",
+                    "rebotes total",
                     "asistencias",
                     "recuperaciones",
                     "perdidas",
@@ -258,14 +258,14 @@ class GenericParserTestCase_3(unittest.TestCase):
         game_metadata = self.parser.parse_game_metadata(doc)
 
         desired_dict = {
-            "date": "08/03/2020",
-            "hour": "18:00",
+            "date": "14-10-2022",
+            "hour": "20:30",
             "league": "LIGA EBA",
-            "season": "2019/2020",
-            "home_team": "HERO JAIRIS",
-            "home_score": "75",
-            "away_team": "UCAM MURCIA JIFFY",
-            "away_score": "68",
+            "season": "2022/2023",
+            "home_team": "JOVENS L´ELIANA",
+            "home_score": "63",
+            "away_team": "NB PATERNA POWER ELECTRONICS",
+            "away_score": "79",
             "main_referee": "-",  # "SERRAT MOLINS. ALBERT",
             "second_referee": "-",  # "ARAQUE CACERES. MAURO",
         }
@@ -284,7 +284,6 @@ class GenericParserTestCase_3(unittest.TestCase):
         # self.assertEqual(game.aux_referee, "GARCIA SALA. ADRIAN")
         self.assertEqual(local_team.name, "JOVENS L´ELIANA")
         self.assertEqual(away_team.name, "NB PATERNA POWER ELECTRONICS")
-
 
 
 if __name__ == "__main__":

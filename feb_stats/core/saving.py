@@ -12,10 +12,10 @@ from feb_stats.core.utils import get_sorted_list_of_columns, timedelta_to_str
 
 
 def league_to_xlsx(
-        league: League,
-        filename: Optional[str] = None,
-        col_width: int = 30,
-        export_language: str = "es",
+    league: League,
+    filename: Optional[str] = None,
+    col_width: int = 30,
+    export_language: str = "es",
 ) -> bytes:
     """Exports a league to xlsx.
     :param league: League to be exported.
@@ -26,7 +26,7 @@ def league_to_xlsx(
     """
 
     if league.aggregated_games is None:
-        raise ValueError(f'The league {league} has no aggregated games.')
+        raise ValueError(f"The league {league} has no aggregated games.")
     filename = filename or f'{league.name}_{league.season.replace("/", "-")}.xlsx'
 
     xlsx_writer = pd.ExcelWriter(
@@ -86,10 +86,14 @@ def league_to_xlsx(
             averaged_team_season_games = average_games(
                 aggregated_team_season_games.copy(), individual_columns=True
             )
-            aggregated_team_season_games.loc[:, "minutes"] = \
-                aggregated_team_season_games["minutes"].apply(lambda x: timedelta_to_str(x) if not pd.isnull(x) else "")
-            averaged_team_season_games.loc[:, "minutes"] = \
-                averaged_team_season_games["minutes"].apply(lambda x: timedelta_to_str(x) if not pd.isnull(x) else "")
+            aggregated_team_season_games.loc[
+                :, "minutes"
+            ] = aggregated_team_season_games["minutes"].apply(
+                lambda x: timedelta_to_str(x) if not pd.isnull(x) else ""
+            )
+            averaged_team_season_games.loc[:, "minutes"] = averaged_team_season_games[
+                "minutes"
+            ].apply(lambda x: timedelta_to_str(x) if not pd.isnull(x) else "")
             aggregated_team_season_games.to_excel(
                 xlsx_writer,
                 float_format="%.3f",

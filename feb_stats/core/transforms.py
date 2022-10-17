@@ -48,15 +48,17 @@ def compute_total_possessions(df: pd.DataFrame) -> pd.DataFrame:
     """
     total_index = df.index.isin(["Total"])
 
-    df.loc[:, "total_possessions"] = (df.loc[:, "field_goal_attempted"] +
-                                      df.loc[:, "free_throw_attempted"] / 2 +
-                                      df.loc[:, "turnovers"])
+    df.loc[:, "total_possessions"] = (
+        df.loc[:, "field_goal_attempted"]
+        + df.loc[:, "free_throw_attempted"] / 2
+        + df.loc[:, "turnovers"]
+    )
     df.loc[~total_index, "total_possessions"] += df.loc[~total_index, "assists"]
     return df
 
 
 def compute_shots_percentage(
-        df: pd.DataFrame, shot_columns: Optional[Set[str]] = None
+    df: pd.DataFrame, shot_columns: Optional[Set[str]] = None
 ) -> pd.DataFrame:
     """Compute percentage of shots, including 2PT, 3PT, FG and FT.
     :param df: Dataframe to use.
@@ -66,14 +68,18 @@ def compute_shots_percentage(
     shot_columns = shot_columns or {"2_point", "3_point", "field_goal", "free_throw"}
 
     for shot_column in shot_columns:
-        df.loc[:, f"{shot_column}_percentage"] = \
-            (df.loc[:, f"{shot_column}_made"].
-             divide(df.loc[:, f"{shot_column}_attempted"], fill_value=0.0) * 100.0
-             )
+        df.loc[:, f"{shot_column}_percentage"] = (
+            df.loc[:, f"{shot_column}_made"].divide(
+                df.loc[:, f"{shot_column}_attempted"], fill_value=0.0
+            )
+            * 100.0
+        )
     return df
 
 
-def compute_volumes(df: pd.DataFrame, volume_keys: Optional[Set[str]] = None) -> pd.DataFrame:
+def compute_volumes(
+    df: pd.DataFrame, volume_keys: Optional[Set[str]] = None
+) -> pd.DataFrame:
     """Compute the volume of stats for a player w.r.t. the team. The volume is the percentage of the stat that is
     accountable to that player.
     :param df: Dataframe to use.
@@ -97,8 +103,10 @@ def compute_volumes(df: pd.DataFrame, volume_keys: Optional[Set[str]] = None) ->
         "total_rebounds",
     }
     for volume_key in volume_keys:
-        df.loc[:, f"{volume_key}_volume"] = \
-            (df.loc[:, volume_key].divide(df.loc["Total", volume_key], fill_value=0.0) * 100.0)
+        df.loc[:, f"{volume_key}_volume"] = (
+            df.loc[:, volume_key].divide(df.loc["Total", volume_key], fill_value=0.0)
+            * 100.0
+        )
     return df
 
 

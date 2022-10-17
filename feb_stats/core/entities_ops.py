@@ -64,11 +64,15 @@ def average_games(df: pd.DataFrame, individual_columns: bool = False) -> pd.Data
     :return: Averaged dataframe.
     """
     n_games = df.loc[:, "games"].astype(np.float32)
-    df.loc[:, get_averageable_numerical_columns(individual_columns=individual_columns)] = \
-        (df.loc[:, get_averageable_numerical_columns(individual_columns=individual_columns)].
-         astype(np.float32).
-         div(n_games, axis="rows")
-         )
+    df.loc[
+        :, get_averageable_numerical_columns(individual_columns=individual_columns)
+    ] = (
+        df.loc[
+            :, get_averageable_numerical_columns(individual_columns=individual_columns)
+        ]
+        .astype(np.float32)
+        .div(n_games, axis="rows")
+    )
     if "minutes" in df:
         df.loc[:, "minutes"] /= n_games
     df.loc[:, "mode"] = "Media"

@@ -38,10 +38,9 @@ class FEBParser(GenericParser):
 
         return metadata_dict
 
-    def parse_game_stats(self,
-                         doc: Element,
-                         ids: Optional[Union[List[Tuple[str, bool]], str]] = None
-                         ) -> Tuple[Game, Tuple[Team, Team]]:
+    def parse_game_stats(
+        self, doc: Element, ids: Optional[Union[List[Tuple[str, bool]], str]] = None
+    ) -> Tuple[Game, Tuple[Team, Team]]:
         ids = ids or [
             ('//table[@id="jugadoresLocalDataGrid"]//tr', True),
             ('//table[@id="jugadoresVisitanteDataGrid"]//tr', False),
@@ -63,7 +62,7 @@ class FEBParser(GenericParser):
         return self.create_objects(metadata, game_stats)
 
     def elements_to_df(
-            self, tr_elements: List[Element], initial_row: int = 2, n_elem: int = 0
+        self, tr_elements: List[Element], initial_row: int = 2, n_elem: int = 0
     ) -> pd.DataFrame:
         col: List = []
         i = 0

@@ -44,7 +44,9 @@ def index(name: Optional[str] = None) -> Union[str, Response]:
     return render_template("index.html", name=name)
 
 
-def allowed_file_extension(filename: str, allowed_extensions: Optional[Set[str]] = None) -> bool:
+def allowed_file_extension(
+    filename: str, allowed_extensions: Optional[Set[str]] = None
+) -> bool:
     allowed_extensions = allowed_extensions or {"html"}
     return "." in filename and filename.rsplit(".", 1)[1].lower() in allowed_extensions
 
@@ -86,7 +88,9 @@ def remove_boxscores() -> None:
 def analyze() -> Response:
     boxscores = read_boxscores()
     grpc_address = f"{ports_config.get('grpc_address', 'localhost')}:f{ports_config.get('grpc_port', '50001')}"
-    grpc_request = feb_stats_pb2.GetFebStatsRequest(boxscores=boxscores, )
+    grpc_request = feb_stats_pb2.GetFebStatsRequest(
+        boxscores=boxscores,
+    )
     service = FebStatsServiceServicer(SimpleLeagueHandler(address=grpc_address))
     grpc_response = service.GetFebStats(grpc_request, None)
 

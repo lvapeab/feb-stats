@@ -24,10 +24,7 @@ def export_boxscores_from_files(boxscores: List[str]) -> bytes:
     :return: xlsx file as bytes.
     """
     parser = FEBLivescoreParser()
-    read_boxscores = [
-        read_file(filename)
-        for filename in boxscores
-    ]
+    read_boxscores = [read_file(filename) for filename in boxscores]
 
     league = parser.parse_boxscores(read_boxscores, reader_fn=parser.read_link_file)
     new_league = compute_league_aggregates(league)
