@@ -2,9 +2,7 @@
 import argparse
 import logging
 import os
-import signal
 from concurrent import futures
-from types import FrameType
 
 import grpc
 from grpc_reflection.v1alpha import reflection

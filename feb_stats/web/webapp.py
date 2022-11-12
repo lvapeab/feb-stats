@@ -2,7 +2,7 @@ import glob
 import logging
 import os
 from datetime import datetime
-from typing import List, Optional, Set, Union, Any
+from typing import Any, List, Optional, Set
 
 import yaml
 from flask import Flask, flash, make_response, redirect, render_template, request

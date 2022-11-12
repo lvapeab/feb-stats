@@ -1,7 +1,7 @@
 import hashlib
 import os
 from abc import ABC, abstractmethod
-from typing import Callable, Dict, List, Optional, Set, Tuple, TypeVar, Union, AnyStr
+from typing import AnyStr, Callable, Dict, List, Optional, Set, Tuple, TypeVar, Union
 from urllib.parse import urlparse
 
 import lxml.html as lh
