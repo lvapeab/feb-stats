@@ -9,36 +9,47 @@ from feb_stats.parsers.generic_parser import GenericParser
 
 
 class FEBLivescoreParser(GenericParser):
+    def extract_nested_value(self, doc: Element, xpath: str) -> Optional[str]:
+        value = None
+        current_path = doc.xpath(xpath)
+        while not value:
+            try:
+                if current_path[-1].text:
+                    value = self.parse_str(current_path[-1].text, decode_bytes=True)
+                    return value
+                current_path = [x for x in current_path[-1]]
+            except IndexError:
+                return None
+
     def parse_game_metadata(self, doc: Element) -> Dict[str, str]:
         # Parse data by id
         hour_date = doc.xpath('//div[@class="fecha"]')
 
         hour_date = self.parse_str(
-            hour_date[0].text_content(), decode_bytes=True
+            hour_date[-1].text_content(), decode_bytes=True
         ).split()  # Format: "Fecha XX/XX/XXXX - HH:MM
         date = hour_date[1]
         hour = hour_date[-1]
 
-        league = doc.xpath('//span[@class="liga"]')
-        season = doc.xpath('//span[@class="temporada"]')
+        season = self.extract_nested_value(doc, '//span[@class="temporada"]')
+        league = self.extract_nested_value(doc, '//span[@class="liga"]')
+        home_team = self.extract_nested_value(
+            doc, '//span[@id="_ctl0_MainContentPlaceHolderMaster_equipoLocalNombre"]'
+        )
+        home_score = self.extract_nested_value(
+            doc, '//div[@class="columna equipo local"]//span[@class="resultado"]'
+        )
+        away_team = self.extract_nested_value(
+            doc,
+            '//span[@id="_ctl0_MainContentPlaceHolderMaster_equipoVisitanteNombre"]',
+        )
+        away_score = self.extract_nested_value(
+            doc, '//div[@class="columna equipo visitante"]//span[@class="resultado"]'
+        )
 
-        home_team = doc.xpath(
-            '//span[@id="_ctl0_MainContentPlaceHolderMaster_equipoLocalNombre"]'
-        )
-        home_score = doc.xpath(
-            '//div[@class="columna equipo local"]//span[@class="resultado"]'
-        )
-        away_team = doc.xpath(
-            '//span[@id="_ctl0_MainContentPlaceHolderMaster_equipoVisitanteNombre"]'
-        )
-        away_score = doc.xpath(
-            '//div[@class="columna equipo visitante"]//span[@class="resultado"]'
-        )
-        _ = doc.xpath('//div[@class="arbitros"]')  # Format: Arbitros X W. Z | A B. C |
-
-        # ref = " ".join(self.parse_str(referees[0].text_content()).split()[1:]).split(
-        #     "|"
-        # )
+        _ = self.extract_nested_value(
+            doc, '//div[@class="arbitros"]'
+        )  # Format: Arbitros X W. Z | A B. C |
 
         # main_referee = ref[0]
         # second_referee = ref[1]
@@ -46,12 +57,12 @@ class FEBLivescoreParser(GenericParser):
         metadata_dict = {
             "date": date,
             "hour": hour,
-            "league": self.parse_str(league[0].text, decode_bytes=True),
-            "season": self.parse_str(season[0].text, decode_bytes=True),
-            "home_team": self.parse_str(home_team[0].text, decode_bytes=True),
-            "home_score": self.parse_str(home_score[0].text, decode_bytes=True),
-            "away_team": self.parse_str(away_team[0].text, decode_bytes=True),
-            "away_score": self.parse_str(away_score[0].text, decode_bytes=True),
+            "league": league,
+            "season": season,
+            "home_team": home_team,
+            "home_score": home_score,
+            "away_team": away_team,
+            "away_score": away_score,
             # TODO(alvaro): Parse referees
             "main_referee": "-",  # self.parse_str(main_referee),
             "second_referee": "-",  # self.parse_str(second_referee),

@@ -258,7 +258,7 @@ class GenericParserTestCase_3(unittest.TestCase):
         game_metadata = self.parser.parse_game_metadata(doc)
 
         desired_dict = {
-            "date": "14-10-2022",
+            "date": "14/10/2022",
             "hour": "20:30",
             "league": "LIGA EBA",
             "season": "2022/2023",
@@ -274,7 +274,7 @@ class GenericParserTestCase_3(unittest.TestCase):
     def test_parse_game_stats(self) -> None:
         doc = self.parser.read_link_file(self.test_file)
         game, (local_team, away_team) = self.parser.parse_game_stats(doc)
-        self.assertEqual(game.date, "14-10-2022")
+        self.assertEqual(game.date, "14/10/2022")
         self.assertEqual(game.hour, "20:30")
         self.assertEqual(game.league, "LIGA EBA")
         self.assertEqual(game.season, "2022/2023")
@@ -286,5 +286,213 @@ class GenericParserTestCase_3(unittest.TestCase):
         self.assertEqual(away_team.name, "NB PATERNA POWER ELECTRONICS")
 
 
-if __name__ == "__main__":
-    unittest.main()
+class GenericParserTestCase_4(unittest.TestCase):
+    def __init__(self, *args: Any, **kwargs: Any):
+        super(GenericParserTestCase_4, self).__init__(*args, **kwargs)
+        self.parser = FEBLivescoreParser()
+        self.test_file = "tests/data/4_livescore.html"
+
+    def test_get_elements(self) -> None:
+        doc = self.parser.read_link_file(self.test_file)
+        id = '//table[@cellpadding="0"]//tbody'
+        table_local, table_away = self.parser.get_elements(doc, id)[-2:]
+        self.assertEqual(len(table_local), 14)
+        self.assertEqual(len(table_away), 13)
+
+    def test_elements_to_df(self) -> None:
+        doc = self.parser.read_link_file(self.test_file)
+        id = '//table[@cellpadding="0"]//tbody'
+        table_local, table_away = self.parser.get_elements(doc, id)[-2:]
+        local_df = self.parser.elements_to_df(
+            table_local, initial_row=2, discard_last=0
+        )
+        away_df = self.parser.elements_to_df(table_away, initial_row=2, discard_last=0)
+        self.assertEqual(local_df.shape, (12, 22))
+        self.assertEqual(away_df.shape, (11, 22))
+        for df in (local_df, away_df):
+            self.assertListEqual(
+                list(df.columns),
+                [
+                    "inicial",
+                    "dorsal",
+                    "nombre jugador",
+                    "minutos",
+                    "puntos",
+                    "tiros dos",
+                    "tiros tres",
+                    "tiros campo",
+                    "tiros libres",
+                    "rebotes ofensivos",
+                    "rebotes defensivos",
+                    "rebotes total",
+                    "asistencias",
+                    "recuperaciones",
+                    "perdidas",
+                    "tapones favor",
+                    "tapones contra",
+                    "mates",
+                    "faltas cometidas",
+                    "faltas recibidas",
+                    "valoracion",
+                    "balance",
+                ],
+            )
+
+    def test_parse_boxscores(self) -> None:
+        with open(self.test_file, mode="rb") as f:
+            boxscores_bytes = f.read()
+        league = self.parser.parse_boxscores([boxscores_bytes])
+        self.assertEqual(2, len(league.teams))
+        self.assertEqual(1, len(league.games))
+
+    def test_read_link_bytes(self) -> None:
+        with open(self.test_file, mode="rb") as f:
+            link_bytes = f.read()
+        doc = self.parser.read_link_bytes(link_bytes)
+        self.assertIsNotNone(doc.forms)
+        self.assertIsNotNone(doc.body)
+        self.assertIsNotNone(doc.head)
+
+    def test_read_link_file(self) -> None:
+        doc = self.parser.read_link_file(self.test_file)
+        self.assertIsNotNone(doc.forms)
+        self.assertIsNotNone(doc.body)
+        self.assertIsNotNone(doc.head)
+
+    def test_parse_game_metadata(self) -> None:
+        doc = self.parser.read_link_file(self.test_file)
+        game_metadata = self.parser.parse_game_metadata(doc)
+
+        desired_dict = {
+            "date": "05/11/2022",
+            "hour": "19:30",
+            "league": "LIGA EBA",
+            "season": "2022/2023",
+            "home_team": "PROYME ALGINET",
+            "home_score": "88",
+            "away_team": "JOVENS L´ELIANA",
+            "away_score": "81",
+            "main_referee": "-",  # "SERRAT MOLINS. ALBERT",
+            "second_referee": "-",  # "ARAQUE CACERES. MAURO",
+        }
+        self.assertDictEqual(game_metadata, desired_dict)
+
+    def test_parse_game_stats(self) -> None:
+        doc = self.parser.read_link_file(self.test_file)
+        game, (local_team, away_team) = self.parser.parse_game_stats(doc)
+        self.assertEqual(game.date, "05/11/2022")
+        self.assertEqual(game.hour, "19:30")
+        self.assertEqual(game.league, "LIGA EBA")
+        self.assertEqual(game.season, "2022/2023")
+        self.assertEqual(game.home_score, 88)
+        self.assertEqual(game.away_score, 81)
+        # self.assertEqual(game.main_referee, "HERROJO JIMENEZ. JORGE")
+        # self.assertEqual(game.aux_referee, "GARCIA SALA. ADRIAN")
+        self.assertEqual(local_team.name, "PROYME ALGINET")
+        self.assertEqual(away_team.name, "JOVENS L´ELIANA")
+
+
+class GenericParserTestCase_5(unittest.TestCase):
+    def __init__(self, *args: Any, **kwargs: Any):
+        super(GenericParserTestCase_5, self).__init__(*args, **kwargs)
+        self.parser = FEBLivescoreParser()
+        self.test_file = "tests/data/5_livescore.html"
+
+    def test_get_elements(self) -> None:
+        doc = self.parser.read_link_file(self.test_file)
+        id = '//table[@cellpadding="0"]//tbody'
+        table_local, table_away = self.parser.get_elements(doc, id)[-2:]
+        self.assertEqual(len(table_local), 14)
+        self.assertEqual(len(table_away), 14)
+
+    def test_elements_to_df(self) -> None:
+        doc = self.parser.read_link_file(self.test_file)
+        id = '//table[@cellpadding="0"]//tbody'
+        table_local, table_away = self.parser.get_elements(doc, id)[-2:]
+        local_df = self.parser.elements_to_df(
+            table_local, initial_row=2, discard_last=0
+        )
+        away_df = self.parser.elements_to_df(table_away, initial_row=2, discard_last=0)
+        self.assertEqual(local_df.shape, (12, 22))
+        self.assertEqual(away_df.shape, (12, 22))
+        for df in (local_df, away_df):
+            self.assertListEqual(
+                list(df.columns),
+                [
+                    "inicial",
+                    "dorsal",
+                    "nombre jugador",
+                    "minutos",
+                    "puntos",
+                    "tiros dos",
+                    "tiros tres",
+                    "tiros campo",
+                    "tiros libres",
+                    "rebotes ofensivos",
+                    "rebotes defensivos",
+                    "rebotes total",
+                    "asistencias",
+                    "recuperaciones",
+                    "perdidas",
+                    "tapones favor",
+                    "tapones contra",
+                    "mates",
+                    "faltas cometidas",
+                    "faltas recibidas",
+                    "valoracion",
+                    "balance",
+                ],
+            )
+
+    def test_parse_boxscores(self) -> None:
+        with open(self.test_file, mode="rb") as f:
+            boxscores_bytes = f.read()
+        league = self.parser.parse_boxscores([boxscores_bytes])
+        self.assertEqual(2, len(league.teams))
+        self.assertEqual(1, len(league.games))
+
+    def test_read_link_bytes(self) -> None:
+        with open(self.test_file, mode="rb") as f:
+            link_bytes = f.read()
+        doc = self.parser.read_link_bytes(link_bytes)
+        self.assertIsNotNone(doc.forms)
+        self.assertIsNotNone(doc.body)
+        self.assertIsNotNone(doc.head)
+
+    def test_read_link_file(self) -> None:
+        doc = self.parser.read_link_file(self.test_file)
+        self.assertIsNotNone(doc.forms)
+        self.assertIsNotNone(doc.body)
+        self.assertIsNotNone(doc.head)
+
+    def test_parse_game_metadata(self) -> None:
+        doc = self.parser.read_link_file(self.test_file)
+        game_metadata = self.parser.parse_game_metadata(doc)
+
+        desired_dict = {
+            "date": "05/11/2022",
+            "hour": "17:30",
+            "league": "LIGA EBA",
+            "season": "2022/2023",
+            "home_team": "VALENCIA B.C.",
+            "home_score": "80",
+            "away_team": "NB TORRENT",
+            "away_score": "81",
+            "main_referee": "-",  # "SERRAT MOLINS. ALBERT",
+            "second_referee": "-",  # "ARAQUE CACERES. MAURO",
+        }
+        self.assertDictEqual(game_metadata, desired_dict)
+
+    def test_parse_game_stats(self) -> None:
+        doc = self.parser.read_link_file(self.test_file)
+        game, (local_team, away_team) = self.parser.parse_game_stats(doc)
+        self.assertEqual(game.date, "05/11/2022")
+        self.assertEqual(game.hour, "17:30")
+        self.assertEqual(game.league, "LIGA EBA")
+        self.assertEqual(game.season, "2022/2023")
+        self.assertEqual(game.home_score, 80)
+        self.assertEqual(game.away_score, 81)
+        # self.assertEqual(game.main_referee, "HERROJO JIMENEZ. JORGE")
+        # self.assertEqual(game.aux_referee, "GARCIA SALA. ADRIAN")
+        self.assertEqual(local_team.name, "VALENCIA B.C.")
+        self.assertEqual(away_team.name, "NB TORRENT")
