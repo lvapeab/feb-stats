@@ -2,7 +2,7 @@ import glob
 import logging
 import os
 from datetime import datetime
-from typing import List, Optional, Set, Union
+from typing import Any, List, Optional, Set
 
 import yaml
 from flask import Flask, flash, make_response, redirect, render_template, request
@@ -33,7 +33,7 @@ os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
 
 
 @app.route("/")
-def index(name: Optional[str] = None) -> Union[str, Response]:
+def index(name: Optional[str] = None) -> Any:
     return render_template("index.html", name=name)
 
 
@@ -45,7 +45,7 @@ def allowed_file_extension(
 
 
 @app.route("/upload", methods=["POST", "GET"])
-def upload() -> Union[Response, str]:
+def upload() -> Any:
     if request.method == "POST":
         # check if the post request has the file part
         if "file" not in request.files:

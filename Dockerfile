@@ -22,8 +22,6 @@ RUN poetry config virtualenvs.create false \
 ENV PATH="/root/.poetry/bin:$PATH" \
     PYTHONPATH="/code:$PYTHONPATH"
 
-RUN poetry install
-
 COPY ./ /code/
 WORKDIR /code
 

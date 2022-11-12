@@ -8,7 +8,7 @@ class GenericParserTestCase(unittest.TestCase):
     def __init__(self, *args: Any, **kwargs: Any):
         super(GenericParserTestCase, self).__init__(*args, **kwargs)
         self.parser = FEBParser()
-        self.test_file = "tests/test_data/1.html"
+        self.test_file = "tests/data/1.html"
 
     def test_parse_str(self) -> None:
         test_str = (

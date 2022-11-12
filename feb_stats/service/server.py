@@ -1,10 +1,10 @@
-# -*- coding: utf-8 -*-
 import argparse
 import logging
 import os
 import signal
 from concurrent import futures
 from types import FrameType
+from typing import Any, Optional
 
 import grpc
 from grpc_reflection.v1alpha import reflection
@@ -60,21 +60,37 @@ class Server:
             ("grpc.max_send_message_length", max_message_length),
         ]
 
-        self.server = grpc.server(thread_pool=executor, options=options)
-        reflection.enable_server_reflection(SERVICE_NAMES, self.server)
+        self.server = grpc.server(
+            thread_pool=executor,
+            options=options,
+        )
+        reflection.enable_server_reflection(
+            SERVICE_NAMES,
+            self.server,
+        )
 
         feb_stats_servicer = FebStatsServiceServicer(
-            SimpleLeagueHandler("localhost:9000", options=options)
+            SimpleLeagueHandler(
+                "localhost:9000",
+                options=options,
+            )
         )
         # TODO: Add healing
         feb_stats_pb2_grpc.add_FebStatsServiceServicer_to_server(
-            feb_stats_servicer, self.server
+            feb_stats_servicer,
+            self.server,
         )
-        signal.signal(signal.Signals.SIGTERM, self._sigterm_handler)
+        signal.signal(
+            signal.Signals.SIGTERM,
+            self._sigterm_handler,
+        )
+
         self.port = self.server.add_insecure_port(address)
         logger.info(f"Server built. Port: {self.port}")
 
-    def _sigterm_handler(self, _signum: signal.Signals, _frame: FrameType) -> None:
+    def _sigterm_handler(
+        self, _signum: int, _frame: Optional[FrameType], *_: Any
+    ) -> None:
         self.server.stop(30)
 
     def start(self) -> None:
