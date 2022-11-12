@@ -7,4 +7,5 @@ exclude =
     ./images
     ./test_data
     ./toolchains
+    ./feb_stats/service/codegen
 

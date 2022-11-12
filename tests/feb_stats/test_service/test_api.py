@@ -8,7 +8,7 @@ from feb_stats.service.handler import SimpleLeagueHandler
 
 class FebStatsServiceServicerTest(unittest.TestCase):
     def test_GetFebStats(self) -> None:
-        input_files = glob.glob("tests/test_data/*livescore*html")
+        input_files = glob.glob("tests/data/*livescore*html")
         boxscores = []
         for file in input_files:
             with open(file, mode="rb") as f:

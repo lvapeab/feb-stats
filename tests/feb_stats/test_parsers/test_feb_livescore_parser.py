@@ -8,7 +8,7 @@ class GenericParserTestCase_1(unittest.TestCase):
     def __init__(self, *args: Any, **kwargs: Any):
         super(GenericParserTestCase_1, self).__init__(*args, **kwargs)
         self.parser = FEBLivescoreParser()
-        self.test_file = "tests/test_data/1_livescore.html"
+        self.test_file = "tests/data/1_livescore.html"
 
     def test_parse_str(self) -> None:
         test_str = (
@@ -149,7 +149,7 @@ class GenericParserTestCase_3(unittest.TestCase):
     def __init__(self, *args: Any, **kwargs: Any):
         super(GenericParserTestCase_3, self).__init__(*args, **kwargs)
         self.parser = FEBLivescoreParser()
-        self.test_file = "tests/test_data/3_livescore.html"
+        self.test_file = "tests/data/3_livescore.html"
 
     def test_parse_str(self) -> None:
         test_str = (

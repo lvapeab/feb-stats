@@ -7,7 +7,7 @@ from base64 import encodebytes
 logger = logging.getLogger(__name__)
 
 if __name__ == "__main__":
-    boxscores_dir = "test_data"
+    boxscores_dir = "data"
     boxscores_list = []
     for (i, link) in enumerate(
         glob.iglob(os.path.join(str(boxscores_dir), "*.html"), recursive=False)
