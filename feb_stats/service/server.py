@@ -70,12 +70,8 @@ class Server:
         feb_stats_pb2_grpc.add_FebStatsServiceServicer_to_server(
             feb_stats_servicer, self.server
         )
-        signal.signal(signal.Signals.SIGTERM, self._sigterm_handler)
         self.port = self.server.add_insecure_port(address)
         logger.info(f"Server built. Port: {self.port}")
-
-    def _sigterm_handler(self, _signum: signal.Signals, _frame: FrameType) -> None:
-        self.server.stop(30)
 
     def start(self) -> None:
         self.server.start()

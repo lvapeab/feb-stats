@@ -1,7 +1,7 @@
 import hashlib
 import os
 from abc import ABC, abstractmethod
-from typing import Callable, Dict, List, Optional, Set, Tuple, TypeVar, Union
+from typing import Callable, Dict, List, Optional, Set, Tuple, TypeVar, Union, AnyStr
 from urllib.parse import urlparse
 
 import lxml.html as lh
@@ -100,12 +100,12 @@ class GenericParser(ABC):
         return game, (home_team, away_team)
 
     def parse_boxscores(
-        self, boxscores_bytes: List[bytes], reader_fn: Optional[Callable] = None
+        self, boxscores: List[AnyStr], reader_fn: Optional[Callable] = None
     ) -> League:
         all_games = []
         all_teams = set()
         reader_fn = reader_fn or self.read_link_bytes
-        for link in boxscores_bytes:
+        for link in boxscores:
             doc = reader_fn(link)
             game, teams = self.parse_game_stats(doc)
             all_games.append(game)
@@ -115,7 +115,7 @@ class GenericParser(ABC):
         if all_games:
             return self.create_league(all_games, all_teams)
         else:
-            raise ValueError(f"No games found in {boxscores_bytes}")
+            raise ValueError(f"No games found in {boxscores}")
 
     @staticmethod
     def read_link_bytes(link: bytes) -> Element:
