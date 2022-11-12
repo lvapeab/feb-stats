@@ -53,8 +53,7 @@ def upload() -> Any:
             return redirect(request.url)
 
         file = request.files["file"]
-
-        if file and allowed_file_extension(file.filename):
+        if file and file.filename and allowed_file_extension(file.filename):
             filename = secure_filename(file.filename)
             filepath = os.path.join(app.config["UPLOAD_FOLDER"], filename)
             logger.info(f"Saving file to {filepath}.")

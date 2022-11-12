@@ -11,34 +11,17 @@ The boxscores are analyzed from the game stats pages (`.html`).
 
 ***
 
-## Build and run app
-
-Builds and tests are done with [Bazel](https://bazel.build/). There are two main services:
-
-* A nodeJS service that builds the website to retrieve the data given by the user.
-* A Python service that analyzes the data and returns the .xls file. 
-
-Both services are connected via [gRPC](https://grpc.io/). 
-
-These services are in Docker images managed by Bazel. 
-There are also rules to directly run them in the local machine (without images). 
-
-### Run the python service
+### Run the python service in local
 
 ```shell script
-bazel run //python/service:image
+poetry run gunicorn --umask 4 --bind 0.0.0.0:80 feb_stats.web.webapp:app
 ```
 
-### Run the NodeJS app
+### Run linting and tests
 
 ```shell script
-bazel run //js/node:image
-```
-
-### Run tests
-
-```shell script
-bazel test //...
+poetry run black . ; poetry run isort . ; poetry run mypy . ; poetry run flake8 .;
+poetry run pytest tests ;
 ```
 
 ### Run using docker-compose
