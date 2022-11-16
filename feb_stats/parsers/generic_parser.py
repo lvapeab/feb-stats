@@ -65,7 +65,7 @@ class GenericParser(ABC):
                 )
             ).hexdigest(),
             date=metadata["date"],
-            hour=metadata["hour"],
+            time=metadata["time"],
             league=metadata["league"],
             season=metadata["season"],
             home_team=home_team,

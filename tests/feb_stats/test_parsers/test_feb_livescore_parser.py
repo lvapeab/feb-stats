@@ -118,7 +118,7 @@ class GenericParserTestCase_1(unittest.TestCase):
 
         desired_dict = {
             "date": "08/03/2020",
-            "hour": "18:00",
+            "time": "18:00",
             "league": "LIGA EBA",
             "season": "2019/2020",
             "home_team": "HERO JAIRIS",
@@ -134,7 +134,7 @@ class GenericParserTestCase_1(unittest.TestCase):
         doc = self.parser.read_link_file(self.test_file)
         game, (local_team, away_team) = self.parser.parse_game_stats(doc)
         self.assertEqual(game.date, "08/03/2020")
-        self.assertEqual(game.hour, "18:00")
+        self.assertEqual(game.time, "18:00")
         self.assertEqual(game.league, "LIGA EBA")
         self.assertEqual(game.season, "2019/2020")
         self.assertEqual(game.home_score, 75)
@@ -259,7 +259,7 @@ class GenericParserTestCase_3(unittest.TestCase):
 
         desired_dict = {
             "date": "14/10/2022",
-            "hour": "20:30",
+            "time": "20:30",
             "league": "LIGA EBA",
             "season": "2022/2023",
             "home_team": "JOVENS L´ELIANA",
@@ -275,7 +275,7 @@ class GenericParserTestCase_3(unittest.TestCase):
         doc = self.parser.read_link_file(self.test_file)
         game, (local_team, away_team) = self.parser.parse_game_stats(doc)
         self.assertEqual(game.date, "14/10/2022")
-        self.assertEqual(game.hour, "20:30")
+        self.assertEqual(game.time, "20:30")
         self.assertEqual(game.league, "LIGA EBA")
         self.assertEqual(game.season, "2022/2023")
         self.assertEqual(game.home_score, 63)
@@ -365,7 +365,7 @@ class GenericParserTestCase_4(unittest.TestCase):
 
         desired_dict = {
             "date": "05/11/2022",
-            "hour": "19:30",
+            "time": "19:30",
             "league": "LIGA EBA",
             "season": "2022/2023",
             "home_team": "PROYME ALGINET",
@@ -381,7 +381,7 @@ class GenericParserTestCase_4(unittest.TestCase):
         doc = self.parser.read_link_file(self.test_file)
         game, (local_team, away_team) = self.parser.parse_game_stats(doc)
         self.assertEqual(game.date, "05/11/2022")
-        self.assertEqual(game.hour, "19:30")
+        self.assertEqual(game.time, "19:30")
         self.assertEqual(game.league, "LIGA EBA")
         self.assertEqual(game.season, "2022/2023")
         self.assertEqual(game.home_score, 88)
@@ -471,7 +471,7 @@ class GenericParserTestCase_5(unittest.TestCase):
 
         desired_dict = {
             "date": "05/11/2022",
-            "hour": "17:30",
+            "time": "17:30",
             "league": "LIGA EBA",
             "season": "2022/2023",
             "home_team": "VALENCIA B.C.",
@@ -487,7 +487,7 @@ class GenericParserTestCase_5(unittest.TestCase):
         doc = self.parser.read_link_file(self.test_file)
         game, (local_team, away_team) = self.parser.parse_game_stats(doc)
         self.assertEqual(game.date, "05/11/2022")
-        self.assertEqual(game.hour, "17:30")
+        self.assertEqual(game.time, "17:30")
         self.assertEqual(game.league, "LIGA EBA")
         self.assertEqual(game.season, "2022/2023")
         self.assertEqual(game.home_score, 80)

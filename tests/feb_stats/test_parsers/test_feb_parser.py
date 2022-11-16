@@ -112,7 +112,7 @@ class GenericParserTestCase(unittest.TestCase):
 
         desired_dict = {
             "date": "08/03/2020",
-            "hour": "18:00",
+            "time": "18:00",
             "league": "LIGA EBA",
             "season": "2019/2020",
             "home_team": "HERO JAIRIS",
@@ -128,7 +128,7 @@ class GenericParserTestCase(unittest.TestCase):
         doc = self.parser.read_link_file(self.test_file)
         game, (local_team, away_team) = self.parser.parse_game_stats(doc)
         self.assertTrue(game.date, "08/03/2020")
-        self.assertTrue(game.hour, "18:00")
+        self.assertTrue(game.time, "18:00")
         self.assertTrue(game.league, "LIGA EBA")
         self.assertTrue(game.season, "2019/2020")
         self.assertTrue(game.home_score, "75")

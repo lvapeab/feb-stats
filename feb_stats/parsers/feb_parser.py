@@ -12,7 +12,7 @@ class FEBParser(GenericParser):
     def parse_game_metadata(self, doc: Element) -> Dict[str, str]:
         # Parse data by id
         date = doc.xpath('//span[@id="fechaLabel"]')
-        hour = doc.xpath('//span[@id="horaLabel"]')
+        time = doc.xpath('//span[@id="horaLabel"]')
         league = doc.xpath('//span[@id="paginaTitulo_ligaLabel"]')
         season = doc.xpath('//span[@id="paginaTitulo_temporadaLabel"]')
         home_team = doc.xpath('//a[@id="equipoLocalHyperLink"]')
@@ -25,7 +25,7 @@ class FEBParser(GenericParser):
 
         metadata_dict = {
             "date": self.parse_str(date[0].text_content()),
-            "hour": self.parse_str(hour[0].text_content()),
+            "time": self.parse_str(time[0].text_content()),
             "league": self.parse_str(league[0].text_content()),
             "season": self.parse_str(season[0].text_content()),
             "home_team": self.parse_str(home_team[0].text_content()),
