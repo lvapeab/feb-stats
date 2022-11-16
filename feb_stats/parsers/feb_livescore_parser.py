@@ -14,8 +14,10 @@ class FEBLivescoreParser(GenericParser):
         current_path = doc.xpath(xpath)
         while not value:
             try:
-                if current_path[-1].text:
-                    value = self.parse_str(current_path[-1].text, decode_bytes=True)
+                if current_path[-1].text_content():
+                    value = self.parse_str(
+                        current_path[-1].text_content(), decode_bytes=True
+                    )
                     return value
                 current_path = [x for x in current_path[-1]]
             except IndexError:
@@ -23,13 +25,16 @@ class FEBLivescoreParser(GenericParser):
 
     def parse_game_metadata(self, doc: Element) -> Dict[str, str]:
         # Parse data by id
-        hour_date = doc.xpath('//div[@class="fecha"]')
-
-        hour_date = self.parse_str(
-            hour_date[-1].text_content(), decode_bytes=True
-        ).split()  # Format: "Fecha XX/XX/XXXX - HH:MM
-        date = hour_date[1]
-        hour = hour_date[-1]
+        date = None
+        time = None
+        time_and_date_str = self.extract_nested_value(doc, '//div[@class="fecha"]')
+        if time_and_date_str is not None:
+            split_time_and_date = (
+                time_and_date_str.split()
+            )  # Format: "Fecha XX/XX/XXXX - HH:MM
+            if len(split_time_and_date) > 1:
+                date = split_time_and_date[1]
+                time = split_time_and_date[-1]
 
         season = self.extract_nested_value(doc, '//span[@class="temporada"]')
         league = self.extract_nested_value(doc, '//span[@class="liga"]')
@@ -55,14 +60,14 @@ class FEBLivescoreParser(GenericParser):
         # second_referee = ref[1]
         # home_team = codecs.latin_1_encode(self.parse_str(home_score[0].text_content()))
         metadata_dict = {
-            "date": date,
-            "hour": hour,
-            "league": league,
-            "season": season,
-            "home_team": home_team,
-            "home_score": home_score,
-            "away_team": away_team,
-            "away_score": away_score,
+            "date": date or "",
+            "time": time or "",
+            "league": league or "",
+            "season": season or "",
+            "home_team": home_team or "",
+            "home_score": home_score or "",
+            "away_team": away_team or "",
+            "away_score": away_score or "",
             # TODO(alvaro): Parse referees
             "main_referee": "-",  # self.parse_str(main_referee),
             "second_referee": "-",  # self.parse_str(second_referee),

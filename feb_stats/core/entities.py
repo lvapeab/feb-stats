@@ -44,7 +44,7 @@ class Game(Generic[T]):
 
     id: str
     date: str
-    hour: str
+    time: str
     league: str
     season: str
     home_team: Team
