@@ -135,9 +135,8 @@ class GenericParser(ABC):
                 with open(link, mode="r", encoding="latin1") as f:
                     document_string = f.read()
             else:
-                raise ValueError(
-                    f"Unable to find the resource {link} (not a valid URL nor an existing file.)"
-                )
+                document_string = link
+
         doc = lh.fromstring(document_string)
 
         return doc
