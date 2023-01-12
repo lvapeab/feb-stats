@@ -14,7 +14,8 @@ RUN apt-get update -y && \
 # System deps:
 RUN pip install "poetry==$POETRY_VERSION"
 
-COPY pyproject.toml /
+WORKDIR /code
+COPY pyproject.toml /code/
 
 RUN poetry config virtualenvs.create false \
   && poetry install --no-dev --no-interaction --no-ansi
@@ -22,8 +23,7 @@ RUN poetry config virtualenvs.create false \
 ENV PATH="/root/.poetry/bin:$PATH" \
     PYTHONPATH="/code:$PYTHONPATH"
 
-COPY ./ /code/
-WORKDIR /code
+COPY . .
 
 EXPOSE 80 50001
 
