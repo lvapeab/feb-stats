@@ -37,14 +37,19 @@ class GetFebStatsRequest(google___protobuf___message___Message):
     boxscores: google___protobuf___internal___containers___RepeatedScalarFieldContainer[
         builtin___bytes
     ] = ...
+    color_sheet: builtin___bool = ...
 
     def __init__(
         self,
         *,
         boxscores: typing___Optional[typing___Iterable[builtin___bytes]] = None,
+        color_sheet: typing___Optional[builtin___bool] = None,
     ) -> None: ...
     def ClearField(
-        self, field_name: typing_extensions___Literal["boxscores", b"boxscores"]
+        self,
+        field_name: typing_extensions___Literal[
+            "boxscores", b"boxscores", "color_sheet", b"color_sheet"
+        ],
     ) -> None: ...
 
 type___GetFebStatsRequest = GetFebStatsRequest

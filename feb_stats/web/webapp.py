@@ -78,10 +78,14 @@ def remove_boxscores() -> None:
 
 @app.route("/analyze", methods=["POST"])
 def analyze() -> Response:
+    color_sheet = False
+    if request.form.get("color-sheet"):
+        color_sheet = True
     boxscores = read_boxscores()
     grpc_address = f"{ports_config.get('grpc_address', 'localhost')}:f{ports_config.get('grpc_port', '50001')}"
     grpc_request = feb_stats_pb2.GetFebStatsRequest(
         boxscores=boxscores,
+        color_sheet=color_sheet,
     )
     service = FebStatsServiceServicer(SimpleLeagueHandler(address=grpc_address))
     grpc_response = service.GetFebStats(grpc_request, None)

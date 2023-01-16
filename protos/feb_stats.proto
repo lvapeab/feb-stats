@@ -8,6 +8,7 @@ service FebStatsService {
 
 message GetFebStatsRequest {
     repeated bytes boxscores = 1;
+    bool color_sheet = 2;
 }
 
 message GetFebStatsResponse {
