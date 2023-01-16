@@ -47,15 +47,18 @@
     <section id="data" class="wrapper style1 fullscreen fade-up">
         <div class="inner">
             <h1>Subir datos</h1>
-            <p> Sube tus actas. Puedes elegir o arrastrar varios archivos de una carpeta o arrastrar la carpeta entera
-                al cuadro: <br>
-                <span class="small">Ningún dato se almacena de manera permanente.</span></p>
+            Sube tus actas. Puedes elegir o arrastrar varios archivos de una carpeta o arrastrar la carpeta entera
+                al cuadro. <br>
+                Marcando colorear se destacan los datos estadísticamente anómalos con respecto a la media
+                de la liga o equipo.<br>
+                <span class="small">Ningún dato se almacena de manera permanente.</span>
             <div>
                 <form id="upload-widget" method="post" action="/upload" class="dropzone">
                     <div class="fallback"><input name="file" type="file"/></div>
                 </form>
             </div>
             <form method="post" id="analyze_button" action="/analyze" enctype="multipart/form-data">
+                Colorear &nbsp;<input type="checkbox" name="color-sheet" style="float: left;" value="False">
                 <button type="submit" style="float: right;" class="button">Analizar</button>
             </form>
         </div>

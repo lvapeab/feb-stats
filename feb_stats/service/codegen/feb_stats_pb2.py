@@ -13,7 +13,7 @@ _sym_db = _symbol_database.Default()
 
 
 DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(
-    b'\n\x0f\x66\x65\x62_stats.proto\x12\tfeb_stats"\'\n\x12GetFebStatsRequest\x12\x11\n\tboxscores\x18\x01 \x03(\x0c"3\n\x13GetFebStatsResponse\x12\r\n\x05sheet\x18\x01 \x01(\x0c\x12\r\n\x05teams\x18\x02 \x03(\t2_\n\x0f\x46\x65\x62StatsService\x12L\n\x0bGetFebStats\x12\x1d.feb_stats.GetFebStatsRequest\x1a\x1e.feb_stats.GetFebStatsResponseb\x06proto3'
+    b'\n\x0f\x66\x65\x62_stats.proto\x12\tfeb_stats"<\n\x12GetFebStatsRequest\x12\x11\n\tboxscores\x18\x01 \x03(\x0c\x12\x13\n\x0b\x63olor_sheet\x18\x02 \x01(\x08"3\n\x13GetFebStatsResponse\x12\r\n\x05sheet\x18\x01 \x01(\x0c\x12\r\n\x05teams\x18\x02 \x03(\t2_\n\x0f\x46\x65\x62StatsService\x12L\n\x0bGetFebStats\x12\x1d.feb_stats.GetFebStatsRequest\x1a\x1e.feb_stats.GetFebStatsResponseb\x06proto3'
 )
 
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, globals())
@@ -22,9 +22,9 @@ if _descriptor._USE_C_DESCRIPTORS == False:
 
     DESCRIPTOR._options = None
     _GETFEBSTATSREQUEST._serialized_start = 30
-    _GETFEBSTATSREQUEST._serialized_end = 69
-    _GETFEBSTATSRESPONSE._serialized_start = 71
-    _GETFEBSTATSRESPONSE._serialized_end = 122
-    _FEBSTATSSERVICE._serialized_start = 124
-    _FEBSTATSSERVICE._serialized_end = 219
+    _GETFEBSTATSREQUEST._serialized_end = 90
+    _GETFEBSTATSRESPONSE._serialized_start = 92
+    _GETFEBSTATSRESPONSE._serialized_end = 143
+    _FEBSTATSSERVICE._serialized_start = 145
+    _FEBSTATSSERVICE._serialized_end = 240
 # @@protoc_insertion_point(module_scope)

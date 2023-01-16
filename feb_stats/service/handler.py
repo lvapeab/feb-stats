@@ -11,7 +11,9 @@ from feb_stats.parsers.feb_livescore_parser import FEBLivescoreParser
 
 class LeagueHandler(ABC):
     @abstractmethod
-    def export_boxscores(self, input_boxscores: List[bytes]) -> bytes:
+    def export_boxscores(
+        self, input_boxscores: List[bytes], color_sheet: bool
+    ) -> bytes:
         raise NotImplementedError()
 
 
@@ -29,10 +31,12 @@ class SimpleLeagueHandler(LeagueHandler):
         self.league = compute_league_aggregates(league)
         return None
 
-    def export_boxscores(self, input_boxscores: List[bytes]) -> bytes:
+    def export_boxscores(
+        self, input_boxscores: List[bytes], color_sheet: bool
+    ) -> bytes:
         self.parse_boxscores(input_boxscores)
         assert self.league is not None
-        return league_to_xlsx(self.league)
+        return league_to_xlsx(self.league, export_colors=color_sheet)
 
     def clean_league(self) -> None:
         self.league = None

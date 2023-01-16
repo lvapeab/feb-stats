@@ -21,8 +21,9 @@ class FebStatsServiceServicer(feb_stats_pb2_grpc.FebStatsServiceServicer):
         self, request: GetFebStatsRequest, context: Optional[ContextStub]
     ) -> GetFebStatsResponse:
         boxscores: List[bytes] = request.boxscores  # type:ignore
+        color_sheet: bool = request.color_sheet
         # TODO: Add tenants when distributing the computations
-        result = self.league_handler.export_boxscores(boxscores)
+        result = self.league_handler.export_boxscores(boxscores, color_sheet)
         response = GetFebStatsResponse()
 
         response.sheet = result

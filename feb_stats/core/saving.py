@@ -53,12 +53,14 @@ def league_to_xlsx(
     filename: Optional[str] = None,
     col_width: int = 60,
     export_language: str = "es",
+    export_colors: bool = False,
 ) -> bytes:
     """Exports a league to xlsx.
     :param league: League to be exported.
     :param filename: Name of the file to be written.
     :param col_width: Column width.
     :param export_language: Export the league in different languages. Currently, only 'es' or 'en' supported.
+    :param export_colors: Add a color style to the output xlsx file.
     :return: The exported xlsx file, as bytes.
     """
 
@@ -91,17 +93,18 @@ def league_to_xlsx(
             "minutes",
         }
     )
-    aggregated_games = aggregated_games.style.apply(
-        gaussian_color_style,
-        subset=numerical_columns,
-        axis=0,
-    )
+    if export_colors:
+        aggregated_games = aggregated_games.style.apply(
+            gaussian_color_style,
+            subset=numerical_columns,
+            axis=0,
+        )
 
-    averaged_games = averaged_games.style.apply(
-        gaussian_color_style,
-        subset=numerical_columns,
-        axis=0,
-    )
+        averaged_games = averaged_games.style.apply(
+            gaussian_color_style,
+            subset=numerical_columns,
+            axis=0,
+        )
     column_names = list(
         map(lambda x: spanish_columns[x], columns)
         if export_language == "es"
@@ -152,17 +155,18 @@ def league_to_xlsx(
                 set(aggregated_team_season_games.columns)
                 - {"mode", "minutes", "player", "number"}
             )
-            aggregated_team_season_games = aggregated_team_season_games.style.apply(
-                gaussian_color_style,
-                subset=numerical_columns,
-                axis=0,
-            )
+            if export_colors:
+                aggregated_team_season_games = aggregated_team_season_games.style.apply(
+                    gaussian_color_style,
+                    subset=numerical_columns,
+                    axis=0,
+                )
 
-            averaged_team_season_games = averaged_team_season_games.style.apply(
-                gaussian_color_style,
-                subset=numerical_columns,
-                axis=0,
-            )
+                averaged_team_season_games = averaged_team_season_games.style.apply(
+                    gaussian_color_style,
+                    subset=numerical_columns,
+                    axis=0,
+                )
             aggregated_team_season_games.to_excel(
                 xlsx_writer,
                 float_format="%.2f",
