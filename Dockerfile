@@ -25,6 +25,6 @@ ENV PATH="/root/.poetry/bin:$PATH" \
 
 COPY . .
 
-EXPOSE 80 50001
+EXPOSE 80 80
 
 CMD ["poetry", "run", "gunicorn", "--umask", "4", "--bind", "0.0.0.0:80", "feb_stats.web.webapp:app"]
