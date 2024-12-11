@@ -1,7 +1,7 @@
 import pandas as pd
 from lxml.html import Element
 
-from feb_stats.core.entities import Game, Team
+from feb_stats.core.entities import Game
 from feb_stats.parsers.feb_livescore_stats_transforms import transform_game_stats_df
 from feb_stats.parsers.generic_parser import GenericParser
 
@@ -68,7 +68,7 @@ class FEBLivescoreParser(GenericParser):
         cls,
         doc: Element,
         ids: list[tuple[str, bool]] | str | None = None,
-    ) -> tuple[Game, tuple[Team, Team]]:
+    ) -> Game:
         ids = ids or '//table[@cellpadding="0" and @cellspacing="0"]//tbody'
         game_stats = {}
         metadata = cls.parse_game_metadata(doc)
@@ -84,7 +84,7 @@ class FEBLivescoreParser(GenericParser):
             game_stats[key] = df
 
         assert game_stats
-        return cls.create_objects(metadata, game_stats)
+        return cls.create_game(metadata, game_stats)
 
     @classmethod
     def elements_to_df(

@@ -124,7 +124,7 @@ class GenericParserTestCase(unittest.TestCase):
 
     def test_parse_game_stats(self) -> None:
         doc = FEBParser.read_link_file(self.test_file)
-        game, (local_team, away_team) = FEBParser.parse_game_stats(doc)
+        game = FEBParser.parse_game_stats(doc)
         self.assertTrue(game.date, "08/03/2020")
         self.assertTrue(game.time, "18:00")
         self.assertTrue(game.league, "LIGA EBA")
@@ -134,8 +134,8 @@ class GenericParserTestCase(unittest.TestCase):
         self.assertTrue(game.away_score, "68")
         self.assertTrue(game.main_referee, "SERRAT MOLINS. ALBERT")
         self.assertTrue(game.aux_referee, "ARAQUE CACERES. MAURO")
-        self.assertTrue(local_team.name, "HERO JAIRIS")
-        self.assertTrue(away_team.name, "UCAM MURCIA JIFFY")
+        self.assertTrue(game.home_team.name, "HERO JAIRIS")
+        self.assertTrue(game.away_team.name, "UCAM MURCIA JIFFY")
 
 
 if __name__ == "__main__":
