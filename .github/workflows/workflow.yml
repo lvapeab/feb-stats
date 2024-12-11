@@ -15,25 +15,22 @@ jobs:
     - name: Checkout LFS objects
       run: git lfs checkout
 
-    - name: Set up Python 3.8
-      uses: actions/setup-python@v2
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v4
       with:
-        python-version: 3.8
+        python-version: 3.11
+        cache: "pipenv"
 
-    - name: Setup Poetry
-      uses: abatilo/actions-poetry@v2.1.6
+    - name: Setup PIpenv
+      uses: tiagovrtr/actions-pipenv@v1
       with:
-        poetry-version: 1.1.15
+        pipenv-version: v2024.4.0
 
     - name: Install Dependencies
-      run: poetry install
+      run: pipenv install --dev
 
     - name: Run Lint
-      run: |
-        poetry run black .
-        poetry run isort .
-        poetry run mypy .
-        poetry run flake8 .
+      run: pipenv run lint
 
     - name: Run tests
-      run: poetry run pytest tests
+      run: pipenv run pytest tests
