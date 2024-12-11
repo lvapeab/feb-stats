@@ -38,8 +38,7 @@ def get_team_boxscores(league: League, team: Team) -> list[Boxscore]:
     :return: List of boxscores of `team`.
     """
     return [
-        game.local_boxscore if game.home_team == team else game.away_boxscore
-        for game in get_games_by_team(league, team)
+        game.home_boxscore if game.home_team == team else game.away_boxscore for game in get_games_by_team(league, team)
     ]
 
 
@@ -50,8 +49,7 @@ def get_rival_boxscores(league: League, team: Team) -> list[Boxscore]:
     :return: List of boxscores of the rivals of  `team`.
     """
     return [
-        game.local_boxscore if game.home_team != team else game.away_boxscore
-        for game in get_games_by_team(league, team)
+        game.home_boxscore if game.home_team != team else game.away_boxscore for game in get_games_by_team(league, team)
     ]
 
 

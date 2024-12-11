@@ -1,27 +1,31 @@
-from dataclasses import dataclass
-from typing import Generic, TypeVar
-
+from pydantic import BaseModel, ConfigDict, field_validator
 import pandas as pd
+from typing import Any
+from feb_stats.core.validation_functions import validate_string, validate_int, validate_datetime
+import datetime
 
-T = TypeVar("T")
 
-
-@dataclass(frozen=True)
-class Player(Generic[T]):
+class Player(BaseModel):
     """Player from a team."""
 
-    id: str
     name: str
     season_stats: pd.DataFrame | None = None
 
+    model_config = ConfigDict(arbitrary_types_allowed=True, frozen=True)
 
-@dataclass(frozen=True)
-class Team(Generic[T]):
+    @field_validator("name")
+    @classmethod
+    def validate_name(cls, v: str) -> str:
+        return validate_string(v)
+
+
+class Team(BaseModel):
     """Team from a league."""
 
-    id: str
     name: str
     season_stats: pd.DataFrame | None = None
+
+    model_config = ConfigDict(arbitrary_types_allowed=True, frozen=True)
 
     def __str__(self) -> str:
         return str(self.name)
@@ -29,44 +33,85 @@ class Team(Generic[T]):
     def __repr__(self) -> str:
         return str(self.name)
 
+    @field_validator("name")
+    @classmethod
+    def validate_name(cls, v: str) -> str:
+        return validate_string(v)
 
-@dataclass(frozen=True)
-class Boxscore(Generic[T]):
+
+class Boxscore(BaseModel):
     """Boxscore from a game."""
 
+    team: Team
+    score: int
     boxscore: pd.DataFrame
-    id: str | None = None
+
+    model_config = ConfigDict(arbitrary_types_allowed=True, frozen=True)
+
+    @field_validator("score")
+    @classmethod
+    def validate_score(cls, v: Any) -> int:
+        return validate_int(v)
 
 
-@dataclass(frozen=True)
-class Game(Generic[T]):
+class Game(BaseModel):
     """Game from a league."""
 
-    id: str
-    date: str
-    time: str
+    game_at: datetime.datetime
     league: str
     season: str
-    home_team: Team
-    away_team: Team
-    home_score: int
-    away_score: int
     main_referee: Player
     aux_referee: Player
-    local_boxscore: Boxscore
+    home_boxscore: Boxscore
     away_boxscore: Boxscore
 
+    model_config = ConfigDict(arbitrary_types_allowed=True, frozen=True)
 
-@dataclass(frozen=True)
-class League(Generic[T]):
+    @field_validator("game_at", mode="before")
+    @classmethod
+    def validate_datetime(cls, v: Any) -> datetime.date:
+        return validate_datetime(v)
+
+    @property
+    def date(self) -> str:
+        return self.game_at.date().strftime("%d/%m/%Y")
+
+    @property
+    def time(self) -> str:
+        return self.game_at.strftime("%H:%M")
+
+    @property
+    def home_score(self) -> int:
+        return self.home_boxscore.score
+
+    @property
+    def away_score(self) -> int:
+        return self.away_boxscore.score
+
+    @property
+    def home_team(self) -> Team:
+        return self.home_boxscore.team
+
+    @property
+    def away_team(self) -> Team:
+        return self.away_boxscore.team
+
+    @property
+    def teams(self) -> list[Team]:
+        return [self.home_boxscore.team, self.away_boxscore.team]
+
+
+class League(BaseModel):
     """Basketball league."""
 
-    id: str
     name: str
     season: str
     teams: list[Team]
     games: list[Game]
+
     aggregated_games: pd.DataFrame | None = None
+
+    model_config = ConfigDict(arbitrary_types_allowed=True, frozen=True)
 
     def __str__(self) -> str:
         return f"{self.name} - {self.season}"

@@ -1,4 +1,3 @@
-import hashlib
 import os
 from abc import ABC, abstractmethod
 from typing import TypeVar
@@ -38,7 +37,6 @@ class GenericParser(ABC):
     @staticmethod
     def create_league(all_games: list[Game], all_teams: set[Team]) -> League:
         return League(
-            id=hashlib.md5(f"{all_games[0].league}".encode()).hexdigest(),
             name=all_games[0].league,
             season=all_games[0].season,
             teams=list(all_teams),
@@ -46,45 +44,24 @@ class GenericParser(ABC):
         )
 
     @staticmethod
-    def create_objects(metadata: dict[str, str], game_stats: dict[str, pd.DataFrame]) -> tuple[Game, tuple[Team, Team]]:
-        home_team: Team = Team(
-            id=hashlib.md5(metadata["home_team"].encode("utf-8")).hexdigest(),
-            name=metadata["home_team"],
-        )
-        away_team: Team = Team(
-            id=hashlib.md5(metadata["away_team"].encode("utf-8")).hexdigest(),
-            name=metadata["away_team"],
-        )
-        game: Game = Game(
-            id=hashlib.md5(
-                f"{metadata['league']}{metadata['date']}{metadata['home_team']}{metadata['away_team']}".encode()
-            ).hexdigest(),
-            date=metadata["date"],
-            time=metadata["time"],
+    def create_game(metadata: dict[str, str], game_stats: dict[str, pd.DataFrame]) -> Game:
+        return Game(
+            game_at=f'{metadata["date"]} {metadata["time"]}',  # type: ignore[arg-type]  # Validated by Pydantic
             league=metadata["league"],
             season=metadata["season"],
-            home_team=home_team,
-            home_score=int(metadata["home_score"]),
-            away_team=away_team,
-            away_score=int(metadata["away_score"]),
-            main_referee=Player(
-                id=hashlib.md5(metadata["main_referee"].encode("utf-8")).hexdigest(),
-                name=metadata["main_referee"],
-            ),
-            aux_referee=Player(
-                id=hashlib.md5(metadata["second_referee"].encode("utf-8")).hexdigest(),
-                name=metadata["second_referee"],
-            ),
-            local_boxscore=Boxscore(
-                id=hashlib.md5(f"{metadata['league']}_{metadata['date']}_{metadata['home_team']}".encode()).hexdigest(),
+            main_referee=Player(name=metadata["main_referee"]),
+            aux_referee=Player(name=metadata["second_referee"]),
+            home_boxscore=Boxscore(
                 boxscore=game_stats["home_boxscore"],
+                team=Team(name=metadata["home_team"]),
+                score=int(metadata["home_score"]),
             ),
             away_boxscore=Boxscore(
-                id=hashlib.md5(f"{metadata['league']}_{metadata['date']}_{metadata['away_team']}".encode()).hexdigest(),
                 boxscore=game_stats["away_boxscore"],
+                team=Team(name=metadata["away_team"]),
+                score=int(metadata["away_score"]),
             ),
         )
-        return game, (home_team, away_team)
 
     @classmethod
     def parse_boxscores(
@@ -96,9 +73,9 @@ class GenericParser(ABC):
         all_teams = set()
         for link in boxscores:
             doc = reader_fn(link)  # type: ignore[arg-type]
-            game, teams = cls.parse_game_stats(doc)
+            game = cls.parse_game_stats(doc)
             all_games.append(game)
-            for team in teams:
+            for team in game.teams:
                 all_teams.add(team)
 
         if all_games:
@@ -140,7 +117,5 @@ class GenericParser(ABC):
 
     @classmethod
     @abstractmethod
-    def parse_game_stats(
-        cls, doc: Element, ids: list[tuple[str, bool]] | str | None = None
-    ) -> tuple[Game, tuple[Team, Team]]:
+    def parse_game_stats(cls, doc: Element, ids: list[tuple[str, bool]] | str | None = None) -> Game:
         pass

@@ -136,9 +136,13 @@ def aggregate_boxscores(boxscores: list[Boxscore]) -> Boxscore:
     :param boxscores: List of Boxscores to sum.
     :return: A Boxscore as the sum of `boxscores`.
     """
+    if not boxscores:
+        raise ValueError("Boxscores cannot be empty.")
     all_dfs = [boxscore.boxscore.set_index("player") for boxscore in boxscores]
     agg_df = functools.reduce(lambda df1, df2: sum_boxscores(df1, df2), all_dfs)
-    return Boxscore(boxscore=agg_df)
+    team = boxscores[0].team
+    scores = sum(bs.score for bs in boxscores)
+    return Boxscore(boxscore=agg_df, team=team, score=scores)
 
 
 def compute_league_aggregates(league: League) -> League:
@@ -157,7 +161,7 @@ def compute_league_aggregates(league: League) -> League:
         total_team_df = team_df.index.isin(["Total"])
         players_df = team_df.loc[~total_team_df, :]
 
-        aggregated_league_teams.append(Team(id=team.id, name=team.name, season_stats=players_df))
+        aggregated_league_teams.append(Team(name=team.name, season_stats=players_df))
 
         team_df = team_df.loc["Total", :].copy()
 
@@ -177,7 +181,6 @@ def compute_league_aggregates(league: League) -> League:
     aggregated_games_df = aggregated_games_df.rename(columns={"index": "mode"})
 
     return League(
-        id=league.id,
         name=league.name,
         season=league.season,
         teams=aggregated_league_teams,

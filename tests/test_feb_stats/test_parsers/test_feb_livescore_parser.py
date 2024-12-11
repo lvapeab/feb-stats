@@ -92,15 +92,15 @@ class TestLivescoreParserScenarios(unittest.TestCase):
 
     def assert_parse_game_stats(self, input_doc, expected_dict) -> None:
         doc = FEBLivescoreParser.read_link_file(input_doc)
-        game, (local_team, away_team) = FEBLivescoreParser.parse_game_stats(doc)
-        self.assertEqual(expected_dict["date"], game.date)
+        game = FEBLivescoreParser.parse_game_stats(doc)
+        self.assertEqual(expected_dict["date"], str(game.date))
         self.assertEqual(expected_dict["time"], game.time)
         self.assertEqual(expected_dict["league"], game.league)
         self.assertEqual(expected_dict["season"], game.season)
         self.assertEqual(int(expected_dict["home_score"]), game.home_score)
         self.assertEqual(int(expected_dict["away_score"]), game.away_score)
-        self.assertEqual(expected_dict["home_team"], local_team.name)
-        self.assertEqual(expected_dict["away_team"], away_team.name)
+        self.assertEqual(expected_dict["home_team"], game.home_team.name)
+        self.assertEqual(expected_dict["away_team"], game.away_team.name)
         # self.assertEqual(game.main_referee, "SERRAT MOLINS. ALBERT")
         # self.assertEqual(game.aux_referee, "ARAQUE CACERES. MAURO")
 

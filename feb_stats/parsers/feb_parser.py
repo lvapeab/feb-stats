@@ -1,7 +1,7 @@
 import pandas as pd
 from lxml.html import Element
 
-from feb_stats.core.entities import Game, Team
+from feb_stats.core.entities import Game
 from feb_stats.parsers.feb_stats_transforms import transform_game_stats_df
 from feb_stats.parsers.generic_parser import GenericParser
 
@@ -38,9 +38,7 @@ class FEBParser(GenericParser):
         return metadata_dict
 
     @classmethod
-    def parse_game_stats(
-        cls, doc: Element, ids: list[tuple[str, bool]] | str | None = None
-    ) -> tuple[Game, tuple[Team, Team]]:
+    def parse_game_stats(cls, doc: Element, ids: list[tuple[str, bool]] | str | None = None) -> Game:
         ids = ids or [
             ('//table[@id="jugadoresLocalDataGrid"]//tr', True),
             ('//table[@id="jugadoresVisitanteDataGrid"]//tr', False),
@@ -59,7 +57,7 @@ class FEBParser(GenericParser):
             else:
                 raise ValueError(f"Unable to parse stats from {doc_id}")
         assert game_stats
-        return cls.create_objects(metadata, game_stats)
+        return cls.create_game(metadata, game_stats)
 
     @classmethod
     def elements_to_df(cls, tr_elements: list[Element], initial_row: int = 2, n_elem: int = 0) -> pd.DataFrame:
