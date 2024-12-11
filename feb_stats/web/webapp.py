@@ -67,7 +67,9 @@ def upload() -> Any:
 
 def get_boxscore_files() -> list[str]:
     return [
-        file for extension in ALLOWED_EXTENSIONS for file in Path(app.config["UPLOAD_FOLDER"]).glob(f"*.{extension}")
+        str(file)
+        for extension in ALLOWED_EXTENSIONS
+        for file in Path(app.config["UPLOAD_FOLDER"]).glob(f"*.{extension}")
     ]
 
 
