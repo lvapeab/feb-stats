@@ -12,16 +12,19 @@ from werkzeug.wrappers import Response
 from feb_stats.service.api import FebStatsServiceServicer
 from feb_stats.service.handler import SimpleLeagueHandler
 from feb_stats.service.server import feb_stats_pb2
-from feb_stats.tools.export_boxscores import read_file
+from feb_stats.web.read_write import read_file
 
 logger = logging.getLogger(__name__)
 
 ALLOWED_EXTENSIONS = {"html", "htm"}
 
+curr_dir = Path(__file__).parent
+
 if os.environ.get("SERVER_ENVIRONMENT", "") == "PRODUCTION":
-    config_filename = "feb_stats/web/config/production.yaml"
+    config_filename = str(curr_dir / "config/production.yaml")
 else:
-    config_filename = "feb_stats/web/config/local.yaml"
+    config_filename = str(curr_dir / "config/local.yaml")
+
 
 with open(config_filename) as f:
     config = yaml.safe_load(f)
@@ -41,7 +44,7 @@ def index(name: str | None = None) -> Any:
     return render_template("index.html", name=name)
 
 
-def allowed_file_extension(filename: str) -> bool:
+def is_allowed_file_extension(filename: str) -> bool:
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
@@ -54,7 +57,7 @@ def upload() -> Any:
             return redirect(request.url)
 
         file = request.files["file"]
-        if file and file.filename and allowed_file_extension(file.filename):
+        if file and file.filename and is_allowed_file_extension(file.filename):
             filename = secure_filename(file.filename)
             filepath = os.path.join(app.config["UPLOAD_FOLDER"], filename)
             logger.info(f"Saving file to {filepath}.")

@@ -31,11 +31,13 @@ line-ending = "auto"
 
 
 [tool.coverage.run]
-omit = ["*/settings/*",
+omit = [
+    "*/settings/*",
     "*/migrations/*",
     ".venv/*",
     "*/tests/*",
-    "*/management/*",
+    "*/scripts/*",
+    "*/*/codegen/*",
 ]
 
 [tool.coverage.report]

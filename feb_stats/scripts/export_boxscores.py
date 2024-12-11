@@ -11,12 +11,6 @@ from feb_stats.parsers.feb_livescore_parser import FEBLivescoreParser
 from feb_stats.parsers.feb_parser import FEBParser
 
 
-def read_file(filename: str) -> bytes:
-    with open(filename, mode="rb") as f:
-        read_f = f.read()
-    return read_f
-
-
 def export_boxscores_from_files(boxscores: list[str]) -> bytes:
     """Export a league to xlsx format from a list of boxscores.
     :param boxscores: The list of boxscore files to read.
