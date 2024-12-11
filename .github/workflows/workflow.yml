@@ -32,5 +32,9 @@ jobs:
     - name: Run Lint
       run: pipenv run lint
 
-    - name: Run tests
-      run: pipenv run pytest tests
+    - name: Run tests with coverage
+      run: | 
+        pipenv run pytest tests \
+          --cov=./ \
+          --cov-report=term-missing \
+          --cov-fail-under=90

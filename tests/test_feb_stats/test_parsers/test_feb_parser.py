@@ -39,6 +39,10 @@ class GenericParserTestCase(unittest.TestCase):
         out_str = FEBParser.parse_str(test_str)
         self.assertEqual(out_str, desired_test_str)
 
+    def test_invalid_link_file(self):
+        with self.assertRaises(ValueError):
+            FEBParser.read_link_file(12)
+
     def test_get_elements(self) -> None:
         doc = FEBParser.read_link_file(self.test_file)
         id = '//table[@id="jugadoresLocalDataGrid"]//tr'

@@ -19,6 +19,10 @@ class FebStatsServiceServicerTest(unittest.TestCase):
         result = service.GetFebStats(request, ContextStub())
         self.assertTrue(result.sheet)
 
+        request_with_color = GetFebStatsRequest(boxscores=boxscores, color_sheet=True)
+        result_with_color = service.GetFebStats(request_with_color, ContextStub())
+        self.assertTrue(result_with_color.sheet)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -152,6 +152,10 @@ class GenericParserTestCase(unittest.TestCase):
             self.assertEqual(2, len(league.teams))
             self.assertEqual(1, len(league.games))
 
+    def test_parse_boxscores_no_boxscores(self) -> None:
+        with self.assertRaises(ValueError):
+            FEBLivescoreParser.parse_boxscores([], FEBLivescoreParser.read_link_bytes)
+
     def test_read_link_bytes(self) -> None:
         for test_file in self.test_files:
             with open(test_file, mode="rb") as f:
