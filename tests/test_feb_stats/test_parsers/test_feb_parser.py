@@ -1,65 +1,59 @@
 import unittest
 from typing import Any
-
+from pathlib import Path
 from feb_stats.parsers.feb_parser import FEBParser
 
 
 class GenericParserTestCase(unittest.TestCase):
     def __init__(self, *args: Any, **kwargs: Any):
         super(GenericParserTestCase, self).__init__(*args, **kwargs)
-        self.parser = FEBParser()
-        self.test_file = "tests/data/1.html"
+        test_dir = Path(__file__).parent.parent.parent
+        self.test_file = str(test_dir / "data/1.html")
 
     def test_parse_str(self) -> None:
-        test_str = (
-            "             Rebotes                            D          O          T "
-        )
+        test_str = "             Rebotes                            D          O          T "
         desired_test_str = "Rebotes D O T"
-        out_str = self.parser.parse_str(test_str)
+        out_str = FEBParser.parse_str(test_str)
         self.assertEqual(out_str, desired_test_str)
 
         test_str = "\n\t\t\t\t\t\t\n\t\t\t\t\nRebotes\n\t\t\t\t\t\n\t\t\tD\n\t\t\t\t\t\tO\n\t\t\t\t\t\tT\n\t\t\t\t\t\t"
-        out_str = self.parser.parse_str(test_str)
+        out_str = FEBParser.parse_str(test_str)
         self.assertEqual(out_str, desired_test_str)
 
         test_str = "                       0                               0                               0           "
         desired_test_str = "0 0 0"
-        out_str = self.parser.parse_str(test_str)
+        out_str = FEBParser.parse_str(test_str)
         self.assertEqual(out_str, desired_test_str)
 
-        test_str = (
-            "\n\t\t\t\t\t\t\n\t\t\t\t\n0\n\t\t\t\t\t\n\t\t\t0\n\t\t\t\t\t\t0\t\t\t\t\t"
-        )
-        out_str = self.parser.parse_str(test_str)
+        test_str = "\n\t\t\t\t\t\t\n\t\t\t\t\n0\n\t\t\t\t\t\n\t\t\t0\n\t\t\t\t\t\t0\t\t\t\t\t"
+        out_str = FEBParser.parse_str(test_str)
         self.assertEqual(out_str, desired_test_str)
 
-        test_str = (
-            "             Tapones                            Fa          Co          "
-        )
+        test_str = "             Tapones                            Fa          Co          "
         desired_test_str = "Tapones Fa Co"
-        out_str = self.parser.parse_str(test_str)
+        out_str = FEBParser.parse_str(test_str)
         self.assertEqual(out_str, desired_test_str)
 
         test_str = "                       0                               0           "
         desired_test_str = "0 0"
-        out_str = self.parser.parse_str(test_str)
+        out_str = FEBParser.parse_str(test_str)
         self.assertEqual(out_str, desired_test_str)
 
     def test_get_elements(self) -> None:
-        doc = self.parser.read_link_file(self.test_file)
+        doc = FEBParser.read_link_file(self.test_file)
         id = '//table[@id="jugadoresLocalDataGrid"]//tr'
-        elements = self.parser.get_elements(doc, id)
+        elements = FEBParser.get_elements(doc, id)
         self.assertEqual(len(elements), 51)
 
         id = '//table[@id="jugadoresVisitanteDataGrid"]//tr'
-        elements = self.parser.get_elements(doc, id)
+        elements = FEBParser.get_elements(doc, id)
         self.assertEqual(len(elements), 59)
 
     def test_elements_to_df(self) -> None:
-        doc = self.parser.read_link_file(self.test_file)
+        doc = FEBParser.read_link_file(self.test_file)
         id = '//table[@id="jugadoresLocalDataGrid"]//tr'
-        elements = self.parser.get_elements(doc, id)
-        df = self.parser.elements_to_df(elements, initial_row=2, n_elem=0)
+        elements = FEBParser.get_elements(doc, id)
+        df = FEBParser.elements_to_df(elements, initial_row=2, n_elem=0)
         self.assertEqual(df.shape, (11, 18))
         self.assertListEqual(
             list(df.columns),
@@ -88,27 +82,27 @@ class GenericParserTestCase(unittest.TestCase):
     def test_parse_boxscores(self) -> None:
         with open(self.test_file, mode="rb") as f:
             boxscores_bytes = f.read()
-        league = self.parser.parse_boxscores([boxscores_bytes])
+        league = FEBParser.parse_boxscores([boxscores_bytes], FEBParser.read_link_bytes)
         self.assertEqual(2, len(league.teams))
         self.assertEqual(1, len(league.games))
 
     def test_read_link_bytes(self) -> None:
         with open(self.test_file, mode="rb") as f:
             link_bytes = f.read()
-        doc = self.parser.read_link_bytes(link_bytes)
+        doc = FEBParser.read_link_bytes(link_bytes)
         self.assertIsNotNone(doc.forms)
         self.assertIsNotNone(doc.body)
         self.assertIsNotNone(doc.head)
 
     def test_read_link_file(self) -> None:
-        doc = self.parser.read_link_file(self.test_file)
+        doc = FEBParser.read_link_file(self.test_file)
         self.assertIsNotNone(doc.forms)
         self.assertIsNotNone(doc.body)
         self.assertIsNotNone(doc.head)
 
     def test_parse_game_metadata(self) -> None:
-        doc = self.parser.read_link_file(self.test_file)
-        game_metadata = self.parser.parse_game_metadata(doc)
+        doc = FEBParser.read_link_file(self.test_file)
+        game_metadata = FEBParser.parse_game_metadata(doc)
 
         desired_dict = {
             "date": "08/03/2020",
@@ -125,8 +119,8 @@ class GenericParserTestCase(unittest.TestCase):
         self.assertDictEqual(game_metadata, desired_dict)
 
     def test_parse_game_stats(self) -> None:
-        doc = self.parser.read_link_file(self.test_file)
-        game, (local_team, away_team) = self.parser.parse_game_stats(doc)
+        doc = FEBParser.read_link_file(self.test_file)
+        game, (local_team, away_team) = FEBParser.parse_game_stats(doc)
         self.assertTrue(game.date, "08/03/2020")
         self.assertTrue(game.time, "18:00")
         self.assertTrue(game.league, "LIGA EBA")

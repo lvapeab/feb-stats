@@ -1,5 +1,4 @@
 from io import BytesIO
-from typing import List, Optional
 
 import numpy as np
 import pandas as pd
@@ -24,15 +23,11 @@ def gaussian_color_style(
     low_regime: str = f"background-color: {LOW_VALUES_COLOR}; border: 1px solid",
     very_low_regime: str = f"background-color: {VERY_LOW_VALUES_COLOR}; border: 1px solid",
     regular_regime: str = "border: 1px solid",
-) -> List[str]:
+) -> list[str]:
     high_indices = np.where(s > s.mean() + s.std(), high_regime, regular_regime)
-    very_high_indices = np.where(
-        s > s.mean() + 2 * s.std(), very_high_regime, regular_regime
-    )
+    very_high_indices = np.where(s > s.mean() + 2 * s.std(), very_high_regime, regular_regime)
     low_indices = np.where(s < s.mean() - s.std(), low_regime, regular_regime)
-    very_low_indices = np.where(
-        s < s.mean() - 2 * s.std(), very_low_regime, regular_regime
-    )
+    very_low_indices = np.where(s < s.mean() - 2 * s.std(), very_low_regime, regular_regime)
     out_color = []
     for i in range(len(high_indices)):
         if very_high_indices[i] != regular_regime:
@@ -50,7 +45,7 @@ def gaussian_color_style(
 
 def league_to_xlsx(
     league: League,
-    filename: Optional[str] = None,
+    filename: str | None = None,
     col_width: int = 60,
     export_language: str = "es",
     export_colors: bool = False,
@@ -68,9 +63,7 @@ def league_to_xlsx(
         raise ValueError(f"The league {league} has no aggregated games.")
     filename = filename or f'{league.name}_{league.season.replace("/", "-")}.xlsx'
 
-    xlsx_writer = pd.ExcelWriter(
-        filename, engine="openpyxl", mode="w", date_format="DD-MM-YYYY"
-    )
+    xlsx_writer = pd.ExcelWriter(filename, engine="openpyxl", mode="w", date_format="DD-MM-YYYY")
 
     sheet_name = f'{league.name}_{league.season.replace("/", "-")}'
     columns = get_sorted_list_of_columns()
@@ -105,18 +98,13 @@ def league_to_xlsx(
             subset=numerical_columns,
             axis=0,
         )
-    column_names = list(
-        map(lambda x: spanish_columns[x], columns)
-        if export_language == "es"
-        else columns
-    )
+    column_names = list(map(lambda x: spanish_columns[x], columns) if export_language == "es" else columns)
     column_names = list(map(lambda x: "\n".join(x.split()), column_names))
 
     aggregated_games.to_excel(
         xlsx_writer,
         float_format="%.2f",
         columns=columns,
-        encoding="latin1",
         header=column_names,
         sheet_name=sheet_name,
     )
@@ -125,35 +113,27 @@ def league_to_xlsx(
         xlsx_writer,
         float_format="%.2f",
         columns=columns,
-        encoding="latin1",
         header=column_names,
         sheet_name=f"Medias {sheet_name}",
     )
 
     player_columns = get_sorted_list_of_columns(individual_columns=True)
     player_column_names = list(
-        map(lambda x: spanish_columns[x], player_columns)
-        if export_language == "es"
-        else player_columns
+        map(lambda x: spanish_columns[x], player_columns) if export_language == "es" else player_columns
     )
     player_column_names = list(map(lambda x: "\n".join(x.split()), player_column_names))
     for team in league.teams:
         if team.season_stats is not None:
             aggregated_team_season_games = team.season_stats.loc[:, player_columns]
-            averaged_team_season_games = average_games(
-                aggregated_team_season_games.copy(), individual_columns=True
-            )
-            aggregated_team_season_games.loc[
-                :, "minutes"
-            ] = aggregated_team_season_games["minutes"].apply(
+            averaged_team_season_games = average_games(aggregated_team_season_games.copy(), individual_columns=True)
+            aggregated_team_season_games.loc[:, "minutes"] = aggregated_team_season_games["minutes"].apply(
                 lambda x: timedelta_to_str(x) if not pd.isnull(x) else ""
             )
-            averaged_team_season_games.loc[:, "minutes"] = averaged_team_season_games[
-                "minutes"
-            ].apply(lambda x: timedelta_to_str(x) if not pd.isnull(x) else "")
+            averaged_team_season_games.loc[:, "minutes"] = averaged_team_season_games["minutes"].apply(
+                lambda x: timedelta_to_str(x) if not pd.isnull(x) else ""
+            )
             numerical_columns = list(
-                set(aggregated_team_season_games.columns)
-                - {"mode", "minutes", "player", "number"}
+                set(aggregated_team_season_games.columns) - {"mode", "minutes", "player", "number"}
             )
             if export_colors:
                 aggregated_team_season_games = aggregated_team_season_games.style.apply(
@@ -172,7 +152,6 @@ def league_to_xlsx(
                 float_format="%.2f",
                 columns=player_columns,
                 header=player_column_names,
-                encoding="latin1",
                 sheet_name=team.name[:31],
             )
             averaged_team_season_games.to_excel(
@@ -180,7 +159,6 @@ def league_to_xlsx(
                 float_format="%.2f",
                 columns=player_columns,
                 header=player_column_names,
-                encoding="latin1",
                 sheet_name=f"Medias {team.name}"[:31],
             )
 

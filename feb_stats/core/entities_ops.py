@@ -1,5 +1,3 @@
-from typing import List
-
 import numpy as np
 import pandas as pd
 
@@ -20,7 +18,7 @@ def get_team_by_name(league: League, team_name: str) -> Team:
     raise Exception(f"Unable to find the team {team_name} in the league {league}")
 
 
-def get_games_by_team(league: League, team: Team) -> List[Game]:
+def get_games_by_team(league: League, team: Team) -> list[Game]:
     """Retrieves all the games played by a team in a league.
     :param league: League to retrieve from.
     :param team: Team whose games will be retrieved.
@@ -33,7 +31,7 @@ def get_games_by_team(league: League, team: Team) -> List[Game]:
     return matching_games
 
 
-def get_team_boxscores(league: League, team: Team) -> List[Boxscore]:
+def get_team_boxscores(league: League, team: Team) -> list[Boxscore]:
     """Retrieves the boxscores of a team from a league.
     :param league: League to retrieve from.
     :param team: Team whose boxscores will be retrieved.
@@ -45,7 +43,7 @@ def get_team_boxscores(league: League, team: Team) -> List[Boxscore]:
     ]
 
 
-def get_rival_boxscores(league: League, team: Team) -> List[Boxscore]:
+def get_rival_boxscores(league: League, team: Team) -> list[Boxscore]:
     """Retrieves the boxscores of the rivals of a team from a league.
     :param league: League to retrieve from.
     :param team: Team whose rival boxscores will be retrieved.
@@ -64,12 +62,8 @@ def average_games(df: pd.DataFrame, individual_columns: bool = False) -> pd.Data
     :return: Averaged dataframe.
     """
     n_games = df.loc[:, "games"].astype(np.float32)
-    df.loc[
-        :, get_averageable_numerical_columns(individual_columns=individual_columns)
-    ] = (
-        df.loc[
-            :, get_averageable_numerical_columns(individual_columns=individual_columns)
-        ]
+    df.loc[:, get_averageable_numerical_columns(individual_columns=individual_columns)] = (
+        df.loc[:, get_averageable_numerical_columns(individual_columns=individual_columns)]
         .astype(np.float32)
         .div(n_games, axis="rows")
     )

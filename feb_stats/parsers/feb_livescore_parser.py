@@ -1,5 +1,3 @@
-from typing import Dict, List, Optional, Tuple, Union
-
 import pandas as pd
 from lxml.html import Element
 
@@ -9,52 +7,42 @@ from feb_stats.parsers.generic_parser import GenericParser
 
 
 class FEBLivescoreParser(GenericParser):
-    def extract_nested_value(self, doc: Element, xpath: str) -> Optional[str]:
+    @classmethod
+    def extract_nested_value(cls, doc: Element, xpath: str) -> str | None:
         value = None
         current_path = doc.xpath(xpath)
         while not value:
             try:
                 if current_path[-1].text_content():
-                    value = self.parse_str(
-                        current_path[-1].text_content(), decode_bytes=True
-                    )
+                    value = cls.parse_str(current_path[-1].text_content(), decode_bytes=True)
                     return value
                 current_path = [x for x in current_path[-1]]
             except IndexError:
                 return None
 
-    def parse_game_metadata(self, doc: Element) -> Dict[str, str]:
+    @classmethod
+    def parse_game_metadata(cls, doc: Element) -> dict[str, str]:
         # Parse data by id
         date = None
         time = None
-        time_and_date_str = self.extract_nested_value(doc, '//div[@class="fecha"]')
+        time_and_date_str = cls.extract_nested_value(doc, '//div[@class="fecha"]')
         if time_and_date_str is not None:
-            split_time_and_date = (
-                time_and_date_str.split()
-            )  # Format: "Fecha XX/XX/XXXX - HH:MM
+            split_time_and_date = time_and_date_str.split()  # Format: "Fecha XX/XX/XXXX - HH:MM
             if len(split_time_and_date) > 1:
                 date = split_time_and_date[1]
                 time = split_time_and_date[-1]
 
-        season = self.extract_nested_value(doc, '//span[@class="temporada"]')
-        league = self.extract_nested_value(doc, '//span[@class="liga"]')
-        home_team = self.extract_nested_value(
-            doc, '//span[@id="_ctl0_MainContentPlaceHolderMaster_equipoLocalNombre"]'
-        )
-        home_score = self.extract_nested_value(
-            doc, '//div[@class="columna equipo local"]//span[@class="resultado"]'
-        )
-        away_team = self.extract_nested_value(
+        season = cls.extract_nested_value(doc, '//span[@class="temporada"]')
+        league = cls.extract_nested_value(doc, '//span[@class="liga"]')
+        home_team = cls.extract_nested_value(doc, '//span[@id="_ctl0_MainContentPlaceHolderMaster_equipoLocalNombre"]')
+        home_score = cls.extract_nested_value(doc, '//div[@class="columna equipo local"]//span[@class="resultado"]')
+        away_team = cls.extract_nested_value(
             doc,
             '//span[@id="_ctl0_MainContentPlaceHolderMaster_equipoVisitanteNombre"]',
         )
-        away_score = self.extract_nested_value(
-            doc, '//div[@class="columna equipo visitante"]//span[@class="resultado"]'
-        )
+        away_score = cls.extract_nested_value(doc, '//div[@class="columna equipo visitante"]//span[@class="resultado"]')
 
-        _ = self.extract_nested_value(
-            doc, '//div[@class="arbitros"]'
-        )  # Format: Arbitros X W. Z | A B. C |
+        _ = cls.extract_nested_value(doc, '//div[@class="arbitros"]')  # Format: Arbitros X W. Z | A B. C |
 
         # main_referee = ref[0]
         # second_referee = ref[1]
@@ -75,29 +63,33 @@ class FEBLivescoreParser(GenericParser):
 
         return metadata_dict
 
+    @classmethod
     def parse_game_stats(
-        self, doc: Element, ids: Optional[Union[List[Tuple[str, bool]], str]] = None
-    ) -> Tuple[Game, Tuple[Team, Team]]:
-        ids = ids or '//table[@cellpadding="0"]//tbody'
+        cls,
+        doc: Element,
+        ids: list[tuple[str, bool]] | str | None = None,
+    ) -> tuple[Game, tuple[Team, Team]]:
+        ids = ids or '//table[@cellpadding="0" and @cellspacing="0"]//tbody'
         game_stats = {}
-        metadata = self.parse_game_metadata(doc)
+        metadata = cls.parse_game_metadata(doc)
 
-        table_local, table_away = self.get_elements(doc, str(ids))[-2:]
+        table_local, table_away = cls.get_elements(doc, str(ids))[-2:]
         if table_away is None or table_local is None:
             raise ValueError(f"Unable to parse stats from {ids}")
 
         for local, table in zip((True, False), (table_local, table_away)):
             key = "home_boxscore" if local else "away_boxscore"
-            ori_df = self.elements_to_df(table, initial_row=2)
+            ori_df = cls.elements_to_df(table, initial_row=2)
             df = transform_game_stats_df(ori_df, home_team=local)
             game_stats[key] = df
 
         assert game_stats
-        return self.create_objects(metadata, game_stats)
+        return cls.create_objects(metadata, game_stats)
 
+    @classmethod
     def elements_to_df(
-        self,
-        tr_elements: List[Element],
+        cls,
+        tr_elements: list[Element],
         initial_row: int = 2,
         discard_last: int = 0,
     ) -> pd.DataFrame:
@@ -109,11 +101,10 @@ class FEBLivescoreParser(GenericParser):
             row = {}
             for t in T.iterchildren():
                 column_title = t.attrib["class"]
-                data = self.parse_str(t.text_content(), decode_bytes=True)
+                data = cls.parse_str(t.text_content(), decode_bytes=True)
                 # Append the data to the empty list of the i'th column
                 row[column_title] = data
             table_rows.append(row)
 
-        # data_dict = {title: column for (title, column) in table_rows}
         df = pd.DataFrame(table_rows)
         return df

@@ -1,1 +1,4 @@
-poetry run black . ; poetry run isort . ; poetry run mypy . ; poetry run flake8 .;
+#!/bin/bash
+pipenv run ruff format  ;
+pipenv run ruff check --fix ;
+pipenv run mypy . ;

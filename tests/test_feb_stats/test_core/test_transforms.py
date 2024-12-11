@@ -93,18 +93,10 @@ class TransformsTestCase(unittest.TestCase):
         )
 
         df = compute_shots_percentage(self.data_df)
-        pd.testing.assert_series_equal(
-            df.loc[:, "2_point_percentage"], desired_series_2pt
-        )
-        pd.testing.assert_series_equal(
-            df.loc[:, "3_point_percentage"], desired_series_3pt
-        )
-        pd.testing.assert_series_equal(
-            df.loc[:, "field_goal_percentage"], desired_series_fg
-        )
-        pd.testing.assert_series_equal(
-            df.loc[:, "free_throw_percentage"], desired_series_ft
-        )
+        pd.testing.assert_series_equal(df.loc[:, "2_point_percentage"], desired_series_2pt)
+        pd.testing.assert_series_equal(df.loc[:, "3_point_percentage"], desired_series_3pt)
+        pd.testing.assert_series_equal(df.loc[:, "field_goal_percentage"], desired_series_fg)
+        pd.testing.assert_series_equal(df.loc[:, "free_throw_percentage"], desired_series_ft)
 
     def test_compute_volumes(self) -> None:
         pass

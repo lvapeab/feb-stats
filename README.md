@@ -7,21 +7,21 @@ computing simple and advanced statistics of players and teams. The stats are sav
 format. Refer to [the website](https://feb-stats-11741086955.europe-west9.run.app) for examples and docs about the data extracted.
 
 It currently supports boxscores from all [FEB (Federación Española de Baloncesto)](http://www.feb.es) categories. 
-The boxscores are analyzed from the game stats pages (`.html`). 
+The boxscores are analyzed from the game stats pages (`.html` or `htm`). 
 
 ***
 
 ### Run the python service in local
 
 ```shell script
-poetry run gunicorn --umask 4 --bind 0.0.0.0:80 feb_stats.web.webapp:app
+pipenv run gunicorn feb_stats.web.webapp:app
 ```
 
 ### Run linting and tests
 
 ```shell script
-poetry run black . ; poetry run isort . ; poetry run mypy . ; poetry run flake8 .;
-poetry run pytest tests ;
+pipenv run lint ; 
+pipenv run pytest tests ;
 ```
 
 ### Run using docker-compose
@@ -47,7 +47,6 @@ As a rough roadmap, some of the next steps to take are:
 - [ ] Link with a database.
 - [ ] Query/crawl data from sources.
 - [ ] Improve docker layering.
-- [ ] Expose images from bazel.
 - [ ] Streamline the image push and deployment workflow.
 - [ ] Add support for another orchestrator (Kubernetes). Likely unnecessary given the expected traffic, but fun to do :)
 
