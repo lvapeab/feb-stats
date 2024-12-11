@@ -4,7 +4,7 @@ import os
 import signal
 from concurrent import futures
 from types import FrameType
-from typing import Any, Optional
+from typing import Any
 
 import grpc
 from grpc_reflection.v1alpha import reflection
@@ -18,10 +18,7 @@ logger = logging.getLogger(__name__)
 
 SERVICE_NAMES = [
     reflection.SERVICE_NAME,
-    *[
-        service.full_name
-        for service in feb_stats_pb2.DESCRIPTOR.services_by_name.values()
-    ],
+    *[service.full_name for service in feb_stats_pb2.DESCRIPTOR.services_by_name.values()],
 ]
 
 
@@ -51,9 +48,7 @@ class Server:
         self,
         address: str,
     ) -> None:
-        executor = futures.ThreadPoolExecutor(
-            max_workers=min(32, os.cpu_count() or 1)
-        )  # Python 3.8 default
+        executor = futures.ThreadPoolExecutor(max_workers=min(32, os.cpu_count() or 1))  # Python 3.8 default
         max_message_length = 100 * 1024 * 1024
         options = [
             ("grpc.max_receive_message_length", max_message_length),
@@ -88,9 +83,7 @@ class Server:
         self.port = self.server.add_insecure_port(address)
         logger.info(f"Server built. Port: {self.port}")
 
-    def _sigterm_handler(
-        self, _signum: int, _frame: Optional[FrameType], *_: Any
-    ) -> None:
+    def _sigterm_handler(self, _signum: int, _frame: FrameType | None, *_: Any) -> None:
         self.server.stop(30)
 
     def start(self) -> None:

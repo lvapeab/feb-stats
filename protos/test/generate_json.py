@@ -9,9 +9,7 @@ logger = logging.getLogger(__name__)
 if __name__ == "__main__":
     boxscores_dir = "data"
     boxscores_list = []
-    for (i, link) in enumerate(
-        glob.iglob(os.path.join(str(boxscores_dir), "*.html"), recursive=False)
-    ):
+    for i, link in enumerate(glob.iglob(os.path.join(str(boxscores_dir), "*.html"), recursive=False)):
         with open(link, mode="rb") as f:
             boxscore_bytes = f.read()
         boxscores_list.append(encodebytes(boxscore_bytes).decode("latin1"))

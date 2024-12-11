@@ -1,14 +1,8 @@
-from typing import List
-
 import pandas as pd
 
 
 def timedelta_to_str(timedelta: pd.Timedelta) -> str:
-    minutes = (
-        timedelta.components.days * 24 * 60
-        + timedelta.components.hours * 60
-        + timedelta.components.minutes
-    )
+    minutes = timedelta.components.days * 24 * 60 + timedelta.components.hours * 60 + timedelta.components.minutes
     return f"{minutes:03d}:{timedelta.components.seconds:02d}"
 
 
@@ -23,7 +17,7 @@ def timedelta_to_minutes(timedelta: pd.Timedelta) -> float:
     return float(minutes)
 
 
-def get_sorted_list_of_columns(individual_columns: bool = False) -> List[str]:
+def get_sorted_list_of_columns(individual_columns: bool = False) -> list[str]:
     """Returns a list of columns to export in the xlsx file in that order."""
 
     column_list = [
@@ -84,7 +78,7 @@ def get_sorted_list_of_columns(individual_columns: bool = False) -> List[str]:
     return column_list
 
 
-def get_averageable_numerical_columns(individual_columns: bool = False) -> List[str]:
+def get_averageable_numerical_columns(individual_columns: bool = False) -> list[str]:
     """List of numerical columns that makes sense to average across multiple games."""
     column_list = [
         "games",

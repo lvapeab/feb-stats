@@ -1,30 +1,33 @@
-FROM python:3.8.12-slim-buster
+FROM python:3.11-slim
 
 ENV PYTHONFAULTHANDLER=1 \
   PYTHONUNBUFFERED=1 \
   PYTHONHASHSEED=random \
   PIP_NO_CACHE_DIR=off \
   PIP_DISABLE_PIP_VERSION_CHECK=on \
-  PIP_DEFAULT_TIMEOUT=100 \
-  POETRY_VERSION=1.8.4
+  PIP_DEFAULT_TIMEOUT=100
 
 RUN apt-get update -y && \
     apt-get install -y  curl wget
 
 # System deps:
-RUN pip install "poetry==$POETRY_VERSION"
+RUN python3 -m pip install --upgrade pip pipx
+
+ENV PATH=/root/.local/bin:$PATH
+
+RUN pipx install pipenv
 
 WORKDIR /code
-COPY pyproject.toml /code/
 
-RUN poetry config virtualenvs.create false \
-  && poetry install --no-dev --no-interaction --no-ansi
+COPY Pipfile Pipfile.lock /code/
 
-ENV PATH="/root/.poetry/bin:$PATH" \
-    PYTHONPATH="/code:$PYTHONPATH"
+RUN pipenv install --deploy
+
+
+ENV PYTHONPATH="/code:$PYTHONPATH"
 
 COPY . .
 
 EXPOSE 80 80
 
-CMD ["poetry", "run", "gunicorn", "--umask", "4", "--bind", "0.0.0.0:80", "feb_stats.web.webapp:app"]
+CMD ["pipenv", "run", "gunicorn", "feb_stats.web.webapp:app"]
