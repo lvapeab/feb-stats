@@ -19,7 +19,9 @@ class TestLivescoreParserScenarios(unittest.TestCase):
 
     def test_scenarios(self):
         test_dir = Path(__file__).parent.parent.parent
-        for test_file in glob.glob(str(test_dir / "data/*_livescore.json")):
+        files = glob.glob(str(test_dir / "data/*_livescore.json"))
+        self.assertGreater(len(files), 5)
+        for test_file in files:
             labeled_file = self.read_labeled_html_json(test_file)
             raw_text = labeled_file["raw_text"]
             self.assert_get_elements(raw_text, labeled_file)
