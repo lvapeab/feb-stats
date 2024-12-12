@@ -37,8 +37,8 @@ jobs:
       - name: Google Auth
         uses: google-github-actions/auth@v2
         with:
-          workload_identity_provider: projects/${{ secrets.GCLOUD_PROJECT_NUMBER }}/locations/global/workloadIdentityPools/github/providers/feb-stats
-          service_account: deploy-cloudrun@${{ secrets.GCLOUD_PROJECT_ID }}.iam.gserviceaccount.com
+          workload_identity_provider: ${{ secrets.GCLOUD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCLOUD_SERVICE_ACCOUNT }}
 
       - name: Deploy to Cloud Run
         uses: google-github-actions/deploy-cloudrun@v2
