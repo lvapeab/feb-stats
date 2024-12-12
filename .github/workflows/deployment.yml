@@ -1,4 +1,4 @@
-name: Docker Build and Push
+name: Build and Deploy
 
 on:
   push:
@@ -30,3 +30,16 @@ jobs:
           tags: lvapeab/feb-stats:latest
           cache-from: type=registry,ref=lvapeab/feb-stats:latest
           cache-to: type=inline
+
+      - name: Google Auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: projects/${secrets.GCLOUD_PROJECT_NUMBER}/locations/global/workloadIdentityPools/github
+          service_account: deploy-cloudrun@${secrets.GCLOUD_PROJECT_ID}.iam.gserviceaccount.com
+
+      - name: Deploy to Cloud Run
+        uses: google-github-actions/deploy-cloudrun@v2
+        with:
+          service: feb-stats
+          region: europe-west9
+          image: lvapeab/feb-stats:latest

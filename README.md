@@ -46,8 +46,6 @@ As a rough roadmap, some of the next steps to take are:
 - [ ] Automatically extract insights from the data.
 - [ ] Link with a database.
 - [ ] Query/crawl data from sources.
-- [ ] Improve docker layering.
-- [ ] Streamline the image push and deployment workflow.
 - [ ] Add support for another orchestrator (Kubernetes). Likely unnecessary given the expected traffic, but fun to do :)
 
 ***
