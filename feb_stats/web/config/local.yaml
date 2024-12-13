@@ -11,9 +11,18 @@ handlers:
   - url: /.*
     script: auto
 
+
+allowed_file_extensions: ["html", "htm"]
 upload_folder: uploads
 max_content_length: 16777216 # 16 * 1024 * 1024
 secret_key: 'secret_key'
+predefined_urls:
+  LF ENDESA: "https://baloncestoenvivo.feb.es/calendario.aspx?g=4&t=2024&nm=lfendesa"
+  LF CHALLENGE: "https://baloncestoenvivo.feb.es/calendario.aspx?g=67&t=2024&nm=lfchallenge"
+  L.F.-2: "https://baloncestoenvivo.feb.es/calendario.aspx?g=9&t=2024&nm=lf2"
+  Primera FEB: "https://baloncestoenvivo.feb.es/calendario.aspx?g=1&t=2024&nm=primerafeb"
+  Segunda FEB: "https://baloncestoenvivo.feb.es/calendario.aspx?g=2&t=2024&nm=segundafeb"
+  Tercera FEB: "https://baloncestoenvivo.feb.es/calendario.aspx?g=3&t=2024&nm=tercerafeb"
 
 ports:
   grpc_address: 'localhost'

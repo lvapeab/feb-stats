@@ -4,6 +4,7 @@ from lxml.html import Element
 from feb_stats.core.entities import Game
 from feb_stats.parsers.feb_livescore_stats_transforms import transform_game_stats_df
 from feb_stats.parsers.generic_parser import GenericParser
+from feb_stats.parsers.exceptions import UnfinishedGameException
 
 
 class FEBLivescoreParser(GenericParser):
@@ -64,17 +65,26 @@ class FEBLivescoreParser(GenericParser):
         return metadata_dict
 
     @classmethod
+    def is_finished_game(cls, doc: Element) -> bool:
+        played_quarters = doc.xpath('.//span[@class="cuarto play"]')
+        return len(played_quarters) >= 4
+
+    @classmethod
     def parse_game_stats(
         cls,
         doc: Element,
         ids: list[tuple[str, bool]] | str | None = None,
     ) -> Game:
-        ids = ids or '//table[@cellpadding="0" and @cellspacing="0"]//tbody'
+        ids = ids or "//table"
         game_stats = {}
         metadata = cls.parse_game_metadata(doc)
-
-        table_local, table_away = cls.get_elements(doc, str(ids))[-2:]
-        if table_away is None or table_local is None:
+        if not cls.is_finished_game(doc):
+            raise UnfinishedGameException
+        try:
+            table_local, table_away = cls.get_elements(doc, str(ids))[-2:]
+            if table_away is None or table_local is None:
+                raise ValueError
+        except ValueError:
             raise ValueError(f"Unable to parse stats from {ids}")
 
         for local, table in zip((True, False), (table_local, table_away)):

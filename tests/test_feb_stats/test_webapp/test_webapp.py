@@ -5,7 +5,13 @@ from unittest.mock import patch, MagicMock
 from io import BytesIO
 from http import HTTPStatus
 
-from feb_stats.web.webapp import app, is_allowed_file_extension, get_boxscore_files, read_boxscores, remove_boxscores
+from feb_stats.web.webapp import (
+    app,
+    is_allowed_file_extension,
+    get_boxscore_files,
+    read_boxscores_from_files,
+    remove_boxscore_files,
+)
 
 
 class TestFebStatsWebapp(unittest.TestCase):
@@ -71,7 +77,7 @@ class TestFebStatsWebapp(unittest.TestCase):
 
         mock_read_file.return_value = b"test boxscore data"
 
-        boxscores = read_boxscores()
+        boxscores = read_boxscores_from_files()
         self.assertEqual(len(boxscores), 2)
         self.assertTrue(all(score == b"test boxscore data" for score in boxscores))
         self.assertEqual(mock_read_file.call_count, 2)
@@ -82,7 +88,7 @@ class TestFebStatsWebapp(unittest.TestCase):
             path = Path(app.config["UPLOAD_FOLDER"]) / file
             path.write_text("test content")
 
-        remove_boxscores()
+        remove_boxscore_files()
 
         remaining_files = list(Path(app.config["UPLOAD_FOLDER"]).glob("*"))
         self.assertEqual(len(remaining_files), 1)

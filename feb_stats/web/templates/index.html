@@ -13,16 +13,17 @@
 <body>
 <div class="flash-messages">
     {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            {% for category, message in messages %}
-                <div class="alert alert-{% if category == 'error' %}danger{% else %}{{ category }}{% endif %} alert-dismissible fade show" role="alert">
-                    {{ message }}
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-            {% endfor %}
-        {% endif %}
+    {% if messages %}
+    {% for category, message in messages %}
+    <div class="alert alert-{% if category == 'error' %}danger{% else %}{{ category }}{% endif %} alert-dismissible fade show"
+         role="alert">
+        {{ message }}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    {% endfor %}
+    {% endif %}
     {% endwith %}
 </div>
 
@@ -31,9 +32,10 @@
         <nav>
             <ul>
                 <li><a href="#intro">Inicio</a></li>
+                <li><a href="#url-analysis">Ligas</a></li>
                 <li><a href="#data">Subir datos</a></li>
-                <li><a href="#instructions">Instrucciones</a></li>
                 <li><a href="#analysis">Datos analizados</a></li>
+                <li><a href="#instructions">Instrucciones</a></li>
                 <li><a href="#contact">Contacto</a></li>
             </ul>
         </nav>
@@ -44,27 +46,77 @@
     <section id="intro" class="wrapper style1 fullscreen fade-up">
         <div class="inner">
             <h1>Analizador de estadísticas FEB</h1>
-            Web para extraer estadísticas avanzadas a partir de las actas de los partidos de la <a
+            Extracción de estadísticas avanzadas a partir de las actas de los partidos de la <a
                 href="http://feb.es/">FEB (Federación Española de Baloncesto).</a>
             <ul>
-                <li> Si ya sabes cómo funciona, pasa a <a href="#data">subir tus datos.</a></li>
-                <li> Si no, puedes encontrar el funcionamiento en <a href="#instructions">la sección de
-                    instrucciones.</a></li>
-                <li> La sección <a href="#analysis">la sección de datos analizados</a> contiene una explicación de los
+                <li><a href="#url-analysis">Selecciona una liga para analizar</a>.</li>
+                <li><a href="#data">O sube tus propios datos.</a></li>
+                <li> La sección de <a href="#analysis">datos analizados</a> contiene una explicación de los
                     datos extraídos.
+                <li> Si no sabes cómo funciona, puedes encontrar ayuda en <a href="#instructions">la sección de
+                    instrucciones.</a></li>
+
                 </li>
             </ul>
         </div>
     </section>
 
+    <section id="url-analysis" class="wrapper style1 fullscreen fade-up">
+        <div class="inner">
+            <h1>Ligas</h1>
+            <p>
+                Analiza todos los partidos jugados. Puedes seleccionar una liga predefinida
+                o introducir la dirección del calendario de otra liga.
+            </p>
+            <div class="form-group">
+
+                <form method="post" id="analyze_url_form" action="/analyze_url" enctype="multipart/form-data">
+
+                    <div class="split">
+                        <div class="field half">
+                            <div class="row mb-4">
+                                <div class="col-md-11">
+                                    <h3>Ligas predefinidas:</h3>
+                                    <select class="form-control" id="predefined_url" name="predefined_url">
+                                        <option value="">Selecciona una liga...</option>
+                                        {% for league, url in predefined_urls.items() %}
+                                        <option value="{{ league }}">{{ league }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <h3> Otra liga:</h3>
+                            <input type="url" class="form-control" id="custom_url" name="custom_url"
+                                   placeholder="https://baloncestoenvivo.feb.es/calendario/...">
+                        </div>
+                    </div>
+                    <div class="row align-items-center">
+                        <div class="col-auto">
+                            <div class="form-check">
+                                Colorear &nbsp;<input type="checkbox" name="color-sheet" style="float: left;"
+                                                      value="False">
+
+                            </div>
+                        </div>
+                        <div class="col text-right">
+                            <button type="submit" class="button">Analizar</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
     <section id="data" class="wrapper style1 fullscreen fade-up">
         <div class="inner">
             <h1>Subir datos</h1>
             Sube tus actas. Puedes elegir o arrastrar varios archivos de una carpeta o arrastrar la carpeta entera
-                al cuadro. <br>
-                Marcando colorear se destacan los datos estadísticamente anómalos con respecto a la media
-                de la liga o equipo.<br>
-                <span class="small">Ningún dato se almacena de manera permanente.</span>
+            al cuadro. <br>
+            Marcando colorear se destacan los datos estadísticamente anómalos con respecto a la media
+            de la liga o equipo.<br>
+            <span class="small">Ningún dato se almacena de manera permanente.</span>
             <div>
                 <form id="upload-widget" method="post" action="/upload" class="dropzone">
                     <div class="fallback"><input name="file" type="file"/></div>
@@ -78,32 +130,6 @@
 
     </section>
 
-    <section id="instructions" class="wrapper style1 fullscreen fade-up">
-        <div class="inner">
-            <h1>Instrucciones</h1>
-            <ol>
-                <li> Guarda las páginas de resultados de <a href="http://feb.es/"> la web de la FEB </a> (<a
-                        href="http://competiciones.feb.es/estadisticas/Partido.aspx?p=2170274&med=0">ejemplo</a>) en tu
-                    PC (haciendo click derecho en la página y eligiendo "guardar como..." o pulsando <code>ctrl+s</code>).
-                    Se guardarán con la extensión <code>.html</code>.
-                </li>
-                <li> Una vez hayas guardado todos los partidos guardados, utiliza <a href="#data">el cuadro anterior</a>
-                    para subirlas.
-                </li>
-                <li> Una vez subidos los archivos deseados, pulsar el botón <a href="#data">Analizar</a>.</li>
-                <li> Se hará el análisis de los datos (puede tardar unos segundos) y se descargará un archivo <code>.xlsx</code>
-                    con las estadísticas analizadas.
-                </li>
-                <li> Este archivo se puede abrir con cualquier gestor de hojas de cálculo (Excel, Google Forms,
-                    LibreOffice).
-                </li>
-                <li> Consulta <a href="#analyze_button">la sección de datos analizados</a> para obtener una explicación
-                    de las estadísticas analizadas.
-                </li>
-            </ol>
-        </div>
-    </section>
-
     <section id="analysis" class="wrapper style1 fullscreen fade-up">
         <div class="inner">
             <h1>Datos analizados</h1>
@@ -112,6 +138,16 @@
             <ul>
                 <li>Los datos acumulados de todos los equipos de la liga y sus medias por partido.</li>
                 <li>Para cada jugador de cada equipo, sus datos acumulados y medias por partido.</li>
+            </ul>
+
+            Si seleccionas la opción "Colorear", los valores anormalmente altos o bajos de una estadística con
+            respecto al del resto de la liga/equipo se colorearán:
+            <ul>
+                <li><span style="color: green; font-weight: bold"> Muy altos </span>: Mayor que el 95% de los datos.
+                </li>
+                <li><span style="color: yellow; font-weight: bold"> Altos </span>: Mayor que el 68% de los datos.</li>
+                <li><span style="color: orange; font-weight: bold"> Bajos </span>: Menor que el 68% de los datos.</li>
+                <li><span style="color: red; font-weight: bold"> Muy bajos </span>: Menor que el 95% de los datos.</li>
             </ul>
 
             Además de todos los datos que ofrece la <a
@@ -141,9 +177,33 @@
             <iframe width="1024" height="250"
                     src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTBm11WzDj0wUubFFsrNZPamKL4NOGHe-4qakapU2CDoxO8anFhkDg8RxnYVaNLy0unGBnaeSJ_HsHq/pubhtml?widget=true&amp;headers=false"></iframe>
         </div>
-
-
     </section>
+    <section id="instructions" class="wrapper style1 fullscreen fade-up">
+        <div class="inner">
+            <h1>Instrucciones</h1>
+            <ol>
+                <li> Guarda las páginas de resultados de <a href="http://feb.es/"> la web de la FEB </a> (<a
+                        href="http://competiciones.feb.es/estadisticas/Partido.aspx?p=2170274&med=0">ejemplo</a>) en tu
+                    PC (haciendo click derecho en la página y eligiendo "guardar como..." o pulsando <code>ctrl+s</code>).
+                    Se guardarán con la extensión <code>.html</code>.
+                </li>
+                <li> Una vez hayas guardado todos los partidos guardados, utiliza <a href="#data">el cuadro anterior</a>
+                    para subirlas.
+                </li>
+                <li> Una vez subidos los archivos deseados, pulsar el botón <a href="#data">Analizar</a>.</li>
+                <li> Se hará el análisis de los datos (puede tardar unos segundos) y se descargará un archivo <code>.xlsx</code>
+                    con las estadísticas analizadas.
+                </li>
+                <li> Este archivo se puede abrir con cualquier gestor de hojas de cálculo (Excel, Google Forms,
+                    LibreOffice).
+                </li>
+                <li> Consulta <a href="#analyze_button">la sección de datos analizados</a> para obtener una explicación
+                    de las estadísticas analizadas.
+                </li>
+            </ol>
+        </div>
+    </section>
+
 
     <section id="contact" class="wrapper style1 fade-up">
         <div class="inner">

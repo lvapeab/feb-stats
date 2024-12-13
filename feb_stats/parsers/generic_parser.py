@@ -8,7 +8,7 @@ import lxml.html as lh
 import pandas as pd
 import requests
 from lxml.html import Element
-
+from feb_stats.parsers.exceptions import UnfinishedGameException
 from feb_stats.core.entities import Boxscore, Game, League, Player, Team
 
 T = TypeVar("T", str, bytes)
@@ -71,9 +71,12 @@ class GenericParser(ABC):
     ) -> League:
         all_games = []
         all_teams = set()
-        for link in boxscores:
+        for i, link in enumerate(boxscores):
             doc = reader_fn(link)  # type: ignore[arg-type]
-            game = cls.parse_game_stats(doc)
+            try:
+                game = cls.parse_game_stats(doc)
+            except (UnfinishedGameException, ValueError):
+                continue
             all_games.append(game)
             for team in game.teams:
                 all_teams.add(team)
