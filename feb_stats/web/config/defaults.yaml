@@ -1,0 +1,48 @@
+calendar_selectors:
+  LF ENDESA:
+    calendar_url: "https://baloncestoenvivo.feb.es/calendario/lfendesa/4/2024"
+    seasons:
+      "2024/2025": "2024"
+    groups:
+      "Liga Regular Único": "86354"
+  LF CHALLENGE:
+    calendar_url: "https://baloncestoenvivo.feb.es/calendario/lfchallenge/67/2024"
+    seasons:
+      "2024/2025": "2024"
+    groups:
+      "Liga Regular Único": "86360"
+  L.F.-2:
+    calendar_url: "https://baloncestoenvivo.feb.es/calendario.aspx?g=9&t=2024&nm=lf2"
+    seasons:
+      "2024/2025": "2024"
+    groups:
+      Liga Regular "A": "86367"
+      Liga Regular "B": "86368"
+  Primera FEB:
+    calendar_url: "https://baloncestoenvivo.feb.es/calendario/primerafeb/1/2024"
+    seasons:
+      "2024/2025": "2024"
+    groups:
+      Liga Regular Único: "86340"
+  Segunda FEB:
+    calendar_url: "https://baloncestoenvivo.feb.es/calendario/segundafeb/2/2024"
+    seasons:
+      "2024/2025": "2024"
+    groups:
+      Liga Regular "ESTE": "86348"
+      Liga Regular "OESTE": "86349"
+  Tercera FEB:
+    calendar_url: "https://baloncestoenvivo.feb.es/calendario/tercerafeb/3/2024"
+    seasons:
+      "2024/2025": "2024"
+    groups:
+      Liga Regular "A-A": "86379"
+      Liga Regular "A-B": "86380"
+      Liga Regular "B-A": "86381"
+      Liga Regular "B-B": "86382"
+      Liga Regular "C-A": "86383"
+      Liga Regular "C-B": "86384"
+      Liga Regular "D-A": "86385"
+      Liga Regular "D-B": "86386"
+      Liga Regular "E-A": "86387"
+      Liga Regular "E-B": "86388"

@@ -3,7 +3,7 @@ from typing import Any
 
 import pandas as pd
 
-from feb_stats.parsers.feb_livescore_stats_transforms import *
+from feb_stats.parsers.transforms import *
 
 
 class FebStatsTransformsTestCase(unittest.TestCase):
