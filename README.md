@@ -43,9 +43,9 @@ As a rough roadmap, some of the next steps to take are:
     - [ ] Translate the website (at least to English). 
     - [ ] Improve the website (now it's somewhat clumsy). 
 - [ ] Temporal data (evolution of teams/players).
-- [ ] Automatically extract insights from the data.
+- [ ] Automatically extract more advanced insights from the data.
+- [ ] Automatically crawl past seasons.
 - [ ] Link with a database.
-- [ ] Query/crawl data from sources.
 - [ ] Add support for another orchestrator (Kubernetes). Likely unnecessary given the expected traffic, but fun to do :)
 
 ***

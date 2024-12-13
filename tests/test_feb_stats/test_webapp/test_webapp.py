@@ -5,11 +5,24 @@ from unittest.mock import patch, MagicMock
 from io import BytesIO
 from http import HTTPStatus
 
-from feb_stats.web.webapp import app, is_allowed_file_extension, get_boxscore_files, read_boxscores, remove_boxscores
+from feb_stats.web.webapp import app
+from feb_stats.web.read_write import (
+    is_allowed_file_extension,
+    get_boxscore_files,
+    read_boxscores_from_files,
+    remove_boxscore_files,
+)
+
+import yaml
 
 
 class TestFebStatsWebapp(unittest.TestCase):
     def setUp(self):
+        app_dir = Path(app.root_path)
+
+        with open(app_dir / "config/defaults.yaml") as f:
+            self.defaults = yaml.safe_load(f)
+
         app.config["TESTING"] = True
         app.config["UPLOAD_FOLDER"] = "test_uploads"
         app.config["SECRET_KEY"] = "test_key"
@@ -58,11 +71,11 @@ class TestFebStatsWebapp(unittest.TestCase):
             path = Path(app.config["UPLOAD_FOLDER"]) / file
             path.write_text("test content")
 
-        files = get_boxscore_files()
+        files = get_boxscore_files(app.config)
         self.assertEqual(len(files), 2)
         self.assertTrue(all(str(file).endswith((".html", ".htm")) for file in files))
 
-    @patch("feb_stats.web.webapp.read_file")
+    @patch("feb_stats.web.read_write.read_file")
     def test_read_boxscores(self, mock_read_file):
         test_files = ["test1.html", "test2.htm"]
         for file in test_files:
@@ -71,7 +84,7 @@ class TestFebStatsWebapp(unittest.TestCase):
 
         mock_read_file.return_value = b"test boxscore data"
 
-        boxscores = read_boxscores()
+        boxscores = read_boxscores_from_files(app.config)
         self.assertEqual(len(boxscores), 2)
         self.assertTrue(all(score == b"test boxscore data" for score in boxscores))
         self.assertEqual(mock_read_file.call_count, 2)
@@ -82,7 +95,7 @@ class TestFebStatsWebapp(unittest.TestCase):
             path = Path(app.config["UPLOAD_FOLDER"]) / file
             path.write_text("test content")
 
-        remove_boxscores()
+        remove_boxscore_files(app.config)
 
         remaining_files = list(Path(app.config["UPLOAD_FOLDER"]).glob("*"))
         self.assertEqual(len(remaining_files), 1)

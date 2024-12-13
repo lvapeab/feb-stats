@@ -1,9 +1,9 @@
 import pandas as pd
 
 
-def timedelta_to_str(timedelta: pd.Timedelta) -> str:
+def timedelta_to_str(timedelta: pd.Timedelta, minute_format: str = "03d") -> str:
     minutes = timedelta.components.days * 24 * 60 + timedelta.components.hours * 60 + timedelta.components.minutes
-    return f"{minutes:03d}:{timedelta.components.seconds:02d}"
+    return f"{minutes:{minute_format}}:{timedelta.components.seconds:02d}"
 
 
 def timedelta_to_minutes(timedelta: pd.Timedelta) -> float:

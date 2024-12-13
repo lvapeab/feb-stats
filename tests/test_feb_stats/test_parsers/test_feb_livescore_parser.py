@@ -4,7 +4,7 @@ import json
 import unittest
 from typing import Any
 
-from feb_stats.parsers.feb_livescore_parser import FEBLivescoreParser
+from feb_stats.parsers.parsers import FEBLivescoreParser
 
 
 class TestLivescoreParserScenarios(unittest.TestCase):
@@ -22,25 +22,25 @@ class TestLivescoreParserScenarios(unittest.TestCase):
         files = glob.glob(str(test_dir / "data/*_livescore.json"))
         self.assertGreater(len(files), 5)
         for test_file in files:
+            print(test_file)
             labeled_file = self.read_labeled_html_json(test_file)
             raw_text = labeled_file["raw_text"]
-            self.assert_get_elements(raw_text, labeled_file)
+            self.assert_get_tables(raw_text, labeled_file)
             self.assert_elements_to_df(raw_text, labeled_file)
             self.assert_parse_game_metadata(raw_text, labeled_file)
             self.assert_parse_game_stats(raw_text, labeled_file)
 
-    def assert_get_elements(self, input_doc, expected_dict) -> None:
+    def assert_get_tables(self, input_doc, expected_dict) -> None:
         doc = FEBLivescoreParser.read_link_file(input_doc)
-        id = '//table[@cellpadding="0" and @cellspacing="0"]//tbody'
-        table_local, table_away = FEBLivescoreParser.get_elements(doc, id)[-2:]
+        table_local, table_away = FEBLivescoreParser.get_tables(doc)
         self.assertEqual(expected_dict["local_table_rows"], len(table_local))
         self.assertEqual(expected_dict["away_table_rows"], len(table_away))
 
     def assert_elements_to_df(self, input_doc, expected_dict) -> None:
         initial_row = 2
         doc = FEBLivescoreParser.read_link_file(input_doc)
-        id = '//table[@cellpadding="0" and @cellspacing="0"]//tbody'
-        table_local, table_away = FEBLivescoreParser.get_elements(doc, id)[-2:]
+        table_local, table_away = FEBLivescoreParser.get_tables(doc)
+
         local_df = FEBLivescoreParser.elements_to_df(table_local, initial_row=initial_row, discard_last=0)
         away_df = FEBLivescoreParser.elements_to_df(table_away, initial_row=initial_row, discard_last=0)
         self.assertEqual(local_df.shape, (expected_dict["local_table_rows"] - initial_row, 22))
@@ -93,8 +93,13 @@ class TestLivescoreParserScenarios(unittest.TestCase):
         self.assertDictEqual(game_metadata, desired_dict)
 
     def assert_parse_game_stats(self, input_doc, expected_dict) -> None:
-        doc = FEBLivescoreParser.read_link_file(input_doc)
-        game = FEBLivescoreParser.parse_game_stats(doc)
+        league = FEBLivescoreParser.parse_boxscores(
+            [input_doc.encode("latin-1")],
+            FEBLivescoreParser.read_link_bytes,
+        )
+
+        self.assertEqual(len(league.games), 1)
+        game = league.games[0]
         self.assertEqual(expected_dict["date"], str(game.date))
         self.assertEqual(expected_dict["time"], game.time)
         self.assertEqual(expected_dict["league"], game.league)

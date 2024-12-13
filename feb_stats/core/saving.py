@@ -130,8 +130,9 @@ def league_to_xlsx(
                 lambda x: timedelta_to_str(x) if not pd.isnull(x) else ""
             )
             averaged_team_season_games.loc[:, "minutes"] = averaged_team_season_games["minutes"].apply(
-                lambda x: timedelta_to_str(x) if not pd.isnull(x) else ""
+                lambda x: timedelta_to_str(x, minute_format="02d") if not pd.isnull(x) else ""
             )
+
             numerical_columns = list(
                 set(aggregated_team_season_games.columns) - {"mode", "minutes", "player", "number"}
             )
