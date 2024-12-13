@@ -69,16 +69,26 @@
                 o introducir la dirección del calendario de otra liga.
             </p>
             <div class="form-group">
-
                 <form method="post" id="analyze_url_form" action="/analyze_url" enctype="multipart/form-data">
-
                     <div class="split">
                         <div class="field half">
                             <div class="row mb-4">
                                 <div class="col-md-11">
-                                    <h3>Ligas predefinidas:</h3>
-                                    <select class="form-control" id="predefined_url" name="predefined_url">
+                                    <h3>Ligas completas</h3>
+                                    <select class="form-control mb-3" id="league_id" name="league_id">
                                         <option value="">Selecciona una liga...</option>
+                                        {% for league, url in predefined_urls.items() %}
+                                        <option value="{{ league }}">{{ league }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <select class="form-control mb-3" id="group_id" name="group_id">
+                                        <option value="">Selecciona un grupo...</option>
+                                        {% for league, url in predefined_urls.items() %}
+                                        <option value="{{ league }}">{{ league }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <select class="form-control" id="season_id" name="season_id">
+                                        <option value="">Selecciona una temporada...</option>
                                         {% for league, url in predefined_urls.items() %}
                                         <option value="{{ league }}">{{ league }}</option>
                                         {% endfor %}
@@ -88,7 +98,7 @@
                         </div>
 
                         <div class="col-md-6">
-                            <h3> Otra liga:</h3>
+                            <h3> Otra liga</h3>
                             <input type="url" class="form-control" id="custom_url" name="custom_url"
                                    placeholder="https://baloncestoenvivo.feb.es/calendario/...">
                         </div>
@@ -237,5 +247,10 @@
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+<script>
+    const predefinedUrls = {{ predefined_urls|tojson|safe }};
+</script>
+<script src="{{ url_for('static', filename='calendar_selector.js') }}"></script>
+
 </body>
 </html>

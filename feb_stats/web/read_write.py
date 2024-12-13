@@ -1,7 +1,9 @@
 import os
 from pathlib import Path
 
-from feb_stats.scraper.scraper import BoxscoreScraper
+from feb_stats.scrapers.boxscore_scraper import BoxscoreScraper
+
+ALLOWED_FILE_EXTENSIONS = ["html", "htm"]
 
 
 def read_file(filename: str) -> bytes:
@@ -13,7 +15,7 @@ def read_file(filename: str) -> bytes:
 def get_boxscore_files(config: dict[str, str]) -> list[str]:
     return [
         str(file)
-        for extension in config["ALLOWED_FILE_EXTENSIONS"]
+        for extension in ALLOWED_FILE_EXTENSIONS
         for file in Path(config["UPLOAD_FOLDER"]).glob(f"*.{extension}")
     ]
 
@@ -27,14 +29,18 @@ def remove_boxscore_files(config: dict[str, str]) -> None:
         os.remove(filename)
 
 
-def is_allowed_file_extension(filename: str, config: dict[str, str]) -> bool:
-    return "." in filename and filename.rsplit(".", 1)[1].lower() in config["ALLOWED_FILE_EXTENSIONS"]
+def is_allowed_file_extension(filename: str) -> bool:
+    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_FILE_EXTENSIONS
 
 
-def read_boxscores_from_calendar_url(calendar_url: str) -> list[bytes]:
+def read_boxscores_from_calendar_url(
+    calendar_url: str,
+    season: str | None = None,
+    group_id: str | None = None,
+) -> list[bytes]:
     """Scrapes boxscores as HTML files going through a calendar URL.
     :param calendar_url: The calendar URL.
     :return: a list of HTML files containing boxscores.
     """
     scraper = BoxscoreScraper()
-    return scraper.fetch_boxscores(calendar_url)
+    return scraper.fetch_boxscores(calendar_url, season, group_id)

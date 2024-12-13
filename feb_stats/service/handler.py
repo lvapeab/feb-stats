@@ -7,7 +7,7 @@ if TYPE_CHECKING:
     from feb_stats.core.entities import League
 from feb_stats.core.saving import league_to_xlsx
 from feb_stats.core.transforms import compute_league_aggregates
-from feb_stats.parsers.feb_livescore_parser import FEBLivescoreParser
+from feb_stats.parsers.parsers import FEBLivescoreParser
 
 
 class LeagueHandler(ABC):

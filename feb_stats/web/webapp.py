@@ -22,21 +22,23 @@ from feb_stats.web.read_write import (
 logger = logging.getLogger(__name__)
 
 
-curr_dir = Path(__file__).parent
-
 # TODO(Alvaro): Create prod/staging/test/local configs
+curr_dir = Path(__file__).parent
 config_filename = str(curr_dir / "config/local.yaml")
+defaults_filename = str(curr_dir / "config/defaults.yaml")
 
 
 with open(config_filename) as f:
     config = yaml.safe_load(f)
+
+with open(defaults_filename) as f:
+    defaults = yaml.safe_load(f)
 
 app = Flask(__name__)
 
 app.config["UPLOAD_FOLDER"] = config.get("upload_folder", "uploads")
 app.config["ALLOWED_FILE_EXTENSIONS"] = config.get("allowed_file_extensions", ["html", "htm"])
 app.config["MAX_CONTENT_LENGTH"] = config.get("max_content_length", 16 * 1024 * 1024)
-app.config["PREDEFINED_URLS"] = config.get("predefined_urls", dict())
 app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", secrets.token_hex(32))
 
 ports_config = config["ports"]
@@ -68,12 +70,10 @@ def analyze_boxscores(boxscores: list[bytes], do_color_sheet: bool) -> Response:
 
 @app.route("/")
 def index(name: str | None = None) -> Any:
-    predefined_urls = app.config["PREDEFINED_URLS"]
-
     return render_template(
         "index.html",
         name=name,
-        predefined_urls=predefined_urls,
+        predefined_urls=defaults["calendar_selectors"],
     )
 
 
@@ -86,7 +86,7 @@ def upload() -> Any:
             return redirect(request.url)
 
         file = request.files["file"]
-        if file and file.filename and is_allowed_file_extension(file.filename, app.config):
+        if file and file.filename and is_allowed_file_extension(file.filename):
             filename = secure_filename(file.filename)
             filepath = os.path.join(app.config["UPLOAD_FOLDER"], filename)
             logger.info(f"Saving file to {filepath}.")
@@ -94,7 +94,11 @@ def upload() -> Any:
             return "OK"
     error = "Invalid /upload request."
     # the code below is executed if the request method was GET
-    return render_template("index.html", error=error)
+    return render_template(
+        "index.html",
+        error=error,
+        predefined_urls=defaults["calendar_selectors"],
+    )
 
 
 @app.route("/analyze", methods=["POST"])
@@ -123,17 +127,29 @@ def analyze_url() -> Response:
         do_color_sheet = False
         if request.form.get("color-sheet-url"):
             do_color_sheet = True
-        url = request.form.get("custom_url")
-        if not url:
-            selected_league = request.form.get("predefined_url")
-            url = app.config["PREDEFINED_URLS"].get(selected_league)
-        if not url:
+        calendar_url = request.form.get("custom_url")
+        season_id = None
+        group_id = None
+
+        if not calendar_url:
+            league_id = request.form.get("league_id")
+            if league_id:
+                league_data = defaults["calendar_selectors"][league_id]
+                calendar_url = league_data["calendar_url"]
+                season_id = request.form.get("season_id")
+                group_id = request.form.get("group_id")
+
+        if not calendar_url:
             flash("No se ha proporcionado ninguna URL para analizar", "error")
             return redirect(url_for("index", _anchor="url-analysis"))
 
-        boxscores = read_boxscores_from_calendar_url(url)
+        boxscores = read_boxscores_from_calendar_url(calendar_url, season=season_id, group_id=group_id)
         if not boxscores:
-            flash(f"No se han encontrado actas para analizar en la url: {url}", "error")
+            flash(
+                f"No se han encontrado actas para analizar para la url: "
+                f"{calendar_url} - Temporada {season_id} - Grupo: {group_id}",
+                "error",
+            )
             return redirect(url_for("index", _anchor="url-analysis"))
         return analyze_boxscores(boxscores, do_color_sheet)
 
