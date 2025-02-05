@@ -19,22 +19,24 @@ jobs:
       uses: actions/setup-python@v4
       with:
         python-version: 3.11
-        cache: "pipenv"
 
-    - name: Setup PIpenv
-      uses: tiagovrtr/actions-pipenv@v1
-      with:
-        pipenv-version: v2024.4.0
+    - name: Setup Poetry
+      uses: abatilo/actions-poetry@v4
 
     - name: Install Dependencies
-      run: pipenv install --dev
+      run: poetry install
+    - uses: actions/cache@v3
+      name: Define a cache for the virtual environment based on the dependencies lock file
+      with:
+        path: ./.venv
+        key: venv-${{ hashFiles('poetry.lock') }}
 
     - name: Run Lint
-      run: pipenv run lint
+      run: poetry run lint
 
     - name: Run tests with coverage
       run: | 
-        pipenv run pytest tests \
+        poetry run pytest tests \
           --cov=./ \
           --cov-report=term-missing \
           --cov-fail-under=88

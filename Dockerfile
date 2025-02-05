@@ -5,7 +5,10 @@ ENV PYTHONFAULTHANDLER=1 \
   PYTHONHASHSEED=random \
   PIP_NO_CACHE_DIR=off \
   PIP_DISABLE_PIP_VERSION_CHECK=on \
-  PIP_DEFAULT_TIMEOUT=100
+  PIP_DEFAULT_TIMEOUT=100 \
+  POETRY_VIRTUALENVS_IN_PROJECT=false \
+  POETRY_NO_INTERACTION=1
+
 
 RUN apt-get update -y && \
     apt-get install -y  curl wget
@@ -15,13 +18,13 @@ RUN python3 -m pip install --upgrade pip pipx
 
 ENV PATH=/root/.local/bin:$PATH
 
-RUN pipx install pipenv
+RUN pipx install poetry
 
 WORKDIR /code
 
-COPY Pipfile Pipfile.lock /code/
+COPY poetry.lock pyproject.toml /code/
 
-RUN pipenv install --deploy
+RUN poetry install --no-root --no-dev
 
 
 ENV PYTHONPATH="/code:$PYTHONPATH"
@@ -30,4 +33,4 @@ COPY . .
 
 EXPOSE 80 80
 
-CMD ["pipenv", "run", "gunicorn", "feb_stats.web.webapp:app"]
+CMD ["poetry", "run", "gunicorn", "feb_stats.web.webapp:app"]
