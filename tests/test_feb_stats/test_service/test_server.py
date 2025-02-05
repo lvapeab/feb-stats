@@ -2,13 +2,14 @@ import os
 import signal
 import threading
 import timeit
-import unittest
 from datetime import timedelta
 
-from feb_stats.service.server import Server
+from django.test import TestCase
+
+from service.server import Server
 
 
-class ServerTestCase(unittest.TestCase):
+class ServerTestCase(TestCase):
     def test_timely_shutdown(self) -> None:
         server = Server(address="127.0.0.1:0")
         server.start()
@@ -28,7 +29,3 @@ class ServerTestCase(unittest.TestCase):
         server.wait_for_termination()
         delta = timedelta(seconds=timeit.default_timer() - start)
         self.assertLessEqual(delta.total_seconds(), 30.0)
-
-
-if __name__ == "__main__":
-    unittest.main()
