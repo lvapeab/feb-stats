@@ -11,7 +11,8 @@ ENV PYTHONFAULTHANDLER=1 \
 
 
 RUN apt-get update -y && \
-    apt-get install -y  curl wget
+    apt-get install -y  curl wget && \
+    rm -rf /var/lib/apt/lists/*
 
 # System deps:
 RUN python3 -m pip install --upgrade pip pipx
@@ -23,9 +24,9 @@ RUN pipx install poetry
 WORKDIR /code
 
 COPY poetry.lock pyproject.toml /code/
+COPY scripts/* /code/scripts/
 
-RUN poetry install --no-root --no-dev
-
+RUN poetry install --no-interaction --no-ansi --only main
 
 ENV PYTHONPATH="/code:$PYTHONPATH"
 

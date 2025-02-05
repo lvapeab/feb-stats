@@ -10,9 +10,17 @@ from web.helpers.read_write import (
     read_boxscores_from_files,
     remove_boxscore_files,
 )
+import tempfile
 
 
 class TestWebHelpers(TestCase):
+    def setUp(self):
+        self.temp_dir = tempfile.TemporaryDirectory()
+        settings.UPLOAD_FOLDER = self.temp_dir.name
+
+    def tearDown(self):
+        self.temp_dir.cleanup()
+
     def test_is_allowed_file_extension(self):
         self.assertTrue(is_allowed_file_extension("test.html"))
         self.assertTrue(is_allowed_file_extension("test.htm"))
