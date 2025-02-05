@@ -295,6 +295,33 @@ argon2 = ["argon2-cffi (>=19.1.0)"]
 bcrypt = ["bcrypt"]
 
 [[package]]
+name = "django-appconf"
+version = "1.0.6"
+description = "A helper class for handling configuration defaults of packaged apps gracefully."
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "django-appconf-1.0.6.tar.gz", hash = "sha256:cfe87ea827c4ee04b9a70fab90b86d704cb02f2981f89da8423cb0fabf88efbf"},
+    {file = "django_appconf-1.0.6-py3-none-any.whl", hash = "sha256:c3ae442fba1ff7ec830412c5184b17169a7a1e71cf0864a4c3f93cf4c98a1993"},
+]
+
+[package.dependencies]
+django = "*"
+
+[[package]]
+name = "django-staticfiles"
+version = "1.2.1"
+description = "A Django app that provides helpers for serving static files."
+optional = false
+python-versions = "*"
+files = [
+    {file = "django-staticfiles-1.2.1.tar.gz", hash = "sha256:6c4371699bb316dc3e0db1ecf07c80d3d72827a789d73b165b0a592875621fe1"},
+]
+
+[package.dependencies]
+django-appconf = ">=0.4"
+
+[[package]]
 name = "django-stubs"
 version = "5.1.2"
 description = "Mypy stubs for Django"
@@ -1689,7 +1716,21 @@ MarkupSafe = ">=2.1.1"
 [package.extras]
 watchdog = ["watchdog (>=2.3)"]
 
+[[package]]
+name = "whitenoise"
+version = "6.8.2"
+description = "Radically simplified static file serving for WSGI applications"
+optional = false
+python-versions = ">=3.9"
+files = [
+    {file = "whitenoise-6.8.2-py3-none-any.whl", hash = "sha256:df12dce147a043d1956d81d288c6f0044147c6d2ab9726e5772ac50fb45d2280"},
+    {file = "whitenoise-6.8.2.tar.gz", hash = "sha256:486bd7267a375fa9650b136daaec156ac572971acc8bf99add90817a530dd1d4"},
+]
+
+[package.extras]
+brotli = ["brotli"]
+
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10,<3.12"
-content-hash = "b299652102b2db1243811f54653851592ca569b81916e25226f430325b6c8d50"
+content-hash = "84e9ea634214ed2fe57853e2477562e850ebe49106fccc4b44a39e97e4145de1"

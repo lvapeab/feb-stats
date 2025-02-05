@@ -215,8 +215,7 @@ body {
 
 body {
     background: #2B84C6;
-    background-image: url("assets/intro.svg");
-
+    background-image: url("../assets/intro.svg");
 }
 
 body.is-loading *, body.is-loading *:before, body.is-loading *:after {
@@ -660,7 +659,7 @@ button:hover:active:after,
     border-radius: 0.25em;
     border: solid 1px rgba(43, 133, 196, 0.55);
     background: rgba(43, 133, 196, 0.15);
-    background-image: url("assets/intro.svg");
+    background-image: url("../assets/intro.svg");
 
     margin: 0 0 2em 0;
 }
@@ -1895,14 +1894,14 @@ table.alt tfoot {
 
 .wrapper.alt {
     background-color: #261c3e;
-    background-image: url("assets/intro.svg");
+    background-image: url("../assets/intro.svg");
 
 }
 
 .wrapper.style1 {
     background-color: #f3f3f3;
     background-attachment: fixed;
-    background-image: url("assets/intro.svg");
+    background-image: url("../assets/intro.svg");
     background-position: top right;
     background-repeat: no-repeat;
     background-size: 100% 100%;
@@ -1910,29 +1909,29 @@ table.alt tfoot {
 
 .wrapper.style1-alt {
     background-color: #2B84C6;
-    background-image: url("assets/intro.svg");
+    background-image: url("../assets/intro.svg");
 
 }
 
 .wrapper.style2 {
     background-color: #f3f3f3;
-    background-image: url("assets/intro.svg");
+    background-image: url("../assets/intro.svg");
 
 }
 
 .wrapper.style2-alt {
     background-color: #23194B;
-    background-image: url("assets/intro.svg");
+    background-image: url("../assets/intro.svg");
 
 }
 
 .wrapper.style3 {
-    background-image: url("assets/intro.svg");
+    background-image: url("../assets/intro.svg");
     background-color: #f3f3f3;;
 }
 
 .wrapper.style3-alt {
-    background-image: url("assets/intro.svg");
+    background-image: url("../assets/intro.svg");
     background-color: rgb(43, 133, 196);
 }
 
@@ -2041,7 +2040,7 @@ body.is-ie .wrapper.fullscreen {
     display: -ms-flex;
     display: flex;
     background-color: #2B84C6;
-    background-image: url("assets/intro.svg");
+    background-image: url("../assets/intro.svg");
 
     cursor: default;
     padding: 1.75em 2em;
@@ -2555,7 +2554,7 @@ body.is-loading #sidebar nav ul li {
 
 #intro {
     background-attachment: fixed;
-    background-image: url("assets/intro.svg");
+    background-image: url("../assets/intro.svg");
     background-position: top right;
     background-repeat: no-repeat;
     background-size: 100% 100%;
