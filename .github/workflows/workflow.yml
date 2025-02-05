@@ -19,9 +19,9 @@ jobs:
       uses: actions/setup-python@v4
       with:
         python-version: 3.11
-        cache: "pipenv"
+        cache: "poetry"
 
-    - name: Setup PIpenv
+    - name: Setup Poetry
       uses: abatilo/actions-poetry@v4
 
     - name: Install Dependencies
