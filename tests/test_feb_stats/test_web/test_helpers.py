@@ -1,3 +1,4 @@
+import tempfile
 from pathlib import Path
 from unittest.mock import patch
 
@@ -10,7 +11,6 @@ from web.helpers.read_write import (
     read_boxscores_from_files,
     remove_boxscore_files,
 )
-import tempfile
 
 
 class TestWebHelpers(TestCase):

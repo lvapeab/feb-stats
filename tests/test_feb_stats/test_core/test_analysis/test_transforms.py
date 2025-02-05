@@ -2,8 +2,16 @@ from typing import Any
 
 import pandas as pd
 from django.test import TestCase
+from pandas.testing import assert_frame_equal
 
-from core.analysis.transforms import compute_oer, compute_shots_percentage, compute_total_possessions
+from core.analysis.entities import Boxscore, Team
+from core.analysis.transforms import (
+    aggregate_boxscores,
+    compute_oer,
+    compute_shots_percentage,
+    compute_total_possessions,
+    sum_boxscores,
+)
 
 
 class TransformsTestCase(TestCase):
@@ -104,10 +112,81 @@ class TransformsTestCase(TestCase):
         pass
 
     def test_sum_boxscores(self) -> None:
-        pass
+        columns = ["number", "minutes", "points_made", "assists"]
+        sample_df1 = pd.DataFrame(
+            {
+                "number": [4, 5],
+                "minutes": [pd.Timedelta("0 days 00:20:00"), pd.Timedelta("0 days 00:15:00")],
+                "points_made": [10, 8],
+                "assists": [2, 3],
+            },
+            index=pd.Index(["Player1", "Player2"], name="player"),
+        )[columns]
+
+        sample_df2 = pd.DataFrame(
+            {
+                "number": [4, None],
+                "minutes": [pd.Timedelta("0 days 00:18:00"), pd.Timedelta("0 days 00:12:00")],
+                "points_made": [12, 6],
+                "assists": [1, 2],
+            },
+            index=pd.Index(["Player1", "Player2"], name="player"),
+        )[columns]
+
+        expected_result = pd.DataFrame(
+            {
+                "number": [4, 5],
+                "minutes": [pd.Timedelta("0 days 00:38:00"), pd.Timedelta("0 days 00:27:00")],
+                "points_made": [22, 14],
+                "assists": [3, 5],
+            },
+            index=pd.Index(["Player1", "Player2"], name="player"),
+        )[columns]
+
+        result = sum_boxscores(sample_df1, sample_df2)
+        assert_frame_equal(result, expected_result, check_like=True)
 
     def test_aggregate_boxscores(self) -> None:
-        pass
+        team_instance = Team(name="TestTeam", season_stats=pd.DataFrame())
+        columns = ["player", "number", "minutes", "points_made"]
+        boxscore1 = Boxscore(
+            boxscore=pd.DataFrame(
+                {
+                    "player": ["Player1"],
+                    "number": [4],
+                    "minutes": [pd.Timedelta("0 days 00:20:00")],
+                    "points_made": [10],
+                }
+            )[columns],
+            team=team_instance,
+            score=10,
+        )
+        boxscore2 = Boxscore(
+            boxscore=pd.DataFrame(
+                {
+                    "player": ["Player1"],
+                    "number": [4],
+                    "minutes": [pd.Timedelta("0 days 00:15:00")],
+                    "points_made": [8],
+                }
+            )[columns],
+            team=team_instance,
+            score=8,
+        )
+
+        expected_result = pd.DataFrame(
+            {"number": [4], "minutes": [pd.Timedelta("0 days 00:35:00")], "points_made": [18]},
+            index=pd.Index(["Player1"], name="player"),
+        )
+
+        result = aggregate_boxscores([boxscore1, boxscore2])
+        assert_frame_equal(result.boxscore, expected_result, check_like=True)
+        self.assertEqual(result.score, 18)
+        self.assertEqual(result.team, team_instance)
 
     def test_compute_league_aggregates(self) -> None:
         pass
+
+    def test_aggregate_boxscores_empty_list(self) -> None:
+        with self.assertRaises(ValueError):
+            aggregate_boxscores([])

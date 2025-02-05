@@ -79,7 +79,7 @@ omit = [
     "*/migrations/*",
     ".venv/*",
     "*/tests/*",
-    "*/scripts/*",
+    "*/commands/*",
     "*/*/codegen/*",
 ]
 
