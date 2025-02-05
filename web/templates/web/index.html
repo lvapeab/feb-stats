@@ -1,0 +1,239 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Analizador de estadísticas FEB</title>
+    <link rel="shortcut icon" href="{% static 'web/assets/basketball.png' %}">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="{% static 'web/css/main.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.5.1/min/dropzone.min.css">
+    <script src="https://kit.fontawesome.com/fbe4d58721.js" crossorigin="anonymous"></script>
+    {% csrf_token %}
+</head>
+<body>
+<div class="flash-messages">
+    {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    {% endfor %}
+    {% endif %}
+</div>
+
+<section id="sidebar">
+    <div class="inner">
+        <nav>
+            <ul>
+                <li><a href="#intro">Inicio</a></li>
+                <li><a href="#url-analysis">Ligas</a></li>
+                <li><a href="#data">Subir datos</a></li>
+                <li><a href="#analysis">Datos analizados</a></li>
+                <li><a href="#instructions">Instrucciones</a></li>
+                <li><a href="#contact">Contacto</a></li>
+            </ul>
+        </nav>
+    </div>
+</section>
+
+<div id="wrapper">
+    <section id="intro" class="wrapper style1 fullscreen fade-up">
+        <div class="inner">
+            <h1>Analizador de estadísticas FEB</h1>
+            Extracción de estadísticas avanzadas a partir de las actas de los partidos de la <a href="http://feb.es/">FEB (Federación Española de Baloncesto).</a>
+            <ul>
+                <li><a href="#url-analysis">Selecciona una liga para analizar</a>.</li>
+                <li><a href="#data">O sube tus propios datos.</a></li>
+                <li> La sección de <a href="#analysis">datos analizados</a> contiene una explicación de los datos extraídos.</li>
+                <li> Si no sabes cómo funciona, puedes encontrar ayuda en <a href="#instructions">la sección de instrucciones.</a></li>
+            </ul>
+        </div>
+    </section>
+
+    <section id="url-analysis" class="wrapper style1 fullscreen fade-up">
+        <div class="inner">
+            <h1>Ligas</h1>
+            <p>Analiza todos los partidos jugados. Puedes seleccionar una liga predefinida o introducir la dirección del calendario de otra liga.</p>
+            <div class="form-group">
+                <form method="post" id="analyze_url_form" action="{% url 'analyze_url' %}" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="split">
+                        <div class="field half">
+                            <div class="row mb-4">
+                                <div class="col-md-11">
+                                    <h3>Ligas completas</h3>
+                                    <select class="form-control mb-3" id="league_id" name="league_id">
+                                        <option value="">Selecciona una liga...</option>
+                                        {% for league, data in predefined_urls.items %}
+                                        <option value="{{ league }}">{{ league }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <select class="form-control mb-3" id="group_id" name="group_id">
+                                        <option value="">Selecciona un grupo...</option>
+                                    </select>
+                                    <select class="form-control" id="season_id" name="season_id">
+                                        <option value="">Selecciona una temporada...</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <h3>Otra liga</h3>
+                            <input type="url" class="form-control" id="custom_url" name="custom_url" placeholder="https://baloncestoenvivo.feb.es/calendario/...">
+                        </div>
+                    </div>
+                    <div class="row align-items-center">
+                        <div class="col-auto">
+                            <div class="form-check">
+                                Colorear &nbsp;<input type="checkbox" name="color-sheet" style="float: left;" value="False">
+                            </div>
+                        </div>
+                        <div class="col text-right">
+                            <button type="submit" class="button">Analizar</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <section id="data" class="wrapper style1 fullscreen fade-up">
+        <div class="inner">
+            <h1>Subir datos</h1>
+            Sube tus actas. Puedes elegir o arrastrar varios archivos de una carpeta o arrastrar la carpeta entera al cuadro. <br>
+            Marcando colorear se destacan los datos estadísticamente anómalos con respecto a la media de la liga o equipo.<br>
+            <span class="small">Ningún dato se almacena de manera permanente.</span>
+            <div>
+                <form id="upload-widget" method="post" action="{% url 'upload' %}" class="dropzone">
+                    {% csrf_token %}
+                    <div class="fallback"><input name="file" type="file"/></div>
+                </form>
+            </div>
+            <form method="post" id="analyze_button" action="{% url 'analyze' %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                Colorear &nbsp;<input type="checkbox" name="color-sheet" style="float: left;" value="False">
+                <button type="submit" style="float: right;" class="button">Analizar</button>
+            </form>
+        </div>
+    </section>
+    <section id="analysis" class="wrapper style1 fullscreen fade-up">
+        <div class="inner">
+            <h1>Datos analizados</h1>
+            Los datos se analizan a nivel de toda la liga y para cada equipo. Este análisis se distribuye en diferentes
+            hojas:
+            <ul>
+                <li>Los datos acumulados de todos los equipos de la liga y sus medias por partido.</li>
+                <li>Para cada jugador de cada equipo, sus datos acumulados y medias por partido.</li>
+            </ul>
+
+            Si seleccionas la opción "Colorear", los valores anormalmente altos o bajos de una estadística con
+            respecto al del resto de la liga/equipo se colorearán:
+            <ul>
+                <li><span style="color: green; font-weight: bold"> Muy altos </span>: Mayor que el 95% de los datos.
+                </li>
+                <li><span style="color: yellow; font-weight: bold"> Altos </span>: Mayor que el 68% de los datos.</li>
+                <li><span style="color: orange; font-weight: bold"> Bajos </span>: Menor que el 68% de los datos.</li>
+                <li><span style="color: red; font-weight: bold"> Muy bajos </span>: Menor que el 95% de los datos.</li>
+            </ul>
+
+            Además de todos los datos que ofrece la <a
+                href="http://competiciones.feb.es/estadisticas/Partido.aspx?p=2170274&med=0">FEB</a>, se calculan los
+            siguientes valores:
+            <ul>
+                <li><b>Posesiones totales</b>: Estimación del número de posesiones jugadas. Calculado como: tiros de
+                    campo intentados + tiros libres intentados / 2 + pérdidas (+ asistencias cuando se calcula para un
+                    jugador).
+                </li>
+                <li><b>OER</b> <sup>1</sup>: Estimación del rendimiento ofensivo. Puntos anotados / posesiones totales
+                </li>
+                <li><b>DER</b> <sup>2</sup>: Estimación del rendimiento defensivo. OER de los rivales cuando se
+                    enfrentan a un equipo.
+                </li>
+                <li><b>Volúmenes</b> <sup>3</sup>: Porcentaje que representa la aportación de un jugador con respecto al
+                    total de su equipo.
+                </li>
+            </ul>
+
+            <span class="small"> <sup>1</sup>No es la definción canónica del <a
+                    href="https://en.wikipedia.org/wiki/Offensive_rating">offensive rating</a>.</span><br>
+            <span class="small"> <sup>2</sup>No se puede calcular a nivel individual.</span><br>
+            <span class="small"> <sup>3</sup>Calculado sólo a nivel de jugador.</span><br><br>
+
+            <h3>Ejemplo de hoja generada a partir de los partidos de la Copa de la Reina 2020</h3>
+            <iframe width="1024" height="250"
+                    src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTBm11WzDj0wUubFFsrNZPamKL4NOGHe-4qakapU2CDoxO8anFhkDg8RxnYVaNLy0unGBnaeSJ_HsHq/pubhtml?widget=true&amp;headers=false"></iframe>
+        </div>
+    </section>
+    <section id="instructions" class="wrapper style1 fullscreen fade-up">
+        <div class="inner">
+            <h1>Instrucciones</h1>
+            <ol>
+                <li> Guarda las páginas de resultados de <a href="http://feb.es/"> la web de la FEB </a> (<a
+                        href="http://competiciones.feb.es/estadisticas/Partido.aspx?p=2170274&med=0">ejemplo</a>) en tu
+                    PC (haciendo click derecho en la página y eligiendo "guardar como..." o pulsando <code>ctrl+s</code>).
+                    Se guardarán con la extensión <code>.html</code>.
+                </li>
+                <li> Una vez hayas guardado todos los partidos guardados, utiliza <a href="#data">el cuadro anterior</a>
+                    para subirlas.
+                </li>
+                <li> Una vez subidos los archivos deseados, pulsar el botón <a href="#data">Analizar</a>.</li>
+                <li> Se hará el análisis de los datos (puede tardar unos segundos) y se descargará un archivo <code>.xlsx</code>
+                    con las estadísticas analizadas.
+                </li>
+                <li> Este archivo se puede abrir con cualquier gestor de hojas de cálculo (Excel, Google Forms,
+                    LibreOffice).
+                </li>
+                <li> Consulta <a href="#analyze_button">la sección de datos analizados</a> para obtener una explicación
+                    de las estadísticas analizadas.
+                </li>
+            </ol>
+        </div>
+    </section>
+
+
+    <section id="contact" class="wrapper style1 fade-up">
+        <div class="inner">
+            <h3>Autor: Álvaro Peris</h3>
+            <ul class="icons">
+                <li><a href="mailto:lvapeab@gmail.com" class="fa fa-mail-forward"><span class="label">Mail</span></a>
+                </li>
+                <li><a href="http://lvapeab.github.io" class="fa-globe"><span class="label">Web</span></a>
+                </li>
+                <li><a href="https://github.com/lvapeab/feb-stats" class="fa-github"><span
+                        class="label">GitHub</span></a>
+                </li>
+                <li><a href="http://es.linkedin.com/in/lvapeab" class="fa-linkedin "><span class="label">LinkedIn</span></a>
+                </li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="footer" class="wrapper style1-alt">
+        <div class="inner">
+            <ul class="menu">
+                <li>&copy; Álvaro Peris. All rights reserved.</li>
+                <li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+            </ul>
+        </div>
+    </footer>
+</div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.5.1/min/dropzone.min.js"></script>
+    <script src="{% static 'dz_config.js' %}"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+    {{ predefined_urls|json_script:"predefined-urls" }}
+    <script>
+        const predefinedUrls = JSON.parse(document.getElementById('predefined-urls').textContent);
+    </script>
+    <script src="{% static 'web/js/calendar_selector.js' %}"></script>
+    <script src="{% static 'web/js/calendar_selector.js' %}"></script>
+</body>
+</html>
