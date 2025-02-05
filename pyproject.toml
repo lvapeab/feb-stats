@@ -34,6 +34,8 @@ beautifulsoup4 = "~=4.12.3"
 django = "^5.1.5"
 django-stubs = "^5.1.2"
 pytest-django = "^4.9.0"
+django-staticfiles = "^1.2.1"
+whitenoise = "^6.8.2"
 
 [tool.poetry.group.dev.dependencies]
 mypy ="~=1.12.1"
