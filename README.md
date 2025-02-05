@@ -14,14 +14,14 @@ The boxscores are analyzed from the game stats pages (`.html` or `htm`).
 ### Run the python service in local
 
 ```shell script
-pipenv run gunicorn feb_stats.web.webapp:app
+poetry run gunicorn feb_stats.wsgi:application --env DJANGO_SETTINGS_MODULE=feb_stats.settings.local
 ```
 
 ### Run linting and tests
 
 ```shell script
-pipenv run lint ; 
-pipenv run pytest tests ;
+poetry run lint ; 
+poetry run pytest tests ;
 ```
 
 ### Run using docker-compose
