@@ -33,4 +33,4 @@ COPY . .
 
 EXPOSE 80 80
 
-CMD ["poetry", "run", "gunicorn", "feb_stats.web.webapp:app"]
+CMD ["poetry", "run", "gunicorn", "feb_stats.wsgi:application", "--env", "DJANGO_SETTINGS_MODULE=feb_stats.settings.production"]

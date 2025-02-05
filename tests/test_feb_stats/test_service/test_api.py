@@ -1,12 +1,14 @@
 import glob
-import unittest
 from pathlib import Path
-from feb_stats.service.api import ContextStub, FebStatsServiceServicer
-from feb_stats.service.codegen.feb_stats_pb2 import GetFebStatsRequest
-from feb_stats.service.handler import SimpleLeagueHandler
+
+from django.test import TestCase
+
+from service.api import ContextStub, FebStatsServiceServicer
+from service.codegen.feb_stats_pb2 import GetFebStatsRequest
+from service.handler import SimpleLeagueHandler
 
 
-class FebStatsServiceServicerTest(unittest.TestCase):
+class FebStatsServiceServicerTest(TestCase):
     def test_GetFebStats(self) -> None:
         test_dir = Path(__file__).parent.parent.parent
         input_files = glob.glob(str(test_dir / "data/*livescore*html"))
@@ -22,7 +24,3 @@ class FebStatsServiceServicerTest(unittest.TestCase):
         request_with_color = GetFebStatsRequest(boxscores=boxscores, color_sheet=True)
         result_with_color = service.GetFebStats(request_with_color, ContextStub())
         self.assertTrue(result_with_color.sheet)
-
-
-if __name__ == "__main__":
-    unittest.main()

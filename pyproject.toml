@@ -31,6 +31,8 @@ grpcio-reflection = "~=1.68.1"
 grpcio-status = "~=1.68.1"
 grpcio-tools = "~=1.68.1"
 beautifulsoup4 = "~=4.12.3"
+django = "^5.1.5"
+django-stubs = "^5.1.2"
 
 [tool.poetry.group.dev.dependencies]
 mypy ="~=1.12.1"
@@ -49,16 +51,15 @@ target-version = "py311"
 indent-width = 4
 
 [tool.ruff.lint]
-select  = ["F", "E", "TCH", "UP"]
+select = ["F", "I", "E", "TCH", "UP"]
 ignore = []
 exclude = [
   "*/migrations/*",
-  "tests/*",
   "*/build/*",
   "doc/",
   "./venv",
   ".pyenv*",
-  "feb_stats/service/codegen/*"
+  "service/codegen/*"
 ]
 # Allow unused variables when underscore-prefixed.
 dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
