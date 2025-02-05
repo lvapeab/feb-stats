@@ -33,6 +33,7 @@ grpcio-tools = "~=1.68.1"
 beautifulsoup4 = "~=4.12.3"
 django = "^5.1.5"
 django-stubs = "^5.1.2"
+pytest-django = "^4.9.0"
 
 [tool.poetry.group.dev.dependencies]
 mypy ="~=1.12.1"

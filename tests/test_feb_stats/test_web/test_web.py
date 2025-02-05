@@ -1,10 +1,10 @@
 import tempfile
 from http import HTTPStatus
-from io import BytesIO
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 from django.conf import settings
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import Client, TestCase
 from django.urls import reverse
 
@@ -28,12 +28,12 @@ class TestFebStatsWebapp(TestCase):
         self.assertEqual(response.status_code, HTTPStatus.FOUND)
 
     def test_upload_invalid_extension(self) -> None:
-        data = {"file": (BytesIO(b"test content"), "test.pdf")}
+        data = {"file": SimpleUploadedFile("test.pdf", b"test content")}
         response = self.client.post(reverse("upload"), data=data)
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
     def test_upload_valid_file(self) -> None:
-        data = {"file": (BytesIO(b"test content"), "test.html")}
+        data = {"file": SimpleUploadedFile("test.html", b"test content")}
         response = self.client.post(reverse("upload"), data=data)
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertEqual(response.content, b"OK")
