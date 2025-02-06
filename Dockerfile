@@ -32,6 +32,8 @@ ENV PYTHONPATH="/code:$PYTHONPATH"
 
 COPY . .
 
-EXPOSE 80 80
+RUN poetry run python manage.py collectstatic --noinput --settings=feb_stats.settings.production
+
+EXPOSE 8000
 
 CMD ["poetry", "run", "gunicorn", "feb_stats.wsgi:application", "--env", "DJANGO_SETTINGS_MODULE=feb_stats.settings.production"]
