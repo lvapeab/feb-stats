@@ -27,6 +27,16 @@ with open(BASE_DIR / "web" / "config" / "defaults.yaml") as f:
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = "django-insecure-0vkkrtes5q48hub)k^ryp#^h)^gj_nl7h-jdx%x^0u1%8#6hz@"
+CSRF_TRUSTED_ORIGINS = []
+
+# Since you're behind Cloud Run's load balancer
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+USE_X_FORWARDED_HOST = True
+SECURE_SSL_REDIRECT = True
+
+# Security settings for production
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
