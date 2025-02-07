@@ -1,6 +1,6 @@
 from .base import *  # noqa
 
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ["feb-stats-11741086955.europe-west9.run.app"]
 CSRF_TRUSTED_ORIGINS = ["https://feb-stats-11741086955.europe-west9.run.app"]
