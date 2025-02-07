@@ -90,9 +90,9 @@ def transform_game_stats_df(initial_df: pd.DataFrame, home_team: bool = False) -
     df = initial_df.rename(no_transform_keys, axis="columns")
     transform_keys = {
         # key, Dict[new_key_prefix, function]
-        "tiros dos": ("2_point", transform_cum_stats_shots),
+        "tiros dos": ("two_point", transform_cum_stats_shots),
         "minutos": ("minutes", transform_cum_stats_minutes),
-        "tiros tres": ("3_point", transform_cum_stats_shots),
+        "tiros tres": ("three_point", transform_cum_stats_shots),
         "tiros campo": ("field_goal", transform_cum_stats_shots),
         "tiros libres": ("free_throw", transform_cum_stats_shots),
         "inicial": ("starter", transform_starter),

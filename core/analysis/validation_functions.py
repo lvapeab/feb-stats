@@ -1,6 +1,7 @@
 import datetime
 import re
 from typing import Any
+from zoneinfo import ZoneInfo
 
 
 def validate_string(value: str) -> str:
@@ -14,8 +15,11 @@ def validate_int(value: Any) -> int:
 
 def validate_datetime(value: Any) -> datetime.datetime:
     if isinstance(value, datetime.datetime):
-        return value
+        return value.replace(tzinfo=ZoneInfo("Europe/Madrid"))
     if isinstance(value, str):
         date_str, time_str = value.split()
-        return datetime.datetime.strptime(f"{date_str} {time_str}", "%d/%m/%Y %H:%M")
+        return datetime.datetime.strptime(f"{date_str} {time_str}", "%d/%m/%Y %H:%M").replace(
+            tzinfo=ZoneInfo("Europe/Madrid")
+        )
+
     raise ValueError(f"DateTime must be in 'dd/mm/yyyy HH:MM' format. Value: {value}")

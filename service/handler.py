@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 from grpc import insecure_channel
 
 if TYPE_CHECKING:
-    from core.analysis.entities import League
+    from core.analysis.data_models import LeagueData
 from core.analysis.saving import league_to_xlsx
 from core.analysis.transforms import compute_league_aggregates
 from core.parsers.parsers import FEBLivescoreParser
@@ -21,10 +21,11 @@ class SimpleLeagueHandler(LeagueHandler):
         self.options = options
         self.address = address
         self.channel = insecure_channel(self.address, options=self.options)
-        self.league: League | None = None
+        self.league: LeagueData | None = None
 
     def parse_boxscores(self, input_boxscores: list[bytes]) -> None:
         league = FEBLivescoreParser.parse_boxscores(input_boxscores, FEBLivescoreParser.read_link_bytes)
+        league.save_to_db()
         self.league = compute_league_aggregates(league)
         return None
 

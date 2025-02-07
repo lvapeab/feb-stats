@@ -29,12 +29,12 @@ def get_sorted_list_of_columns(individual_columns: bool = False) -> list[str]:
         "assists",
         "steals",
         "turnovers",
-        "2_point_percentage",
-        "2_point_made",
-        "2_point_attempted",
-        "3_point_percentage",
-        "3_point_made",
-        "3_point_attempted",
+        "two_point_percentage",
+        "two_point_made",
+        "two_point_attempted",
+        "three_point_percentage",
+        "three_point_made",
+        "three_point_attempted",
         "field_goal_percentage",
         "field_goal_made",
         "field_goal_attempted",
@@ -60,10 +60,10 @@ def get_sorted_list_of_columns(individual_columns: bool = False) -> list[str]:
     else:
         column_list.insert(3, "points_made_volume")
         column_list.insert(5, "total_possessions_volume")
-        column_list.insert(11, "2_point_made_volume")
-        column_list.insert(13, "2_point_attempted_volume")
-        column_list.insert(16, "3_point_made_volume")
-        column_list.insert(18, "3_point_attempted_volume")
+        column_list.insert(11, "two_point_made_volume")
+        column_list.insert(13, "two_point_attempted_volume")
+        column_list.insert(16, "three_point_made_volume")
+        column_list.insert(18, "three_point_attempted_volume")
         column_list.insert(21, "field_goal_made_volume")
         column_list.insert(23, "field_goal_attempted_volume")
         column_list.insert(26, "free_throw_made_volume")
@@ -87,10 +87,10 @@ def get_averageable_numerical_columns(individual_columns: bool = False) -> list[
         "assists",
         "steals",
         "turnovers",
-        "2_point_made",
-        "2_point_attempted",
-        "3_point_made",
-        "3_point_attempted",
+        "two_point_made",
+        "two_point_attempted",
+        "three_point_made",
+        "three_point_attempted",
         "field_goal_made",
         "field_goal_attempted",
         "free_throw_made",

@@ -4,7 +4,7 @@ import pandas as pd
 from django.test import TestCase
 from pandas.testing import assert_frame_equal
 
-from core.analysis.entities import Boxscore, Team
+from core.analysis.data_models import BoxscoreData, LeagueData, LeagueTeamData
 from core.analysis.transforms import (
     aggregate_boxscores,
     compute_oer,
@@ -25,10 +25,10 @@ class TransformsTestCase(TestCase):
             "dunks": {0: 0.0, 1: 1.0, 2: 4.0},
             "ranking": {0: 576.0, 1: 516.0, 2: 543.0},
             "point_balance": {0: -160.0, 1: -108.0, 2: -28.0},
-            "2_point_made": {0: 130.0, 1: 134.0, 2: 159.0},
-            "2_point_attempted": {0: 293.0, 1: 288.0, 2: 306.0},
-            "3_point_made": {0: 55.0, 1: 58.0, 2: 63.0},
-            "3_point_attempted": {0: 190.0, 1: 202.0, 2: 180.0},
+            "two_point_made": {0: 130.0, 1: 134.0, 2: 159.0},
+            "two_point_attempted": {0: 293.0, 1: 288.0, 2: 306.0},
+            "three_point_made": {0: 55.0, 1: 58.0, 2: 63.0},
+            "three_point_attempted": {0: 190.0, 1: 202.0, 2: 180.0},
             "field_goal_made": {0: 185.0, 1: 192.0, 2: 222.0},
             "field_goal_attempted": {0: 483.0, 1: 490.0, 2: 486.0},
             "free_throw_made": {0: 127.0, 1: 86.0, 2: 57.0},
@@ -82,11 +82,11 @@ class TransformsTestCase(TestCase):
     def test_compute_shots_percentage(self) -> None:
         desired_series_2pt = pd.Series(
             {0: 100 * 130.0 / 293.0, 1: 100 * 134.0 / 288.0, 2: 100 * 159.0 / 306.0},
-            name="2_point_percentage",
+            name="two_point_percentage",
         )
         desired_series_3pt = pd.Series(
             {0: 100 * 55.0 / 190.0, 1: 100 * 58.0 / 202.0, 2: 100 * 63.0 / 180.0},
-            name="3_point_percentage",
+            name="three_point_percentage",
         )
 
         desired_series_fg = pd.Series(
@@ -100,8 +100,8 @@ class TransformsTestCase(TestCase):
         )
 
         df = compute_shots_percentage(self.data_df)
-        pd.testing.assert_series_equal(df.loc[:, "2_point_percentage"], desired_series_2pt)
-        pd.testing.assert_series_equal(df.loc[:, "3_point_percentage"], desired_series_3pt)
+        pd.testing.assert_series_equal(df.loc[:, "two_point_percentage"], desired_series_2pt)
+        pd.testing.assert_series_equal(df.loc[:, "three_point_percentage"], desired_series_3pt)
         pd.testing.assert_series_equal(df.loc[:, "field_goal_percentage"], desired_series_fg)
         pd.testing.assert_series_equal(df.loc[:, "free_throw_percentage"], desired_series_ft)
 
@@ -147,9 +147,14 @@ class TransformsTestCase(TestCase):
         assert_frame_equal(result, expected_result, check_like=True)
 
     def test_aggregate_boxscores(self) -> None:
-        team_instance = Team(name="TestTeam", season_stats=pd.DataFrame())
+        team_instance = LeagueTeamData(
+            name="TestTeam",
+            exid="1234",
+            league=LeagueData(name="Liga EBA", season="2022/2023", teams=[], games=[]),
+            season_stats=pd.DataFrame(),
+        )
         columns = ["player", "number", "minutes", "points_made"]
-        boxscore1 = Boxscore(
+        boxscore1 = BoxscoreData(
             boxscore=pd.DataFrame(
                 {
                     "player": ["Player1"],
@@ -161,7 +166,7 @@ class TransformsTestCase(TestCase):
             team=team_instance,
             score=10,
         )
-        boxscore2 = Boxscore(
+        boxscore2 = BoxscoreData(
             boxscore=pd.DataFrame(
                 {
                     "player": ["Player1"],

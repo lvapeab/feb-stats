@@ -5,8 +5,8 @@ import pandas as pd
 from openpyxl.styles import Alignment
 from openpyxl.utils import get_column_letter
 
-from core.analysis.entities import League
-from core.analysis.entities_ops import average_games
+from core.analysis.data_models import LeagueData
+from core.analysis.data_models_ops import average_games
 from core.analysis.lang import spanish_columns
 from core.analysis.utils import get_sorted_list_of_columns, timedelta_to_str
 
@@ -44,14 +44,14 @@ def gaussian_color_style(
 
 
 def league_to_xlsx(
-    league: League,
+    league: LeagueData,
     filename: str | None = None,
     col_width: int = 60,
     export_language: str = "es",
     export_colors: bool = False,
 ) -> bytes:
     """Exports a league to xlsx.
-    :param league: League to be exported.
+    :param league: LeagueData to be exported.
     :param filename: Name of the file to be written.
     :param col_width: Column width.
     :param export_language: Export the league in different languages. Currently, only 'es' or 'en' supported.
