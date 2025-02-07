@@ -12,14 +12,10 @@ ENV PYTHONFAULTHANDLER=1 \
 
 RUN apt-get update -y && \
     apt-get install -y  curl wget && \
-    rm -rf /var/lib/apt/lists/*
-
-# System deps:
-RUN python3 -m pip install --upgrade pip pipx
-
-ENV PATH=/root/.local/bin:$PATH
-
-RUN pipx install poetry
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* && \
+    python3 -m pip install --upgrade pip pipx && \
+    pipx install poetry
 
 WORKDIR /code
 
@@ -34,6 +30,9 @@ COPY . .
 
 RUN poetry run python manage.py collectstatic --noinput --settings=feb_stats.settings.production
 
-EXPOSE 8000
-
-CMD ["poetry", "run", "gunicorn", "feb_stats.wsgi:application", "--env", "DJANGO_SETTINGS_MODULE=feb_stats.settings.production"]
+CMD ["poetry", "run", "gunicorn", "feb_stats.wsgi:application", \
+     "--env", "DJANGO_SETTINGS_MODULE=feb_stats.settings.production", \
+     "--bind", "0.0.0.0:$PORT" \
+     "--workers", "2", \
+     "--timeout", "300"
+     ]
