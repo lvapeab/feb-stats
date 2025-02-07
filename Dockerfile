@@ -30,7 +30,8 @@ COPY . .
 
 RUN poetry run python manage.py collectstatic --noinput --settings=feb_stats.settings.production
 
-CMD ["poetry", "run", "gunicorn", "feb_stats.wsgi:application", \
+CMD ["poetry", "run", "gunicorn", "--timeout", "300", \
+     "feb_stats.wsgi:application", \
      "--env", "DJANGO_SETTINGS_MODULE=feb_stats.settings.production", \
      "--bind", "0.0.0.0:$PORT", \
      "--timeout", "300"
