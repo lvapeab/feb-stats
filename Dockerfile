@@ -17,6 +17,8 @@ RUN apt-get update -y && \
     python3 -m pip install --upgrade pip pipx && \
     pipx install poetry
 
+ENV PATH=/root/.local/bin:$PATH
+
 WORKDIR /code
 
 COPY poetry.lock pyproject.toml /code/
