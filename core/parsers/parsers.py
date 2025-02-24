@@ -17,6 +17,7 @@ T = TypeVar("T", str, bytes)
 
 
 class MetadataDict(TypedDict):
+    league_exid: str
     game_exid: str
     date: str
     time: str
@@ -62,6 +63,7 @@ class FEBLivescoreParser:
     def create_league(all_games: list[GameData], all_teams: set[LeagueTeamData]) -> LeagueData:
         return LeagueData(
             # TODO: This is quite absurd. Review.
+            exid=all_games[0].league.exid,
             name=all_games[0].league.name,
             season=all_games[0].league.season,
             teams=list(all_teams),
@@ -71,6 +73,7 @@ class FEBLivescoreParser:
     @staticmethod
     def create_game(metadata: MetadataDict, game_stats: dict[str, pd.DataFrame]) -> GameData:
         league = LeagueData(
+            exid=metadata["league_exid"],
             name=metadata["league"],
             season=metadata["season"],
             # TODO: This is quite absurd. Review.
@@ -156,6 +159,8 @@ class FEBLivescoreParser:
 
     @classmethod
     def parse_game_metadata(cls, doc: Element, game_stats: dict[str, Any]) -> MetadataDict:
+        league_exid = None
+
         game_exid = None
         game_id_nodes = doc.xpath('//script[contains(text(), "idPartido")]')
         if game_id_nodes:
@@ -190,6 +195,7 @@ class FEBLivescoreParser:
 
         # home_team = codecs.latin_1_encode(self.parse_str(home_score[0].text_content()))
         metadata_dict: MetadataDict = {
+            "league_exid": league_exid or "",
             "game_exid": game_exid or "",
             "date": date or "",
             "time": time or "",

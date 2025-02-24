@@ -10,9 +10,11 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 import yaml
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
@@ -80,11 +82,16 @@ WSGI_APPLICATION = "feb_stats.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-
+load_dotenv()
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": "feb_stats",
+        "ENGINE": "django_cockroachdb",
+        "NAME": os.getenv("TEST_DB_NAME"),
+        "USER": os.getenv("TEST_DB_USER"),
+        "PASSWORD": os.getenv("TEST_DB_PASSWORD"),
+        "HOST": os.getenv("TEST_DB_HOST"),
+        "PORT": os.getenv("DB_PORT", "26257"),
+        "OPTIONS": {"sslmode": "require", "sslrootcert": os.getenv("DB_ROOT_CERT"), "connect_timeout": 10},
     }
 }
 
@@ -146,4 +153,22 @@ MAX_CONTENT_LENGTH = 16 * 1024 * 1024
 PORTS = {
     "grpc_address": "localhost",
     "grpc_port": "50001",
+}
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "level": "DEBUG",
+        },
+    },
+    "loggers": {
+        "django.db.backends": {
+            "handlers": ["console"],
+            "level": "DEBUG",
+            "propagate": True,
+        },
+    },
 }

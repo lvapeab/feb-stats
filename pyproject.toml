@@ -36,6 +36,10 @@ django-stubs = "^5.1.2"
 pytest-django = "^4.9.0"
 django-staticfiles = "^1.2.1"
 whitenoise = "^6.8.2"
+django-cockroachdb = "^5.1"
+psycopg2-binary = "^2.9.10"
+python-dotenv = "^1.0.1"
+env-cmd = "^1.1"
 
 [tool.poetry.group.dev.dependencies]
 mypy ="~=1.12.1"

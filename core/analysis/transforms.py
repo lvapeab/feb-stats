@@ -177,6 +177,7 @@ def compute_league_aggregates(league: LeagueData) -> LeagueData:
     aggregated_games_df = aggregated_games_df.rename(columns={"index": "mode"})
 
     return LeagueData(
+        exid=league.exid,
         name=league.name,
         season=league.season,
         teams=aggregated_league_teams,

@@ -90,7 +90,7 @@ class LeagueTeamData(BaseModel):
         return validate_string(v)
 
     def save_to_db(self, league: League) -> LeagueTeam:
-        team, _ = Team.objects.get_or_create(exid=self.exid)
+        team, _ = Team.objects.update_or_create(exid=self.exid, defaults={"name": self.name})
         league_team, _ = LeagueTeam.objects.get_or_create(team=team, league=league)
         return league_team
 
@@ -155,6 +155,7 @@ class LeagueData(BaseModel):
 
     name: str
     season: str
+    exid: str
     teams: list[LeagueTeamData]
     games: list["GameData"]
 
@@ -166,9 +167,12 @@ class LeagueData(BaseModel):
         return f"{self.name} - {self.season}"
 
     def save_to_db(self) -> League:
-        league, _ = League.objects.get_or_create(
-            name=self.name,
-            season=self.season,
+        league, _ = League.objects.update_or_create(
+            exid=self.exid,
+            defaults={
+                "name": self.name,
+                "season": self.season,
+            },
         )
         for team in self.teams:
             team.save_to_db(league)
@@ -230,11 +234,9 @@ class GameData(BaseModel):
     def save_to_db(self, league: League) -> Game:
         main_referee = self.main_referee.save_to_db()
         aux_referee = self.aux_referee.save_to_db()
-        home_team, _ = Team.objects.get_or_create(exid=self.home_team.exid)
-        home_league_team, _ = LeagueTeam.objects.get_or_create(team=home_team, league_id=league)
+        home_league_team = LeagueTeam.objects.get(team__exid=self.home_team.exid, league=league)
 
-        away_team, _ = Team.objects.get_or_create(exid=self.away_team.exid)
-        away_league_team, _ = LeagueTeam.objects.get_or_create(team=away_team, league=league)
+        away_league_team = LeagueTeam.objects.get(team__exid=self.away_team.exid, league=league)
 
         game, _ = Game.objects.get_or_create(
             exid=self.exid,

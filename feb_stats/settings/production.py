@@ -1,4 +1,6 @@
 from .base import *  # noqa
+import os
+from dotenv import load_dotenv
 
 DEBUG = False
 
@@ -16,3 +18,17 @@ USE_X_FORWARDED_HOST = True
 SECURE_SSL_REDIRECT = True
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
+
+
+load_dotenv()
+DATABASES = {
+    "default": {
+        "ENGINE": "django_cockroachdb",
+        "NAME": os.getenv("DB_NAME"),
+        "USER": os.getenv("DB_USER"),
+        "PASSWORD": os.getenv("DB_PASSWORD"),
+        "HOST": os.getenv("DB_HOST"),
+        "PORT": os.getenv("DB_PORT", "26257"),
+        "OPTIONS": {"sslmode": "require", "sslrootcert": os.getenv("DB_ROOT_CERT"), "connect_timeout": 10},
+    }
+}
