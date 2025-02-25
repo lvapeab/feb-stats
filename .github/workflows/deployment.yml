@@ -31,8 +31,6 @@ jobs:
           context: .
           push: true
           tags: lvapeab/feb-stats:latest
-          cache-from: type=registry,ref=lvapeab/feb-stats:latest
-          cache-to: type=inline
 
       - name: Google Auth
         uses: google-github-actions/auth@v2
