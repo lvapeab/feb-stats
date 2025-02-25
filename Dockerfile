@@ -32,11 +32,11 @@ COPY . .
 
 RUN poetry run python manage.py collectstatic --noinput --settings=feb_stats.settings.production
 
-EXPOSE ${PORT:-8080}
+EXPOSE 8080
 
 CMD ["poetry", "run", "gunicorn", \
      "feb_stats.wsgi:application", \
      "--env", "DJANGO_SETTINGS_MODULE=feb_stats.settings.production", \
-     "--bind", "0.0.0.0:${PORT:-8080}", \
+     "--bind", "0.0.0.0:8080", \
      "--timeout", "300" \
      ]
