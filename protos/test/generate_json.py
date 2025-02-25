@@ -12,7 +12,7 @@ if __name__ == "__main__":
     for i, link in enumerate(glob.iglob(os.path.join(str(boxscores_dir), "*.html"), recursive=False)):
         with open(link, mode="rb") as f:
             boxscore_bytes = f.read()
-        boxscores_list.append(encodebytes(boxscore_bytes).decode("latin1"))
+        boxscores_list.append(encodebytes(boxscore_bytes).decode("utf-8"))
 
     with open("protos/minidata.json", mode="w") as f:  # type:ignore
         json.dump({"boxscores": boxscores_list}, f, ensure_ascii=False)  # type:ignore

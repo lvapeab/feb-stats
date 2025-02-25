@@ -19,7 +19,6 @@ class TestLivescoreParserScenarios(TestCase):
         files = glob.glob(str(test_dir / "data/*_livescore.json"))
         self.assertGreater(len(files), 5)
         for test_file in files:
-            print(test_file)
             labeled_file = self.read_labeled_html_json(test_file)
             raw_text = labeled_file["raw_text"]
             self.assert_get_tables(raw_text, labeled_file)
@@ -91,7 +90,7 @@ class TestLivescoreParserScenarios(TestCase):
 
     def assert_parse_game_stats(self, input_doc, expected_dict) -> None:
         league = FEBLivescoreParser.parse_boxscores(
-            [input_doc.encode("latin-1")],
+            [input_doc.encode("utf-8")],
             FEBLivescoreParser.read_link_bytes,
         )
 
