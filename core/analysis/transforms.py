@@ -1,5 +1,3 @@
-import functools
-
 import pandas as pd
 
 from core.analysis.entities import Boxscore, League, Team
@@ -102,22 +100,26 @@ def sum_boxscores(df1: pd.DataFrame, df2: pd.DataFrame) -> pd.DataFrame:
     :param df2: Second dataframe to add.
     :return: The sum of the dataframes.
     """
-    numbers1 = df1.loc[:, "number"]
-    numbers2 = df2.loc[:, "number"]
-    dorsales = numbers1.combine(numbers2, lambda x, y: x if pd.isna(y) else y)
+    result_df = df1.copy()
 
-    minutes1 = df1.loc[:, "minutes"]
-    minutes2 = df2.loc[:, "minutes"]
-    minutes_sum = minutes1.add(minutes2, fill_value=pd.to_timedelta(0.0))
+    if "number" in df1 and "number" in df2:
+        result_df["number"] = df1["number"].combine(df2["number"], lambda x, y: y if not pd.isna(y) else x)
 
-    df1 = df1.drop("number", axis="columns")
-    df2 = df2.drop("number", axis="columns")
-    df1 = df1.drop("minutes", axis="columns")
-    df2 = df2.drop("minutes", axis="columns")
-    df_sum = df1.add(df2, fill_value=0)
-    df_sum.loc[:, "number"] = dorsales
-    df_sum.loc[:, "minutes"] = minutes_sum
-    return df_sum
+    if "minutes" in df1 and "minutes" in df2:
+        minutes1 = pd.to_timedelta(df1["minutes"]) if df1["minutes"].dtype == "object" else df1["minutes"]
+        minutes2 = pd.to_timedelta(df2["minutes"]) if df2["minutes"].dtype == "object" else df2["minutes"]
+        result_df["minutes"] = minutes1.add(minutes2, fill_value=pd.Timedelta(0))
+        df2 = df2.drop("minutes", axis="columns", errors="ignore")
+
+    # Add all remaining columns with fill_value=0
+    columns_to_sum = [col for col in df2.columns if col != "number"]
+    for col in columns_to_sum:
+        if col in result_df:
+            result_df[col] = result_df[col].add(df2[col], fill_value=0)
+        else:
+            result_df[col] = df2[col].fillna(0)
+
+    return result_df
 
 
 def aggregate_boxscores(boxscores: list[Boxscore]) -> Boxscore:
@@ -127,11 +129,16 @@ def aggregate_boxscores(boxscores: list[Boxscore]) -> Boxscore:
     """
     if not boxscores:
         raise ValueError("Boxscores cannot be empty.")
-    all_dfs = [boxscore.boxscore.set_index("player") for boxscore in boxscores]
-    agg_df = functools.reduce(lambda df1, df2: sum_boxscores(df1, df2), all_dfs)
+    player_indexed_dfs = [boxscore.boxscore.set_index("player") for boxscore in boxscores]
+    base_df = player_indexed_dfs[0].copy()
+    for df in player_indexed_dfs[1:]:
+        base_df = sum_boxscores(base_df, df)
+
+    # Extract metadata from original boxscores
     team = boxscores[0].team
-    scores = sum(bs.score for bs in boxscores)
-    return Boxscore(boxscore=agg_df, team=team, score=scores)
+    total_score = sum(bs.score for bs in boxscores)
+
+    return Boxscore(boxscore=base_df, team=team, score=total_score)
 
 
 def compute_league_aggregates(league: League) -> League:

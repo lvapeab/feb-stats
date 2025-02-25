@@ -23,7 +23,7 @@ class FEBLivescoreParser:
     @staticmethod
     def parse_str(input_str: str | bytes, decode_bytes: bool = False) -> str:
         if decode_bytes:
-            input_str = bytes(str(input_str), "latin-1").decode("latin-1")
+            input_str = bytes(str(input_str), "utf-8").decode("utf-8")
         assert isinstance(input_str, str)
         return " ".join(
             input_str.replace("\n", " ").replace("\t", " ").replace("\r", " ").replace(",", ".").split()
@@ -89,7 +89,7 @@ class FEBLivescoreParser:
 
     @classmethod
     def read_link_bytes(cls, link: bytes) -> Element:
-        document_string = link.decode("latin1")
+        document_string = link.decode("utf-8")
         doc = lh.fromstring(document_string)
         return doc
 
@@ -102,7 +102,7 @@ class FEBLivescoreParser:
                 # Store the contents of the website under doc
                 return lh.fromstring(page.content)
             elif os.path.isfile(link):
-                with open(link, encoding="latin1") as f:
+                with open(link, encoding="utf-8") as f:
                     document_string = f.read()
                     return lh.fromstring(document_string)
             else:

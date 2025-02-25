@@ -43,6 +43,17 @@ def gaussian_color_style(
     return out_color
 
 
+def format_minutes_column(df: pd.DataFrame) -> None:
+    """Format timedelta minutes column to strings."""
+    if "minutes" not in df.columns:
+        return
+
+    formatted_minutes = df["minutes"].map(lambda x: (timedelta_to_str(x, minute_format="02d")))
+    df["minutes"] = df["minutes"].astype("object")
+    df["minutes"] = formatted_minutes
+    return
+
+
 def league_to_xlsx(
     league: League,
     filename: str | None = None,
@@ -126,13 +137,8 @@ def league_to_xlsx(
         if team.season_stats is not None:
             aggregated_team_season_games = team.season_stats.loc[:, player_columns]
             averaged_team_season_games = average_games(aggregated_team_season_games.copy(), individual_columns=True)
-            aggregated_team_season_games.loc[:, "minutes"] = aggregated_team_season_games["minutes"].apply(
-                lambda x: timedelta_to_str(x) if not pd.isnull(x) else ""
-            )
-            averaged_team_season_games.loc[:, "minutes"] = averaged_team_season_games["minutes"].apply(
-                lambda x: (timedelta_to_str(x, minute_format="02d") if not pd.isnull(x) else "")
-            )
-
+            format_minutes_column(aggregated_team_season_games)
+            format_minutes_column(averaged_team_season_games)
             numerical_columns = list(
                 set(aggregated_team_season_games.columns) - {"mode", "minutes", "player", "number"}
             )
