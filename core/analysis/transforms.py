@@ -2,8 +2,8 @@ import functools
 
 import pandas as pd
 
-from core.analysis.entities import Boxscore, League, Team
-from core.analysis.entities_ops import get_rival_boxscores, get_team_boxscores
+from core.analysis.data_models import BoxscoreData, LeagueData, LeagueTeamData
+from core.analysis.data_models_ops import get_rival_boxscores, get_team_boxscores
 from core.analysis.utils import timedelta_to_minutes
 
 
@@ -47,7 +47,7 @@ def compute_shots_percentage(df: pd.DataFrame, shot_columns: set[str] | None = N
     :param shot_columns: Prefix of the columns from which to compute percentages.
     :return: Input dataframe including the *_percentage columns.
     """
-    shot_columns = shot_columns or {"2_point", "3_point", "field_goal", "free_throw"}
+    shot_columns = shot_columns or {"two_point", "three_point", "field_goal", "free_throw"}
 
     for shot_column in shot_columns:
         df.loc[:, f"{shot_column}_percentage"] = (
@@ -67,10 +67,10 @@ def compute_volumes(df: pd.DataFrame, volume_keys: set[str] | None = None) -> pd
     volume_keys = volume_keys or {
         "points_made",
         "total_possessions",
-        "2_point_made",
-        "2_point_attempted",
-        "3_point_made",
-        "3_point_attempted",
+        "two_point_made",
+        "two_point_attempted",
+        "three_point_made",
+        "three_point_attempted",
         "field_goal_made",
         "field_goal_attempted",
         "free_throw_made",
@@ -120,10 +120,10 @@ def sum_boxscores(df1: pd.DataFrame, df2: pd.DataFrame) -> pd.DataFrame:
     return df_sum
 
 
-def aggregate_boxscores(boxscores: list[Boxscore]) -> Boxscore:
-    """Reduces a list of Boxscores by summation. Set `'player'` as the index of the output Boxscore.
+def aggregate_boxscores(boxscores: list[BoxscoreData]) -> BoxscoreData:
+    """Reduces a list of Boxscores by summation. Set `'player'` as the index of the output BoxscoreData.
     :param boxscores: List of Boxscores to sum.
-    :return: A Boxscore as the sum of `boxscores`.
+    :return: A BoxscoreData as the sum of `boxscores`.
     """
     if not boxscores:
         raise ValueError("Boxscores cannot be empty.")
@@ -131,16 +131,16 @@ def aggregate_boxscores(boxscores: list[Boxscore]) -> Boxscore:
     agg_df = functools.reduce(lambda df1, df2: sum_boxscores(df1, df2), all_dfs)
     team = boxscores[0].team
     scores = sum(bs.score for bs in boxscores)
-    return Boxscore(boxscore=agg_df, team=team, score=scores)
+    return BoxscoreData(boxscore=agg_df, team=team, score=scores)
 
 
-def compute_league_aggregates(league: League) -> League:
-    """Aggregates the games of a League. Computes DER and OER.
-    :param league: League to aggregate the results.
-    :return: League with the aggregated games.
+def compute_league_aggregates(league: LeagueData) -> LeagueData:
+    """Aggregates the games of a LeagueData. Computes DER and OER.
+    :param league: LeagueData to aggregate the results.
+    :return: LeagueData with the aggregated games.
     """
     aggregated_games_df = pd.DataFrame()
-    aggregated_league_teams: list[Team] = []
+    aggregated_league_teams: list[LeagueTeamData] = []
     for team in league.teams:
         team_boxscores = get_team_boxscores(league, team)
         own_df = aggregate_boxscores(team_boxscores)
@@ -150,7 +150,14 @@ def compute_league_aggregates(league: League) -> League:
         total_team_df = team_df.index.isin(["Total"])
         players_df = team_df.loc[~total_team_df, :]
 
-        aggregated_league_teams.append(Team(name=team.name, season_stats=players_df))
+        aggregated_league_teams.append(
+            LeagueTeamData(
+                name=team.name,
+                exid=team.exid,
+                league=team.league,
+                season_stats=players_df,
+            )
+        )
 
         team_df = team_df.loc["Total", :].copy()
 
@@ -169,7 +176,8 @@ def compute_league_aggregates(league: League) -> League:
     aggregated_games_df = aggregated_games_df.reset_index()
     aggregated_games_df = aggregated_games_df.rename(columns={"index": "mode"})
 
-    return League(
+    return LeagueData(
+        exid=league.exid,
         name=league.name,
         season=league.season,
         teams=aggregated_league_teams,

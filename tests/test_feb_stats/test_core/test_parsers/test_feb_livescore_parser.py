@@ -39,14 +39,16 @@ class TestLivescoreParserScenarios(TestCase):
 
         local_df = FEBLivescoreParser.elements_to_df(table_local, initial_row=initial_row, discard_last=0)
         away_df = FEBLivescoreParser.elements_to_df(table_away, initial_row=initial_row, discard_last=0)
-        self.assertEqual(local_df.shape, (expected_dict["local_table_rows"] - initial_row, 22))
-        self.assertEqual(away_df.shape, (expected_dict["away_table_rows"] - initial_row, 22))
+        self.assertEqual(local_df.shape, (expected_dict["local_table_rows"] - initial_row, 24))
+        self.assertEqual(away_df.shape, (expected_dict["away_table_rows"] - initial_row, 24))
         for df in (local_df, away_df):
             self.assertSetEqual(
                 set(df.columns),
                 {
                     "inicial",
                     "dorsal",
+                    "player_exid",
+                    "team_exid",
                     "nombre jugador",
                     "minutos",
                     "puntos",
@@ -72,9 +74,10 @@ class TestLivescoreParserScenarios(TestCase):
 
     def assert_parse_game_metadata(self, input_doc, expected_dict) -> None:
         doc = FEBLivescoreParser.read_link_file(input_doc)
-        game_metadata = FEBLivescoreParser.parse_game_metadata(doc)
+        game, game_metadata = FEBLivescoreParser.parse_game_stats(doc)
 
         desired_dict = {
+            "game_exid": expected_dict["game_exid"],
             "date": expected_dict["date"],
             "time": expected_dict["time"],
             "league": expected_dict["league"],
@@ -83,8 +86,12 @@ class TestLivescoreParserScenarios(TestCase):
             "home_score": expected_dict["home_score"],
             "away_team": expected_dict["away_team"],
             "away_score": expected_dict["away_score"],
-            "main_referee": "-",  # "SERRAT MOLINS. ALBERT",
-            "second_referee": "-",  # "ARAQUE CACERES. MAURO",
+            "main_referee": expected_dict["main_referee"],
+            "aux_referee": expected_dict["aux_referee"],
+            "main_referee_exid": str(hash(expected_dict["main_referee"])),
+            "aux_referee_exid": str(hash(expected_dict["aux_referee"])),
+            "home_team_exid": expected_dict["home_team_exid"],
+            "away_team_exid": expected_dict["away_team_exid"],
         }
         self.assertDictEqual(game_metadata, desired_dict)
 
@@ -98,8 +105,8 @@ class TestLivescoreParserScenarios(TestCase):
         game = league.games[0]
         self.assertEqual(expected_dict["date"], str(game.date))
         self.assertEqual(expected_dict["time"], game.time)
-        self.assertEqual(expected_dict["league"], game.league)
-        self.assertEqual(expected_dict["season"], game.season)
+        self.assertEqual(expected_dict["league"], game.league.name)
+        self.assertEqual(expected_dict["season"], game.league.season)
         self.assertEqual(int(expected_dict["home_score"]), game.home_score)
         self.assertEqual(int(expected_dict["away_score"]), game.away_score)
         self.assertEqual(expected_dict["home_team"], game.home_team.name)

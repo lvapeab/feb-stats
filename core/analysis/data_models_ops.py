@@ -1,14 +1,14 @@
 import numpy as np
 import pandas as pd
 
-from core.analysis.entities import Boxscore, Game, League, Team
+from core.analysis.data_models import BoxscoreData, GameData, LeagueData, LeagueTeamData
 from core.analysis.utils import get_averageable_numerical_columns
 
 
 # TODO: These ops should be done in a DB
-def get_team_by_name(league: League, team_name: str) -> Team:
+def get_team_by_name(league: LeagueData, team_name: str) -> LeagueTeamData:
     """Retrieves a team by name from a league.
-    :param league: League to retrieve from.
+    :param league: LeagueData to retrieve from.
     :param team_name: Name of the team to retrieve.
     :return: The retrieved team.
     """
@@ -18,9 +18,9 @@ def get_team_by_name(league: League, team_name: str) -> Team:
     raise Exception(f"Unable to find the team {team_name} in the league {league}")
 
 
-def get_games_by_team(league: League, team: Team) -> list[Game]:
+def get_games_by_team(league: LeagueData, team: LeagueTeamData) -> list[GameData]:
     """Retrieves all the games played by a team in a league.
-    :param league: League to retrieve from.
+    :param league: LeagueData to retrieve from.
     :param team: Team whose games will be retrieved.
     :return: List of games played by `team`.
     """
@@ -31,9 +31,9 @@ def get_games_by_team(league: League, team: Team) -> list[Game]:
     return matching_games
 
 
-def get_team_boxscores(league: League, team: Team) -> list[Boxscore]:
+def get_team_boxscores(league: LeagueData, team: LeagueTeamData) -> list[BoxscoreData]:
     """Retrieves the boxscores of a team from a league.
-    :param league: League to retrieve from.
+    :param league: LeagueData to retrieve from.
     :param team: Team whose boxscores will be retrieved.
     :return: List of boxscores of `team`.
     """
@@ -42,9 +42,9 @@ def get_team_boxscores(league: League, team: Team) -> list[Boxscore]:
     ]
 
 
-def get_rival_boxscores(league: League, team: Team) -> list[Boxscore]:
+def get_rival_boxscores(league: LeagueData, team: LeagueTeamData) -> list[BoxscoreData]:
     """Retrieves the boxscores of the rivals of a team from a league.
-    :param league: League to retrieve from.
+    :param league: LeagueData to retrieve from.
     :param team: Team whose rival boxscores will be retrieved.
     :return: List of boxscores of the rivals of  `team`.
     """
