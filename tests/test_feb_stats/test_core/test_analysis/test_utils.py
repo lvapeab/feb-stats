@@ -3,7 +3,7 @@ import unittest
 import pandas as pd
 from django.test import TestCase
 
-from core.analysis.utils import (
+from src.core.analysis.utils import (
     get_averageable_numerical_columns,
     get_sorted_list_of_columns,
     timedelta_to_minutes,

@@ -1,4 +1,4 @@
-from core.scrapers.boxscore_scraper import BoxscoreScraper
+from src.core.scrapers.boxscore_scraper import BoxscoreScraper
 
 
 def read_boxscores_from_calendar_url(

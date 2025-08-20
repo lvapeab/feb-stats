@@ -14,11 +14,11 @@ from django.urls import reverse
 from django.views import View
 from werkzeug.utils import secure_filename
 
-from core.scrapers.actions import read_boxscores_from_calendar_url
-from service.api import FebStatsServiceServicer
-from service.handler import SimpleLeagueHandler
-from service.server import feb_stats_pb2
-from web.helpers.read_write import (
+from src.core.scrapers.actions import read_boxscores_from_calendar_url
+from src.service.api import FebStatsServiceServicer
+from src.service.handler import SimpleLeagueHandler
+from src.service.server import feb_stats_pb2
+from src.web.helpers.read_write import (
     is_allowed_file_extension,
     read_boxscores_from_files,
     remove_boxscore_files,

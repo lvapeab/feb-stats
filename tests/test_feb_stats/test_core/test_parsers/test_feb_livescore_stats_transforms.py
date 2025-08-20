@@ -1,7 +1,7 @@
 import pandas as pd
 from django.test import TestCase
 
-from core.parsers.transforms import (
+from src.core.parsers.transforms import (
     transform_cum_stats_blocks,
     transform_cum_stats_fouls,
     transform_cum_stats_minutes,

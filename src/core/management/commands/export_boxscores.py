@@ -6,10 +6,10 @@ from typing import Any
 from django.core.management.base import BaseCommand, CommandParser
 from openpyxl import load_workbook
 
-from core.analysis.saving import league_to_xlsx
-from core.analysis.transforms import compute_league_aggregates
-from core.parsers.parsers import FEBLivescoreParser
-from core.scrapers.actions import read_boxscores_from_calendar_url
+from src.core.analysis.saving import league_to_xlsx
+from src.core.analysis.transforms import compute_league_aggregates
+from src.core.parsers.parsers import FEBLivescoreParser
+from src.core.scrapers.actions import read_boxscores_from_calendar_url
 
 
 class Command(BaseCommand):

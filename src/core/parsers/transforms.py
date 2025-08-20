@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 
-from core.parsers.helpers import add_hours, remove_percentage
+from src.core.parsers.helpers import add_hours, remove_percentage
 
 __all__ = [
     "transform_cum_stats_shots",

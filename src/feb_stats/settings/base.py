@@ -42,8 +42,8 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "core",
-    "web.apps.WebConfig",
+    "src.core",
+    "src.web.apps.WebConfig",
 ]
 
 MIDDLEWARE = [
@@ -57,7 +57,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = "feb_stats.urls"
+ROOT_URLCONF = "src.feb_stats.urls"
 
 TEMPLATES = [
     {
@@ -84,7 +84,7 @@ WSGI_APPLICATION = "feb_stats.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": "feb_stats",
+        "NAME": "src/feb_stats",
     }
 }
 

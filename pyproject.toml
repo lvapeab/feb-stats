@@ -1,51 +1,57 @@
 [build-system]
-requires = ["poetry-core", ]
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
-[tool.poetry]
+[tool.hatch.build.targets.wheel]
+packages = ["src/feb_stats", "scripts"]
+
+[project]
 name = "feb-stats"
 version = "1.0.0"
-authors = ["Álvaro Peris"]
+authors = [
+    { name = "Álvaro Peris", email = "lvapeab@gmail.com" }
+]
 description = "FEB Stats: Insights from FEB data."
-packages = [
-    { include = "scripts" }
+readme = "README.md"
+requires-python = ">=3.10,<3.12"
+dependencies = [
+    "lxml>=5.3.0,<6.0.0",
+    "numpy>=2.1.2,<3.0.0",
+    "openpyxl>=3.1.5,<4.0.0",
+    "pandas>=2.2.3,<3.0.0",
+    "pydantic>=2.10.3,<3.0.0",
+    "requests>=2.32.3,<3.0.0",
+    "flask>=3.0.3,<4.0.0",
+    "pyyaml>=6.0.2,<7.0.0",
+    "werkzeug>=3.0.4,<4.0.0",
+    "gunicorn>=23.0.0,<24.0.0",
+    "grpcio>=1.68.1,<2.0.0",
+    "grpcio-reflection>=1.68.1,<2.0.0",
+    "grpcio-status>=1.68.1,<2.0.0",
+    "grpcio-tools>=1.68.1,<2.0.0",
+    "beautifulsoup4>=4.12.3,<5.0.0",
+    "django>=5.1.5,<6.0.0",
+    "django-stubs>=5.1.2,<6.0.0",
+    "django-staticfiles>=1.2.1,<2.0.0",
+    "whitenoise>=6.8.2,<7.0.0",
+]
+[project.optional-dependencies]
+dev = [
+    "mypy>=1.12.1,<2.0.0",
+    "types-beautifulsoup4>=4.12.0,<5.0.0",
+    "ruff>=0.8.2,<1.0.0",
+    "pytest>=8.3.3,<9.0.0",
+    "pytest-cov>=6.0.0,<7.0.0",
+    "pytest-django>=4.9.0,<5.0.0",
+    "mypy-protobuf>=3.6.0,<4.0.0",
+    "types-PyYAML>=6.0.12,<7.0.0",
+    "types-requests>=2.32.0,<3.0.0",
 ]
 
-[tool.poetry.scripts]
+[project.scripts]
 lint = "scripts.lint:main"
 
-[tool.poetry.dependencies]
-python = ">=3.10,<3.12"
-lxml = "~=5.3.0"
-numpy = "~=2.1.2"
-openpyxl = "~=3.1.5"
-pandas = "~=2.2.3"
-pydantic = "~=2.10.3"
-requests = "~=2.32.3"
-flask = "~=3.0.3"
-pyyaml = "~=6.0.2"
-werkzeug = "~=3.0.4"
-gunicorn = "~=23.0.0"
-grpcio = "~=1.68.1"
-grpcio-reflection = "~=1.68.1"
-grpcio-status = "~=1.68.1"
-grpcio-tools = "~=1.68.1"
-beautifulsoup4 = "~=4.12.3"
-django = "^5.1.5"
-django-stubs = "^5.1.2"
-pytest-django = "^4.9.0"
-django-staticfiles = "^1.2.1"
-whitenoise = "^6.8.2"
 
-[tool.poetry.group.dev.dependencies]
-mypy ="~=1.12.1"
-types-beautifulsoup4 ="~=4.12.0"
-ruff ="~=0.8.2"
-pytest = "~=8.3.3"
-pytest-cov = "~=6.0.0"
-mypy-protobuf ="~=3.6.0"
-types-PyYAML = "~=6.0.12"
-types-requests = "~=2.32.0"
 
 
 [tool.ruff]
@@ -57,12 +63,12 @@ indent-width = 4
 select = ["F", "I", "E", "TCH", "UP"]
 ignore = []
 exclude = [
-  "*/migrations/*",
-  "*/build/*",
-  "doc/",
-  "./venv",
-  ".pyenv*",
-  "service/codegen/*"
+    "*/migrations/*",
+    "*/build/*",
+    "doc/",
+    "./venv",
+    ".pyenv*",
+    "src/service/codegen/*"
 ]
 # Allow unused variables when underscore-prefixed.
 dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
@@ -82,25 +88,22 @@ omit = [
     ".venv/*",
     "*/tests/*",
     "*/commands/*",
-    "*/*/codegen/*",
+    "src/service/codegen/*",
 ]
 
 [tool.coverage.report]
 exclude_lines = [
-  "pragma: no cover",
-  "raise NotImplementedError",
-  ".__instance is None:",
-  "@abstract",
+    "pragma: no cover",
+    "raise NotImplementedError",
+    ".__instance is None:",
+    "@abstract",
     # Don't complain about missing debug-only code:
     "def __repr__",
     "if self\\.debug",
-
     # Don't complain if tests don't hit defensive assertion code:
     "raise AssertionError",
     "raise NotImplementedError",
-
     # Don't complain if non-runnable code isn't run:
     "if 0:",
     "if __name__ == .__main__.:",
-
 ]

@@ -5,10 +5,10 @@ import pandas as pd
 from openpyxl.styles import Alignment
 from openpyxl.utils import get_column_letter
 
-from core.analysis.entities import League
-from core.analysis.entities_ops import average_games
-from core.analysis.lang import spanish_columns
-from core.analysis.utils import get_sorted_list_of_columns, timedelta_to_str
+from src.core.analysis.entities import League
+from src.core.analysis.entities_ops import average_games
+from src.core.analysis.lang import spanish_columns
+from src.core.analysis.utils import get_sorted_list_of_columns, timedelta_to_str
 
 VERY_HIGH_VALUES_COLOR = "green"
 HIGH_VALUES_COLOR = "yellow"

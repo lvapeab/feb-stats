@@ -5,7 +5,7 @@ from unittest.mock import patch
 from django.conf import settings
 from django.test import TestCase
 
-from web.helpers.read_write import (
+from src.web.helpers.read_write import (
     get_boxscore_files,
     is_allowed_file_extension,
     read_boxscores_from_files,
@@ -37,7 +37,7 @@ class TestWebHelpers(TestCase):
         self.assertEqual(len(files), 2)
         self.assertTrue(all(str(file).endswith((".html", ".htm")) for file in files))
 
-    @patch("web.helpers.read_write.read_file")
+    @patch("src.web.helpers.read_write.read_file")
     def test_read_boxscores(self, mock_read_file):
         test_files = ["test1.html", "test2.htm"]
         for file in test_files:
