@@ -4,7 +4,7 @@ from typing import Any
 import pandas as pd
 from pydantic import BaseModel, ConfigDict, field_validator
 
-from core.analysis.validation_functions import (
+from src.core.analysis.validation_functions import (
     validate_datetime,
     validate_int,
     validate_string,

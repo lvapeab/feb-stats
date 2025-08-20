@@ -3,7 +3,7 @@ from unittest.mock import Mock, patch
 import requests
 from django.test import TestCase
 
-from core.scrapers.boxscore_scraper import BoxscoreScraper
+from src.core.scrapers.boxscore_scraper import BoxscoreScraper
 
 
 class TestBoxscoreScraper(TestCase):

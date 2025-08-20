@@ -3,9 +3,9 @@ from pathlib import Path
 
 from django.test import TestCase
 
-from service.api import ContextStub, FebStatsServiceServicer
-from service.codegen.feb_stats_pb2 import GetFebStatsRequest
-from service.handler import SimpleLeagueHandler
+from src.service.api import ContextStub, FebStatsServiceServicer
+from src.service.codegen.feb_stats_pb2 import GetFebStatsRequest
+from src.service.handler import SimpleLeagueHandler
 
 
 class FebStatsServiceServicerTest(TestCase):

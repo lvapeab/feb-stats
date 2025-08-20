@@ -1,9 +1,9 @@
-from service.codegen import feb_stats_pb2_grpc
-from service.codegen.feb_stats_pb2 import (
+from src.service.codegen import feb_stats_pb2_grpc
+from src.service.codegen.feb_stats_pb2 import (
     GetFebStatsRequest,
     GetFebStatsResponse,
 )
-from service.handler import SimpleLeagueHandler
+from src.service.handler import SimpleLeagueHandler
 
 
 class ContextStub:

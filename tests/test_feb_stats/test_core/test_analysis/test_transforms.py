@@ -4,8 +4,8 @@ import pandas as pd
 from django.test import TestCase
 from pandas.testing import assert_frame_equal
 
-from core.analysis.entities import Boxscore, Team
-from core.analysis.transforms import (
+from src.core.analysis.entities import Boxscore, Team
+from src.core.analysis.transforms import (
     aggregate_boxscores,
     compute_oer,
     compute_shots_percentage,

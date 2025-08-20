@@ -5,9 +5,7 @@ ENV PYTHONFAULTHANDLER=1 \
   PYTHONHASHSEED=random \
   PIP_NO_CACHE_DIR=off \
   PIP_DISABLE_PIP_VERSION_CHECK=on \
-  PIP_DEFAULT_TIMEOUT=100 \
-  POETRY_VIRTUALENVS_IN_PROJECT=false \
-  POETRY_NO_INTERACTION=1
+  PIP_DEFAULT_TIMEOUT=100
 
 
 RUN apt-get update -y && \
@@ -15,28 +13,28 @@ RUN apt-get update -y && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
     python3 -m pip install --upgrade pip pipx && \
-    pipx install poetry
+    pipx install uv
 
 ENV PATH=/root/.local/bin:$PATH
 
 WORKDIR /code
 
-COPY poetry.lock pyproject.toml /code/
+COPY uv.lock pyproject.toml README.md /code/
 COPY scripts/* /code/scripts/
 
-RUN poetry install --no-interaction --no-ansi --only main
+RUN uv sync --frozen
 
 ENV PYTHONPATH="/code:$PYTHONPATH"
 
 COPY . .
 
-RUN poetry run python manage.py collectstatic --noinput --settings=feb_stats.settings.production
+RUN uv run python manage.py collectstatic --noinput --settings=src.feb_stats.settings.production
 
 EXPOSE 8080
 
-CMD ["poetry", "run", "gunicorn", \
+CMD ["uv", "run", "gunicorn", \
      "feb_stats.wsgi:application", \
-     "--env", "DJANGO_SETTINGS_MODULE=feb_stats.settings.production", \
+     "--env", "DJANGO_SETTINGS_MODULE=src.feb_stats.settings.production", \
      "--bind", "0.0.0.0:8080", \
      "--timeout", "300" \
      ]

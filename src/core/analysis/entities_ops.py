@@ -1,8 +1,8 @@
 import numpy as np
 import pandas as pd
 
-from core.analysis.entities import Boxscore, Game, League, Team
-from core.analysis.utils import get_averageable_numerical_columns
+from src.core.analysis.entities import Boxscore, Game, League, Team
+from src.core.analysis.utils import get_averageable_numerical_columns
 
 
 # TODO: These ops should be done in a DB
