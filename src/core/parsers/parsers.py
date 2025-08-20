@@ -8,9 +8,9 @@ import pandas as pd
 import requests
 from lxml.html import Element
 
-from core.analysis.entities import Boxscore, Game, League, Player, Team
-from core.parsers.exceptions import UnfinishedGameException
-from core.parsers.transforms import transform_game_stats_df
+from src.core.analysis.entities import Boxscore, Game, League, Player, Team
+from src.core.parsers.exceptions import UnfinishedGameException
+from src.core.parsers.transforms import transform_game_stats_df
 
 T = TypeVar("T", str, bytes)
 
@@ -47,7 +47,7 @@ class FEBLivescoreParser:
     @staticmethod
     def create_game(metadata: dict[str, str], game_stats: dict[str, pd.DataFrame]) -> Game:
         return Game(
-            game_at=f'{metadata["date"]} {metadata["time"]}',  # type: ignore[arg-type]  # Validated by Pydantic
+            game_at=f"{metadata['date']} {metadata['time']}",  # type: ignore[arg-type]  # Validated by Pydantic
             league=metadata["league"],
             season=metadata["season"],
             main_referee=Player(name=metadata["main_referee"]),
@@ -121,6 +121,7 @@ class FEBLivescoreParser:
                 current_path = [x for x in current_path[-1]]
             except IndexError:
                 return None
+        return value
 
     @classmethod
     def parse_game_metadata(cls, doc: Element) -> dict[str, str]:

@@ -9,9 +9,9 @@ from typing import Any
 import grpc
 from grpc_reflection.v1alpha import reflection
 
-from service.api import FebStatsServiceServicer
-from service.codegen import feb_stats_pb2, feb_stats_pb2_grpc
-from service.handler import SimpleLeagueHandler
+from src.service.api import FebStatsServiceServicer
+from src.service.codegen import feb_stats_pb2, feb_stats_pb2_grpc
+from src.service.handler import SimpleLeagueHandler
 
 logger = logging.getLogger(__name__)
 

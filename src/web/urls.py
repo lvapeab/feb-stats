@@ -1,6 +1,6 @@
 from django.urls import path
 
-from web.views import AnalyzeUrlView, AnalyzeView, IndexView, UploadView
+from src.web.views import AnalyzeUrlView, AnalyzeView, IndexView, UploadView
 
 urlpatterns = [
     path("", IndexView.as_view(), name="index"),

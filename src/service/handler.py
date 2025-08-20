@@ -4,10 +4,10 @@ from typing import TYPE_CHECKING
 from grpc import insecure_channel
 
 if TYPE_CHECKING:
-    from core.analysis.entities import League
-from core.analysis.saving import league_to_xlsx
-from core.analysis.transforms import compute_league_aggregates
-from core.parsers.parsers import FEBLivescoreParser
+    from src.core.analysis.entities import League
+from src.core.analysis.saving import league_to_xlsx
+from src.core.analysis.transforms import compute_league_aggregates
+from src.core.parsers.parsers import FEBLivescoreParser
 
 
 class LeagueHandler(ABC):

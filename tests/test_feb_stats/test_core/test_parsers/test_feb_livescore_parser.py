@@ -4,7 +4,7 @@ from pathlib import Path
 
 from django.test import TestCase
 
-from core.parsers.parsers import FEBLivescoreParser
+from src.core.parsers.parsers import FEBLivescoreParser
 
 
 class TestLivescoreParserScenarios(TestCase):

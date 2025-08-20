@@ -42,7 +42,7 @@ class TestFebStatsWebapp(TestCase):
         self.assertTrue(uploaded_file.exists())
         self.assertEqual(uploaded_file.read_bytes(), b"test content")
 
-    @patch("web.views.FebStatsServiceServicer")
+    @patch("src.web.views.FebStatsServiceServicer")
     def test_analyze_endpoint_success(self, mock_service: MagicMock) -> None:
         test_file = Path(settings.UPLOAD_FOLDER) / "test.html"
         test_file.write_text("test content")
@@ -58,12 +58,12 @@ class TestFebStatsWebapp(TestCase):
         self.assertEqual(response["Content-Type"], "application/vnd.ms-excel")
         self.assertIn("estadisticas_", response["Content-Disposition"])
 
-    @patch("web.views.FebStatsServiceServicer")
+    @patch("src.web.views.FebStatsServiceServicer")
     def test_analyze_endpoint_no_files(self, mock_service: MagicMock) -> None:
         response = self.client.post(reverse("analyze"))
         self.assertEqual(response.status_code, HTTPStatus.FOUND)
 
-    @patch("web.views.FebStatsServiceServicer")
+    @patch("src.web.views.FebStatsServiceServicer")
     def test_analyze_endpoint_error(self, mock_service: MagicMock) -> None:
         test_file = Path(settings.UPLOAD_FOLDER) / "test.html"
         test_file.write_text("test content")

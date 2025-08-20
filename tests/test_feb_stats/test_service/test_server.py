@@ -6,7 +6,7 @@ from datetime import timedelta
 
 from django.test import TestCase
 
-from service.server import Server
+from src.service.server import Server
 
 
 class ServerTestCase(TestCase):

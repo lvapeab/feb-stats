@@ -2,9 +2,9 @@ import functools
 
 import pandas as pd
 
-from core.analysis.entities import Boxscore, League, Team
-from core.analysis.entities_ops import get_rival_boxscores, get_team_boxscores
-from core.analysis.utils import timedelta_to_minutes
+from src.core.analysis.entities import Boxscore, League, Team
+from src.core.analysis.entities_ops import get_rival_boxscores, get_team_boxscores
+from src.core.analysis.utils import timedelta_to_minutes
 
 
 def compute_oer(df: pd.DataFrame, key_name: str = "oer") -> pd.DataFrame:
