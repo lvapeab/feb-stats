@@ -14,14 +14,14 @@ The boxscores are analyzed from the game stats pages (`.html` or `htm`).
 ### Run the python service in local
 
 ```shell script
-poetry run gunicorn feb_stats.wsgi:application --env DJANGO_SETTINGS_MODULE=feb_stats.settings.local
+uv run gunicorn feb_stats.wsgi:application --env DJANGO_SETTINGS_MODULE=feb_stats.settings.local
 ```
 
 ### Run linting and tests
 
 ```shell script
-poetry run lint ; 
-poetry run pytest tests ;
+uv run lint ; 
+uv run pytest tests ;
 ```
 
 ### Run using docker-compose
@@ -51,3 +51,4 @@ As a rough roadmap, some of the next steps to take are:
 ***
 
 *Disclaimer: This is not a* Federación Española de Baloncesto *product nor has any relationship with it.*
+
