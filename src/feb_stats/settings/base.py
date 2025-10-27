@@ -18,7 +18,7 @@ import yaml
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 # Load YAML configurations
-with open(BASE_DIR / "web" / "config" / "defaults.yaml") as f:
+with open(BASE_DIR / "web" / "config" / "defaults_25_26.yaml") as f:
     DEFAULTS = yaml.safe_load(f)
 
 
